@@ -20,13 +20,11 @@ class PlayerService {
   }
 
   public async getAll() {
-    debugger
     let result = await http.get('/api/services/app/Player/GetAll');
     return result.data.result;
   }
 
   public async getPaginatedAll(pagedFilterAndSortedRequest: PagedPlayerResultRequestDto) {
-    debugger
     let result = await http.get('/api/services/app/Player/GetPaginatedAll', { params: pagedFilterAndSortedRequest });
     return result.data.result;
   }

@@ -16,6 +16,7 @@
     "mobx-react": "^6.1.4",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.27",
+    "prop-types": "^15.7.2",
     "query-string": "^6.9.0",
     "react": "^16.12.0",
     "react-document-title": "^2.0.3",
@@ -23,7 +24,8 @@
     "react-loadable": "^5.5.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.2.0",
-    "recharts": "^1.8.5"
+    "recharts": "^1.8.5",
+    "tesseract.js": "^2.1.5"
   },
   "scripts": {
     "start": "craco start",

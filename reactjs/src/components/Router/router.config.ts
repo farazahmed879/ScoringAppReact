@@ -67,6 +67,14 @@ export const appRouters: any = [
     component: LoadableComponent(() => import('../../scenes/Players')),
   },
   {
+    path: '/readImage',
+    title: 'ReadImage',
+    name: 'readImage',
+    icon: 'tags',
+    showInMenu: true,
+    component: LoadableComponent(() => import('../../scenes/ReadImage/readImage')),
+  },
+  {
     path: '/tenants',
     permission: 'Pages.Tenants',
     title: 'Tenants',

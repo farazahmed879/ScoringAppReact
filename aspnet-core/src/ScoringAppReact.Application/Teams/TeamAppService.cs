@@ -41,7 +41,14 @@ namespace ScoringAppReact.Teams
         {
             var result = await _repository.InsertAsync(new Team()
             {
-                Name = teamDto.Name
+                Name = teamDto.Name,
+                City = teamDto.City,
+                Contact = teamDto.Contact,
+                IsRegistered = teamDto.IsRegistered,
+                Place = teamDto.Place,
+                FileName = teamDto.FileName,
+                Zone = teamDto.Zone,
+                TenantId = teamDto.TenantId
             });
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
@@ -69,9 +76,13 @@ namespace ScoringAppReact.Teams
         {
             var result = await _repository.UpdateAsync(new Team()
             {
-                Id = teamDto.Id.Value,
                 Name = teamDto.Name,
-                TenantId = teamDto.TenantId
+                Contact = teamDto.Contact,
+                FileName = teamDto.FileName,
+                Zone = teamDto.Zone,
+                IsRegistered = teamDto.IsRegistered,
+                City = teamDto.City,
+                Place = teamDto.Place
             });
 
             if (result != null)
@@ -101,7 +112,13 @@ namespace ScoringAppReact.Teams
                 new TeamDto()
                 {
                     Id = i.Id,
-                    Name = i.Name
+                    Name = i.Name,
+                    Contact = i.Contact,
+                    FileName = i.FileName,
+                    Zone = i.Zone,
+                    IsRegistered = i.IsRegistered,
+                    City = i.City,
+                    Place = i.Place
                 })
                 .FirstOrDefaultAsync();
             return result;
@@ -150,9 +167,14 @@ namespace ScoringAppReact.Teams
                 items: await pagedAndFilteredPlayers.Select(i => new TeamDto()
                 {
                     Id = i.Id,
-                    Name = i.Name
-                })
-                    .ToListAsync());
+                    Name = i.Name,
+                    Contact = i.Contact,
+                    FileName = i.FileName,
+                    Zone = i.Zone,
+                    IsRegistered = i.IsRegistered,
+                    City = i.City,
+                    Place = i.Place
+                }).ToListAsync());
         }
     }
 }

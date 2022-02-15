@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Avatar, Col, Icon, Layout, Menu } from 'antd';
 import { L, isGranted } from '../../lib/abpUtility';
 
-import AbpLogo from '../../images/abp-logo-long.png';
+import AbpLogo from '../../images/a.jpg';
 import { appRouters } from '../../components/Router/router.config';
 
 const { Sider } = Layout;
@@ -23,15 +23,15 @@ const SiderMenu = (props: ISiderMenuProps) => {
     <Sider trigger={null} className={'sidebar'} width={256} collapsible collapsed={collapsed} onCollapse={onCollapse}>
       {collapsed ? (
         <Col style={{ textAlign: 'center', marginTop: 15, marginBottom: 10 }}>
-          <Avatar shape="square" style={{ height: 27, width: 64 }} src={AbpLogo} />
+          <Avatar shape="square" style={{ height: 27, width: 80 }} src={AbpLogo} />
         </Col>
       ) : (
         <Col style={{ textAlign: 'center', marginTop: 15, marginBottom: 10 }}>
-          <Avatar shape="square" style={{ height: 54, width: 128 }} src={AbpLogo} />
+          <Avatar shape="square" style={{ height: 54, width: 250 }} src={AbpLogo} />
         </Col>
       )}
 
-      <Menu theme="dark" mode="inline">
+      <Menu theme="light" mode="inline">
         {appRouters
           .filter((item: any) => !item.isLayout && item.showInMenu)
           .map((route: any, index: number) => {

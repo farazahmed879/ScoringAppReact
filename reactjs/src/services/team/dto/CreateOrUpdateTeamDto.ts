@@ -1,4 +1,4 @@
-export interface CreateOrUpdatePlayerDto {
+export interface CreateOrUpdateTeamDto {
   id: number,
   name: string;
   contact: string;

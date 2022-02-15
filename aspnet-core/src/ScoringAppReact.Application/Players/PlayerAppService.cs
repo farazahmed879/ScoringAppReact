@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using ScoringAppReact.Models;
 using Abp;
 using ScoringAppReact.Players.Dto;
+using System;
 
 namespace ScoringAppReact.Players
 {
@@ -26,7 +27,7 @@ namespace ScoringAppReact.Players
         public async Task<ResponseMessageDto> CreateOrEditAsync(CreateOrUpdatePlayerDto playerDto)
         {
             ResponseMessageDto result;
-            if (playerDto.Id == 0)
+            if (playerDto.Id == 0 || playerDto.Id == null)
             {
                 result = await CreatePlayerAsync(playerDto);
             }
@@ -39,7 +40,14 @@ namespace ScoringAppReact.Players
 
         private async Task<ResponseMessageDto> CreatePlayerAsync(CreateOrUpdatePlayerDto playerDto)
         {
-            var result = await _repository.InsertAsync(new Player()
+            if (string.IsNullOrEmpty(playerDto.Name))
+            {
+                Console.WriteLine("PLayer Name Missing");
+                //return;
+            }
+                
+
+           var result = await _repository.InsertAsync(new Player()
             {
                 Name = playerDto.Name,
                 Address = playerDto.Address,
@@ -139,7 +147,8 @@ namespace ScoringAppReact.Players
             var result = await _repository.GetAll().Where(i => i.IsDeleted == false && i.TenantId == tenantId).Select(i => new PlayerDto()
             {
                 Id = i.Id,
-                Name = i.Name
+                Name = i.Name,
+                FileName = i.FileName
             }).ToListAsync();
             return result;
         }
@@ -162,9 +171,18 @@ namespace ScoringAppReact.Players
                 items: await pagedAndFilteredPlayers.Select(i => new PlayerDto()
                 {
                     Id = i.Id,
-                    Name = i.Name
-                })
-                    .ToListAsync());
+                    Name = i.Name,
+                    Team = i.Team.Name,
+                    BattingStyleId = i.BattingStyleId,
+                    BowlingStyleId = i.BowlingStyleId,
+                    PlayerRoleId = i.PlayerRoleId,
+                    DOB = i.DOB,
+                    IsDeactivated = i.IsDeactivated,
+                    Contact = i.Contact,
+                    FileName = i.FileName,
+                    Address = i.Address
+
+                }).ToListAsync());
         }
     }
 }
