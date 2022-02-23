@@ -8,17 +8,17 @@ const OptionGenerator =
         <Option key={e.id} value={e.id}>
             {e.name}</Option>)
 
-const CustomInput = ({ options = [], title, handleChange = (a, b) => { }, value, placeholder = "Placeholder", stateKey = "", type = "text", errorMessage="" }) => {
+const CustomInput = ({ options = [], title, handleChange = (a, b) => { }, value, placeholder = "Placeholder", stateKey = "", type = "text", errorMessage = "" }) => {
     return (
         <>
-            <label>{title}</label>  <em>{errorMessage}</em>
+            <label>{title}</label>  <em style={{ float: "right", color: "#b10505e0" }}>{errorMessage}</em>
             {type == "select" ?
                 <Select placeholder={placeholder} value={value} style={{ width: '100%' }} onChange={(e) => handleChange(e, stateKey)} >
                     {OptionGenerator(options)}
                 </Select>
                 : type == "datePicker" ?
                     <DatePicker style={{ width: '100%' }} onChange={handleChange} name={stateKey}></DatePicker> :
-                    <Input onChange={(e) => handleChange(e.target.value, stateKey)} value={value} name={stateKey} >
+                    <Input type={type} onChange={(e) => handleChange(e.target.value, stateKey)} value={value} name={stateKey} >
                     </Input >
             }
         </>

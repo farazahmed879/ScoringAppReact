@@ -4,6 +4,7 @@ using Abp.Application.Services.Dto;
 using Abp.Authorization.Roles;
 using Abp.AutoMapper;
 using ScoringAppReact.Authorization.Roles;
+using ScoringAppReact.Models;
 
 namespace ScoringAppReact.Teams.Dto
 {
@@ -16,5 +17,6 @@ namespace ScoringAppReact.Teams.Dto
         public bool IsRegistered { get; set; }
         public string City { get; set; }
         public string FileName { get; set; }
+        public List<Player> Players { get; set; }
     }
 }

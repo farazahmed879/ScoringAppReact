@@ -157,7 +157,7 @@ class Login extends React.Component<ILoginProps> {
                     </Col>
 
                     <Col span={8} offset={4}>
-                      <Button style={{ backgroundColor: '#f5222d', color: 'white' }} htmlType={'submit'} type="danger">
+                      <Button style={{ backgroundColor: '#f5222d', color: 'white' }} htmlType={'submit'} type="primary">
                         {L('LogIn')}
                       </Button>
                     </Col>

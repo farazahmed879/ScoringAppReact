@@ -11,6 +11,7 @@
     "classnames": "^2.2.6",
     "craco-antd": "^1.14.1",
     "famfamfam-flags": "^1.0.0",
+    "formik": "^2.2.9",
     "lodash": "^4.17.15",
     "mobx": "^5.15.0",
     "mobx-react": "^6.1.4",
@@ -25,7 +26,8 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "^3.2.0",
     "recharts": "^1.8.5",
-    "tesseract.js": "^2.1.5"
+    "tesseract.js": "^2.1.5",
+    "yup": "^0.32.11"
   },
   "scripts": {
     "start": "craco start",

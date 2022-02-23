@@ -1,10 +1,10 @@
 import http from '../httpService';
-import { CreateOrUpdateTeamDto } from './dto/CreateOrUpdateTeamDto';
+//import { CreateOrUpdateTeamDto } from './dto/CreateOrUpdateTeamDto';
 import { PagedTeamResultRequestDto } from './dto/PagedTeamResultRequestDto';
 import { TeamDto } from './dto/TeamDto';
 
 class TeamService {
-  public async createOrUpdate(createRoleInput: CreateOrUpdateTeamDto) {
+  public async createOrUpdate(createRoleInput: any) {
     let result = await http.post('/api/services/app/Team/CreateOrEdit', createRoleInput);
     return result.data.result;
   }

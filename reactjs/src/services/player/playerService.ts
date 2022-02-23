@@ -1,10 +1,10 @@
 import http from '../httpService';
-import { CreateOrUpdatePlayerDto } from './dto/CreateOrUpdatePlayerDto';
+//import { CreateOrUpdatePlayerDto } from './dto/CreateOrUpdatePlayerDto';
 import { PagedPlayerResultRequestDto } from './dto/PagedPlayerResultRequestDto';
 import { PlayerDto } from './dto/PlayerDto';
 
 class PlayerService {
-  public async createOrUpdate(createRoleInput: CreateOrUpdatePlayerDto) {
+  public async createOrUpdate(createRoleInput: any) {
     let result = await http.post('/api/services/app/Player/CreateOrEdit', createRoleInput);
     return result.data.result;
   }

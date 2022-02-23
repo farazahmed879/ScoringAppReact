@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using ScoringAppReact.Models;
 using Abp;
 using ScoringAppReact.Teams.Dto;
+using Abp.Runtime.Session;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ScoringAppReact.Teams
 {
@@ -17,11 +19,13 @@ namespace ScoringAppReact.Teams
     public class TeamAppService : AbpServiceBase, ITeamAppService
     {
         private readonly IRepository<Team, long> _repository;
-
-        public TeamAppService(IRepository<Team, long> repository)
+        private readonly IAbpSession _abpSession;
+        public TeamAppService(IRepository<Team, long> repository, IAbpSession abpSession)
         {
             _repository = repository;
+            _abpSession = abpSession;
         }
+
 
         public async Task<ResponseMessageDto> CreateOrEditAsync(CreateOrUpdateTeamDto teamDto)
         {
@@ -39,19 +43,10 @@ namespace ScoringAppReact.Teams
 
         private async Task<ResponseMessageDto> CreateTeamAsync(CreateOrUpdateTeamDto teamDto)
         {
-            var result = await _repository.InsertAsync(new Team()
-            {
-                Name = teamDto.Name,
-                City = teamDto.City,
-                Contact = teamDto.Contact,
-                IsRegistered = teamDto.IsRegistered,
-                Place = teamDto.Place,
-                FileName = teamDto.FileName,
-                Zone = teamDto.Zone,
-                TenantId = teamDto.TenantId
-            });
-
-            await UnitOfWorkManager.Current.SaveChangesAsync();
+            var result = (ObjectMapper.Map<Team>(teamDto));
+            result.TenantId = _abpSession.TenantId;
+                await _repository.InsertAsync(result);
+                await UnitOfWorkManager.Current.SaveChangesAsync();
 
             if (result.Id != 0)
             {
@@ -141,11 +136,15 @@ namespace ScoringAppReact.Teams
 
         public async Task<List<TeamDto>> GetAll(long? tenantId)
         {
-            var result = await _repository.GetAll().Where(i => i.IsDeleted == false && i.TenantId == tenantId).Select(i => new TeamDto()
-            {
-                Id = i.Id,
-                Name = i.Name
-            }).ToListAsync();
+            var result = await _repository.GetAll()
+                .Where(i => i.IsDeleted == false && i.TenantId == _abpSession.TenantId)
+                .Select(i => new TeamDto()
+                {
+                    Id = i.Id,
+                    Name = i.Name,
+                    Players = i.Players
+
+                }).ToListAsync();
             return result;
         }
 
