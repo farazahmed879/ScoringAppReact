@@ -13,3 +13,11 @@ body {
     -webkit-box-shadow: 0 2px 0 rgb(0 0 0 / 5%);
     box-shadow: 0 2px 0 rgb(0 0 0 / 5%);
 }
+
+.ant-layout-sider {
+  position: relative;
+  min-width: 0;
+  background: #ffffff !important;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+}
