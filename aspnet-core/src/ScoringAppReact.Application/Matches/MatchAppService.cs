@@ -102,10 +102,10 @@ namespace ScoringAppReact.Matches
             return ObjectMapper.Map<MatchDto>(result);
         }
 
-        public async Task<ResponseMessageDto> DeleteAsync(long playerId)
+        public async Task<ResponseMessageDto> DeleteAsync(long matchId)
         {
 
-            var model = await _repository.FirstOrDefaultAsync(i => i.Id == playerId);
+            var model = await _repository.FirstOrDefaultAsync(i => i.Id == matchId);
             if (model == null)
                 throw new UserFriendlyException("No Record Exists");
             model.IsDeleted = true;
@@ -113,7 +113,7 @@ namespace ScoringAppReact.Matches
 
             return new ResponseMessageDto()
             {
-                Id = playerId,
+                Id = matchId,
                 SuccessMessage = AppConsts.SuccessfullyDeleted,
                 Success = true,
                 Error = false,

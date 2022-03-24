@@ -8,6 +8,8 @@ import CustomModal from '../../components/Modal';
 import CustomInput from '../../components/Input';
 import matchService from '../../services/match/matchService';
 import TeamService from '../../services/team/TeamService';
+import playerService from '../../services/player/playerService';
+import { matchType, eventStage } from '../../components/Enum/enum';
 const matchValidation = Yup.object().shape({
   team1: Yup.string().required('Required'),
   team2: Yup.string().required('Required'),
@@ -15,33 +17,19 @@ const matchValidation = Yup.object().shape({
 });
 
 const matchInitial = {
-  overs: 0,
-  description: '',
+  matchOvers: 0,
+  matchDescription: '',
   season: 0,
   eventId: 0,
-  // gender: {
-  //   id: 1,
-  //   name: 'Male'
-  // },
-  // address: "",
-  // cnic: "",
-  // battingStyle: {
-  //   id: 0,
-  //   name: 'Right-Handed'
-  // },
-  // bowlingStyle: {
-  //   id: 0,
-  //   name: 'Right-Arm-Fast'
-  // },
-  // playingRole: {
-  //   id: 0,
-  //   name: 'Batsman'
-  // },
   team1: '',
   team2: '',
-  ground: '',
-  // dob: Date(),
-  // fileName: ''
+  groundId: '',
+  matchTypeId: '',
+  eventType: '',
+  eventStage: '',
+  date: '',
+  TossWinningTeam: '',
+  playerOTM: '',
 };
 
 const success = Modal.success;
@@ -56,8 +44,10 @@ const Matches = () => {
   const [match, setPlayer] = useState(matchInitial);
   const [teamList, setTeamList] = useState([]);
   const [groundList, setGroundList] = useState([]);
+  const [playerList, setPlayerList] = useState([]);
+  const [eventList, setEventList] = useState([]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     console.log('e', e);
   };
   // const handleSubmit = () => {
@@ -92,6 +82,8 @@ const Matches = () => {
     if (isOpenModal) {
       getAllTeams();
       getAllGrounds();
+      getAllPlayers();
+      getAllEvents();
     }
   }, [isOpenModal]);
 
@@ -122,8 +114,18 @@ const Matches = () => {
     });
   };
 
-
- 
+  const getAllPlayers = () => {
+    playerService.getAll().then((res) => {
+      console.log('Players', res);
+      setPlayerList(res);
+    });
+  };
+  const getAllEvents = () => {
+    playerService.getAll().then((res) => {
+      console.log('eventList', res);
+      setEventList(res);
+    });
+  };
 
   const handleChange = (value, key) => {
     debugger;
@@ -212,48 +214,114 @@ const Matches = () => {
         }}
       >
         <Form className="form" onSubmit={matchFormik.handleSubmit}>
-          <Form.Item
-            rules={[
-              {
-                required: true,
-                message: 'Please input your username!',
-              },
-            ]}
-          >
-            <CustomInput
-              title="Team 1"
-              type="select"
-              options={teamList.filter((i) => i.id != matchFormik.values.team2)}
-              handleChange={handleChange}
-              value={matchFormik.values.team1}
-              stateKey="team1"
-              placeholder="Select Team"
-              errorMessage={matchFormik.errors.team1}
-            />
-          </Form.Item>
-          <Form.Item>
-            <CustomInput
-              title="Team 2"
-              type="select"
-              options={teamList.filter((i) => i.id != matchFormik.values.team1)}
-              handleChange={handleChange}
-              value={matchFormik.values.team2}
-              stateKey="team2"
-              placeholder="Select Team"
-              errorMessage={matchFormik.errors.team2}
-            />
-          </Form.Item>
-          <Form.Item>
-            <CustomInput
-              title="Ground"
-              type="select"
-              options={groundList}
-              handleChange={handleChange}
-              value={matchFormik.values.ground}
-              stateKey="ground"
-              placeholder="Select Ground"
-            />
-          </Form.Item>
+          <CustomInput
+            title="Team 1"
+            type="select"
+            options={teamList.filter((i) => i.id != matchFormik.values.team2)}
+            handleChange={handleChange}
+            value={matchFormik.values.team1}
+            stateKey="team1"
+            placeholder="Select Team"
+            errorMessage={matchFormik.errors.team1}
+          />
+          <CustomInput
+            title="Team 2"
+            type="select"
+            options={teamList.filter((i) => i.id != matchFormik.values.team1)}
+            handleChange={handleChange}
+            value={matchFormik.values.team2}
+            stateKey="team2"
+            placeholder="Select Team"
+            errorMessage={matchFormik.errors.team2}
+          />
+          <CustomInput
+            title="Ground"
+            type="select"
+            options={groundList}
+            handleChange={handleChange}
+            value={matchFormik.values.ground}
+            stateKey="ground"
+            placeholder="Select Ground"
+          />
+          <CustomInput
+            title="Description"
+            type="text"
+            handleChange={handleChange}
+            value={matchFormik.values.description}
+            stateKey="description"
+            placeholder="Optional"
+          />
+          <CustomInput
+            title="Season"
+            type="number"
+            handleChange={handleChange}
+            value={matchFormik.values.season}
+            stateKey="season"
+            placeholder="Optional"
+          />
+          <CustomInput
+            title="Overs"
+            type="number"
+            handleChange={handleChange}
+            value={matchFormik.values.overs}
+            stateKey="season"
+            placeholder="Optional"
+          />
+
+          <CustomInput
+            title="Match Type"
+            type="select"
+            options={matchType}
+            handleChange={handleChange}
+            value={matchFormik.values.matchType}
+            stateKey="matchType"
+            placeholder="Select Type"
+          />
+          <CustomInput
+            title="Date of Match"
+            type="datePicker"
+            handleChange={handleChange}
+            value={matchFormik.values.date}
+            stateKey="datePicker"
+            placeholder="Select Date"
+          />
+          <CustomInput
+            title="Event"
+            type="select"
+            handleChange={handleChange}
+            options={eventList}
+            value={matchFormik.values.date}
+            stateKey="select"
+            placeholder="Select Event"
+          />
+          <CustomInput
+            title="Event Stage"
+            type="select"
+            handleChange={handleChange}
+            options={eventStage}
+            value={matchFormik.values.eventStage}
+            stateKey="select"
+            placeholder="Select Stage"
+          />
+          <CustomInput
+            title="Toss Winning Team"
+            type="select"
+            handleChange={handleChange}
+            options={teamList}
+            value={matchFormik.values.TossWinningTeam}
+            stateKey="select"
+            placeholder="Select Team"
+          />
+
+          <CustomInput
+            title="Player Of the Match"
+            type="select"
+            handleChange={handleChange}
+            options={playerList}
+            value={matchFormik.values.playerOTM}
+            stateKey="select"
+            placeholder="Man of the match"
+          />
 
           {/* <CustomInput title="Overs" type="number" handleChange={handleChange} 
                     value={playerFormik.values.overs} stateKey="overs" placeholder="" /> */}
@@ -266,8 +334,13 @@ const Matches = () => {
                     <CustomInput title="Player Role" type="select" options={playingRoleOptions} handleChange={handleChange} value={playerFormik.values.playingRole.name} stateKey="playingRole" placeholder="" />
                     <CustomInput title="Batting Style" type="select" options={battingStyleOptions} handleChange={handleChange} value={playerFormik.values.battingStyle.name} stateKey="battingStyle" placeholder="" />
                     <CustomInput title="Bowling Style" type="select" options={bowlingStyleOptions} handleChange={handleChange} value={playerFormik.values.bowlingStyle.name} stateKey="bowlingStyle" placeholder="" /> */}
-          <Form.Item >
-            <Button htmlType="submit">Book Now</Button>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Book Now
+            </Button>
+            <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
+              Cancel
+            </Button>
           </Form.Item>
         </Form>
       </CustomModal>

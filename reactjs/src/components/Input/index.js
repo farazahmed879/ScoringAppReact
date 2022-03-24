@@ -18,7 +18,7 @@ const CustomInput = ({ options = [], title, handleChange = (a, b) => { }, value,
                 </Select>
                 : type == "datePicker" ?
                     <DatePicker style={{ width: '100%' }} onChange={handleChange} name={stateKey}></DatePicker> :
-                    <Input type={type} onChange={(e) => handleChange(e.target.value, stateKey)} value={value} name={stateKey} >
+                    <Input type={type} onChange={(e) => handleChange(e.target.value, stateKey)} value={value || undefined} name={stateKey} >
                     </Input >
             }
         </>

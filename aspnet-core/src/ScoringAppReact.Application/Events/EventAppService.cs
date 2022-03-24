@@ -9,51 +9,50 @@ using ScoringAppReact.Authorization;
 using Microsoft.EntityFrameworkCore;
 using ScoringAppReact.Models;
 using Abp;
-using ScoringAppReact.Teams.Dto;
 using Abp.Runtime.Session;
-using Microsoft.AspNetCore.Mvc;
+using ScoringAppReact.Events.Dto;
 
-namespace ScoringAppReact.Teams
+namespace ScoringAppReact.Events
 {
     [AbpAuthorize(PermissionNames.Pages_Roles)]
-    public class TeamAppService : AbpServiceBase, ITeamAppService
+    public class EventAppService : AbpServiceBase, IEventAppService
     {
-        private readonly IRepository<Team, long> _repository;
+        private readonly IRepository<Event, long> _repository;
         private readonly IAbpSession _abpSession;
-        public TeamAppService(IRepository<Team, long> repository, IAbpSession abpSession)
+        public EventAppService(IRepository<Event, long> repository, IAbpSession abpSession)
         {
             _repository = repository;
             _abpSession = abpSession;
         }
 
 
-        public async Task<ResponseMessageDto> CreateOrEditAsync(CreateOrUpdateTeamDto teamDto)
+        public async Task<ResponseMessageDto> CreateOrEditAsync(CreateOrUpdateEventDto eventDto)
         {
             ResponseMessageDto result;
-            if (teamDto.Id == 0)
+            if (eventDto.Id == 0)
             {
-                result = await CreateTeamAsync(teamDto);
+                result = await CreateEventAsync(eventDto);
             }
             else
             {
-                result = await UpdateTeamAsync(teamDto);
+                result = await UpdateEventAsync(eventDto);
             }
             return result;
         }
 
-        private async Task<ResponseMessageDto> CreateTeamAsync(CreateOrUpdateTeamDto model)
+        private async Task<ResponseMessageDto> CreateEventAsync(CreateOrUpdateEventDto model)
         {
-
-
-            var result = await _repository.InsertAsync(new Team()
+            var result = await _repository.InsertAsync(new Event()
             {
                 Name = model.Name,
-                Place = model.Place,
-                Zone = model.Zone,
-                Contact = model.Contact,
-                IsRegistered = model.IsRegistered,
-                City = model.City,
                 FileName = model.FileName,
+                Organizor = model.Organizor,
+                OrganizorContact = model.OrganizorContact,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                EventType = model.EventType,
+                TournamentType = model.TournamentType,
+                NumberOfGroup = model.NumberOfGroup,
                 TenantId = _abpSession.TenantId
 
             });
@@ -78,18 +77,23 @@ namespace ScoringAppReact.Teams
             };
         }
 
-        private async Task<ResponseMessageDto> UpdateTeamAsync(CreateOrUpdateTeamDto teamDto)
+        private async Task<ResponseMessageDto> UpdateEventAsync(CreateOrUpdateEventDto model)
         {
-            var result = await _repository.UpdateAsync(new Team()
+            var result = await _repository.UpdateAsync(new Event()
             {
-                Name = teamDto.Name,
-                Contact = teamDto.Contact,
-                FileName = teamDto.FileName,
-                Zone = teamDto.Zone,
-                IsRegistered = teamDto.IsRegistered,
-                City = teamDto.City,
-                Place = teamDto.Place
+                Name = model.Name,
+                FileName = model.FileName,
+                Organizor = model.Organizor,
+                OrganizorContact = model.OrganizorContact,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                EventType = model.EventType,
+                TournamentType = model.TournamentType,
+                NumberOfGroup = model.NumberOfGroup,
+                TenantId = _abpSession.TenantId
+
             });
+            await UnitOfWorkManager.Current.SaveChangesAsync();
 
             if (result != null)
             {
@@ -110,21 +114,16 @@ namespace ScoringAppReact.Teams
             };
         }
 
-        public async Task<TeamDto> GetById(long productId)
+        public async Task<EventDto> GetById(long eventId)
         {
             var result = await _repository.GetAll()
-                .Where(i => i.Id == productId)
+                .Where(i => i.Id == eventId)
                 .Select(i =>
-                new TeamDto()
+                new EventDto()
                 {
                     Id = i.Id,
                     Name = i.Name,
-                    Contact = i.Contact,
                     FileName = i.FileName,
-                    Zone = i.Zone,
-                    IsRegistered = i.IsRegistered,
-                    City = i.City,
-                    Place = i.Place
                 })
                 .FirstOrDefaultAsync();
             return result;
@@ -145,21 +144,20 @@ namespace ScoringAppReact.Teams
             };
         }
 
-        public async Task<List<TeamDto>> GetAll(long? tenantId)
+        public async Task<List<EventDto>> GetAll(long? tenantId)
         {
             var result = await _repository.GetAll()
                 .Where(i => i.IsDeleted == false && i.TenantId == _abpSession.TenantId)
-                .Select(i => new TeamDto()
+                .Select(i => new EventDto()
                 {
                     Id = i.Id,
                     Name = i.Name,
-                    Players = i.Players
 
                 }).ToListAsync();
             return result;
         }
 
-        public async Task<PagedResultDto<TeamDto>> GetPaginatedAllAsync(PagedTeamResultRequestDto input)
+        public async Task<PagedResultDto<EventDto>> GetPaginatedAllAsync(PagedEventResultRequestDto input)
         {
             var filteredPlayers = _repository.GetAll()
                 .Where(i => i.IsDeleted == false && (!input.TenantId.HasValue || i.TenantId == input.TenantId))
@@ -172,18 +170,13 @@ namespace ScoringAppReact.Teams
 
             var totalCount = filteredPlayers.Count();
 
-            return new PagedResultDto<TeamDto>(
+            return new PagedResultDto<EventDto>(
                 totalCount: totalCount,
-                items: await pagedAndFilteredPlayers.Select(i => new TeamDto()
+                items: await pagedAndFilteredPlayers.Select(i => new EventDto()
                 {
                     Id = i.Id,
                     Name = i.Name,
-                    Contact = i.Contact,
-                    FileName = i.FileName,
-                    Zone = i.Zone,
-                    IsRegistered = i.IsRegistered,
-                    City = i.City,
-                    Place = i.Place
+                    FileName = i.FileName
                 }).ToListAsync());
         }
     }
