@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { render } from 'react-dom';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row } from 'antd';
 import { L } from '../../lib/abpUtility';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -214,115 +214,124 @@ const Matches = () => {
         }}
       >
         <Form className="form" onSubmit={matchFormik.handleSubmit}>
-          <CustomInput
-            title="Team 1"
-            type="select"
-            options={teamList.filter((i) => i.id != matchFormik.values.team2)}
-            handleChange={handleChange}
-            value={matchFormik.values.team1}
-            stateKey="team1"
-            placeholder="Select Team"
-            errorMessage={matchFormik.errors.team1}
-          />
-          <CustomInput
-            title="Team 2"
-            type="select"
-            options={teamList.filter((i) => i.id != matchFormik.values.team1)}
-            handleChange={handleChange}
-            value={matchFormik.values.team2}
-            stateKey="team2"
-            placeholder="Select Team"
-            errorMessage={matchFormik.errors.team2}
-          />
-          <CustomInput
-            title="Ground"
-            type="select"
-            options={groundList}
-            handleChange={handleChange}
-            value={matchFormik.values.ground}
-            stateKey="ground"
-            placeholder="Select Ground"
-          />
-          <CustomInput
-            title="Description"
-            type="text"
-            handleChange={handleChange}
-            value={matchFormik.values.description}
-            stateKey="description"
-            placeholder="Optional"
-          />
-          <CustomInput
-            title="Season"
-            type="number"
-            handleChange={handleChange}
-            value={matchFormik.values.season}
-            stateKey="season"
-            placeholder="Optional"
-          />
-          <CustomInput
-            title="Overs"
-            type="number"
-            handleChange={handleChange}
-            value={matchFormik.values.overs}
-            stateKey="season"
-            placeholder="Optional"
-          />
+          <Row>
+            <CustomInput
+              title="Team 1"
+              type="select"
+              options={teamList.filter((i) => i.id != matchFormik.values.team2)}
+              handleChange={handleChange}
+              value={matchFormik.values.team1}
+              stateKey="team1"
+              placeholder="Select Team"
+              errorMessage={matchFormik.errors.team1}
+            />
+            <CustomInput
+              title="Team 2"
+              type="select"
+              options={teamList.filter((i) => i.id != matchFormik.values.team1)}
+              handleChange={handleChange}
+              value={matchFormik.values.team2}
+              stateKey="team2"
+              placeholder="Select Team"
+              errorMessage={matchFormik.errors.team2}
+            />
+            <CustomInput
+              title="Ground"
+              type="select"
+              options={groundList}
+              handleChange={handleChange}
+              value={matchFormik.values.ground}
+              stateKey="ground"
+              placeholder="Select Ground"
+            />
+            <CustomInput
+              title="Description"
+              type="text"
+              handleChange={handleChange}
+              value={matchFormik.values.description}
+              stateKey="description"
+              placeholder="Optional"
+            />
+            <CustomInput
+              title="Date of Match"
+              type="datePicker"
+              handleChange={handleChange}
+              value={matchFormik.values.date}
+              stateKey="datePicker"
+              placeholder="Select Date"
+            />
+            <CustomInput
+              title="Season"
+              type="number"
+              handleChange={handleChange}
+              value={matchFormik.values.season}
+              stateKey="season"
+              placeholder="Optional"
+              width="40%"
+            />
 
-          <CustomInput
-            title="Match Type"
-            type="select"
-            options={matchType}
-            handleChange={handleChange}
-            value={matchFormik.values.matchType}
-            stateKey="matchType"
-            placeholder="Select Type"
-          />
-          <CustomInput
-            title="Date of Match"
-            type="datePicker"
-            handleChange={handleChange}
-            value={matchFormik.values.date}
-            stateKey="datePicker"
-            placeholder="Select Date"
-          />
-          <CustomInput
-            title="Event"
-            type="select"
-            handleChange={handleChange}
-            options={eventList}
-            value={matchFormik.values.date}
-            stateKey="select"
-            placeholder="Select Event"
-          />
-          <CustomInput
-            title="Event Stage"
-            type="select"
-            handleChange={handleChange}
-            options={eventStage}
-            value={matchFormik.values.eventStage}
-            stateKey="select"
-            placeholder="Select Stage"
-          />
-          <CustomInput
-            title="Toss Winning Team"
-            type="select"
-            handleChange={handleChange}
-            options={teamList}
-            value={matchFormik.values.TossWinningTeam}
-            stateKey="select"
-            placeholder="Select Team"
-          />
+            <CustomInput
+              title="Overs"
+              type="number"
+              handleChange={handleChange}
+              value={matchFormik.values.overs}
+              stateKey="season"
+              placeholder="Optional"
+              width="40%"
+            />
 
-          <CustomInput
-            title="Player Of the Match"
-            type="select"
-            handleChange={handleChange}
-            options={playerList}
-            value={matchFormik.values.playerOTM}
-            stateKey="select"
-            placeholder="Man of the match"
-          />
+            <CustomInput
+              title="Match Type"
+              type="select"
+              options={matchType}
+              handleChange={handleChange}
+              value={matchFormik.values.matchType}
+              stateKey="matchType"
+              placeholder="Select Type"
+            />
+            {matchFormik.values.matchType == 2 ? (
+              <CustomInput
+                title="Event"
+                type="select"
+                handleChange={handleChange}
+                options={eventList}
+                value={matchFormik.values.date}
+                stateKey="select"
+                placeholder="Select Event"
+              />
+            ) : null}
+            {matchFormik.values.matchType == 2 ? (
+              <CustomInput
+                title="Event Stage"
+                type="select"
+                handleChange={handleChange}
+                options={eventStage}
+                value={matchFormik.values.eventStage}
+                stateKey="select"
+                placeholder="Select Stage"
+              />
+            ) : null}
 
+            <CustomInput
+              title="Toss Winning Team"
+              type="select"
+              handleChange={handleChange}
+              options={teamList}
+              value={matchFormik.values.TossWinningTeam}
+              stateKey="select"
+              placeholder="Select Team"
+            />
+
+            <CustomInput
+              title="Player Of the Match"
+              type="select"
+              handleChange={handleChange}
+              options={playerList}
+              value={matchFormik.values.playerOTM}
+              stateKey="select"
+              placeholder="Man of the match"
+            />
+          </Row>
           {/* <CustomInput title="Overs" type="number" handleChange={handleChange} 
                     value={playerFormik.values.overs} stateKey="overs" placeholder="" /> */}
           {/* <CustomInput title="Gender" type="select" options={genderOptions} handleChange={handleChange} value={playerFormik.values.gender.id} stateKey="gender" />

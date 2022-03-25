@@ -8,20 +8,20 @@ const OptionGenerator =
         <Option key={e.id} value={e.id}>
             {e.name}</Option>)
 
-const CustomInput = ({ options = [], title, handleChange = (a, b) => { }, value, placeholder = "Select", stateKey = "", type = "text", errorMessage = "" }) => {
+const CustomInput = ({ options = [], title, handleChange = (a, b) => { }, value, placeholder = "Select", stateKey = "", type = "text", errorMessage = "", width = "100%" }) => {
     return (
-        <>
+        <div style={{ width: width }}>
             <label>{title}</label>  <em style={{ float: "right", color: "#b10505e0" }}>{errorMessage}</em>
             {type == "select" ?
-                <Select placeholder={placeholder} value={value || undefined} style={{ width: '100%' }} onChange={(e) => handleChange(e, stateKey)} >
+                <Select placeholder={placeholder} value={value || undefined} style={{ width: width }} onChange={(e) => handleChange(e, stateKey)} >
                     {OptionGenerator(options)}
                 </Select>
                 : type == "datePicker" ?
-                    <DatePicker style={{ width: '100%' }} onChange={handleChange} name={stateKey}></DatePicker> :
-                    <Input type={type} onChange={(e) => handleChange(e.target.value, stateKey)} value={value || undefined} name={stateKey} >
+                    <DatePicker style={{ width: width }} onChange={handleChange} name={stateKey}></DatePicker> :
+                    <Input  type={type} onChange={(e) => handleChange(e.target.value, stateKey)} value={value || undefined} name={stateKey} >
                     </Input >
             }
-        </>
+        </div>
     );
 }
 
