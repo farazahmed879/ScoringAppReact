@@ -121,6 +121,15 @@ export const appRouters: any = [
     component: LoadableComponent(() => import('../../components/Logout')),
   },
   {
+    path: '/scoreCard',
+    permission: '',
+    title: 'ScoreCard',
+    name: 'scoreCard',
+    icon: 'info-circle',
+    showInMenu: false,
+    component: LoadableComponent(() => import('../../scenes/ScoreCard')),
+  },
+  {
     path: '/exception?:type',
     permission: '',
     title: 'exception',

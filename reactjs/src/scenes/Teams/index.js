@@ -48,8 +48,8 @@ const Team = (Props) => {
   const teamValidation = Yup.object().shape({
     name: Yup.string().required('Required'),
   });
-  const [maxResultCount] = useState(10);
-  const [skipCount] = useState(0);
+ // const [maxResultCount] = useState(10);
+ // const [skipCount] = useState(0);
   const [filter] = useState('');
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [teamList, setTeamList] = useState([]);

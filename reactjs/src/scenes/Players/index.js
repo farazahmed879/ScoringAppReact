@@ -261,7 +261,14 @@ const Player = (props) => {
           <CustomInput title="Player Role" type="select" options={playingRoleOptions} handleChange={handleChange} value={playerFormik.values.playingRole.name} stateKey="playingRole" placeholder="" />
           <CustomInput title="Batting Style" type="select" options={battingStyleOptions} handleChange={handleChange} value={playerFormik.values.battingStyle.name} stateKey="battingStyle" placeholder="" />
           <CustomInput title="Bowling Style" type="select" options={bowlingStyleOptions} handleChange={handleChange} value={playerFormik.values.bowlingStyle.name} stateKey="bowlingStyle" placeholder="" />
-
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Add
+            </Button>
+            <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
+              Cancel
+            </Button>
+          </Form.Item>
         </Form>
       </CustomModal>
     </Card >

@@ -9,13 +9,13 @@ class TeamService {
     return result.data.result;
   }
 
-  public async delete( playerId: Number) {
-    let result = await http.delete(`api/services/app/Team/DeleteplayerId=${playerId}`);
+  public async delete( id: Number) {
+    let result = await http.delete(`api/services/app/Team/Delete?id=${id}`);
     return result.data;
   }
 
-  public async getPlayerById(playerId: Number): Promise<TeamDto> {
-    let result = await http.get(`api/services/app/Team/GetRoleForEdit?playerId=${playerId}`);
+  public async getPlayerById(id: Number): Promise<TeamDto> {
+    let result = await http.get(`api/services/app/Team/GetById?id=${id}`);
     return result.data.result;
   }
 
