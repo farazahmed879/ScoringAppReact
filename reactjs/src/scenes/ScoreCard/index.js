@@ -48,7 +48,7 @@ const ScoreCard = (prop) => {
   const [activeTag, setActiveTag] = useState('1');
 
   const [teamScore, setTeam1Score] = useState({});
-
+  const [scoreCard, setScoreCard] = useState({});
   //const history = useHistory();
   const param = useParams();
 
@@ -141,10 +141,10 @@ const ScoreCard = (prop) => {
   console.log('teamScore', teamScore);
   const getAllTeam1 = (teamId, matchId) => {
     ScoreCardService.getAll(teamId, matchId).then((res) => {
-      if (!res.items) return;
-      console.log('PLayer Scores 1', res.items);
+      console.log('PLayer Scores 1', res);
+      if (!res) return;
       setScoreCardListTeam1(
-        res.items.map((r) => ({
+        res.map((r) => ({
           ...r,
           key: r.id,
         }))
@@ -234,7 +234,12 @@ const ScoreCard = (prop) => {
     console.log('Team SCore Object', req);
     TeamScoreCardService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
-      getTeamScore(+param.team1Id, +param.matchId);
+      setTeam1Score(res.result);
+      teamScoreFormik.setValues({
+        ...teamScoreFormik.values,
+        ...res.result,
+      });
+      //getTeamScore(+param.team1Id, +param.matchId);
       setIsTeamScoreModal(false);
     });
   };
@@ -256,6 +261,20 @@ const ScoreCard = (prop) => {
     teamScoreFormik.setValues({ ...teamScoreFormik.values, [key]: value });
   };
 
+  const getPlayeScore = (id) => {
+    debugger;
+    setIsOpenModal(true);
+    ScoreCardService.getPlayerScoreById(id).then((res) => {
+      if (!res) return;
+      res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
+      setScoreCard(res);
+      scoreCardFormik.setValues({
+        ...scoreCardFormik.values,
+        ...res,
+      });
+    });
+  };
+
   const columns = [
     {
       title: 'Position',
@@ -270,8 +289,8 @@ const ScoreCard = (prop) => {
     {
       title: 'Player',
       width: 250,
-      dataIndex: 'team1',
-      key: 'team1',
+      dataIndex: 'playerId',
+      key: 'playerId',
       fixed: 'left',
     },
 
@@ -306,8 +325,6 @@ const ScoreCard = (prop) => {
             overlay={
               <Menu>
                 <Menu.Item>{L('Edit')}</Menu.Item>
-                <Menu.Item>{L('Delete')}</Menu.Item>
-                <Menu.Item>{L('Score Card')}</Menu.Item>
               </Menu>
             }
             placement="bottomLeft"
@@ -347,7 +364,7 @@ const ScoreCard = (prop) => {
               {Object.keys(teamScore).length ? 'Edit Team Score' : 'Add Team Score'}
             </Button>
           </div>
-          <Table columns={columns} dataSource={scoreCardListTeam1} scroll={{ x: 1500, y: 1000 }} />
+          <Table columns={columns} dataSource={scoreCardListTeam1} scroll={{ x: 1500, y: 1000 }} pagination={false} />
         </TabPane>
         <TabPane tab="Team-2" key="2">
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px' }}>
@@ -376,179 +393,230 @@ const ScoreCard = (prop) => {
         }}
       >
         <Form className="form" onSubmit={scoreCardFormik.handleSubmit}>
-          <Row>
-            <CustomInput
-              title="Player"
-              type="select"
-              options={playerList}
-              handleChange={handleChange}
-              value={scoreCardFormik.values.playerId}
-              stateKey="playerId"
-              placeholder="Select"
-              errorMessage={scoreCardFormik.errors.playerId}
-            />
-            <CustomInput
-              title="How Out"
-              type="select"
-              options={howOutOptions}
-              handleChange={handleChange}
-              value={scoreCardFormik.values.howOutId}
-              stateKey="howOutId"
-              placeholder="Select"
-              errorMessage={scoreCardFormik.errors.howOutId}
-            />
-            {scoreCardFormik.values.howOutId == 2 ||
-            scoreCardFormik.values.howOutId == 3 ||
-            scoreCardFormik.values.howOutId == 4 ||
-            scoreCardFormik.values.howOutId == 5 ||
-            scoreCardFormik.values.howOutId == 6 ? (
+          <Row gutter={16}>
+            <Col span={8}>
               <CustomInput
-                title="Got out by"
+                title="Player"
                 type="select"
                 options={playerList}
                 handleChange={handleChange}
-                value={scoreCardFormik.values.bowlerId}
-                stateKey="bowlerId"
+                value={scoreCardFormik.values.playerId}
+                stateKey="playerId"
                 placeholder="Select"
-                errorMessage={scoreCardFormik.errors.bowlerId}
+                errorMessage={scoreCardFormik.errors.playerId}
               />
-            ) : null}
-
-            {scoreCardFormik.values.howOutId == 3 || scoreCardFormik.values.howOutId == 4 || scoreCardFormik.values.howOutId == 7 ? (
+            </Col>
+            <Col span={8}>
               <CustomInput
-                title="Fielder"
-                type="text"
+                title="How Out"
+                type="select"
+                options={howOutOptions}
                 handleChange={handleChange}
-                value={scoreCardFormik.values.fielder}
-                stateKey="fielder"
-                placeholder=""
-                errorMessage={scoreCardFormik.errors.fielder}
+                value={scoreCardFormik.values.howOutId}
+                stateKey="howOutId"
+                placeholder="Select"
+                errorMessage={scoreCardFormik.errors.howOutId}
               />
-            ) : null}
-            <CustomInput
-              title="Inning"
-              type="checkbox"
-              handleChange={handleChange}
-              value={scoreCardFormik.values.isPlayedInning}
-              stateKey="isPlayedInning"
-              placeholder=""
-              errorMessage={scoreCardFormik.errors.isPlayedInning}
-            />
-            <Divider orientation="left">Batting</Divider>
-            <CustomInput
-              title="Position"
-              type="select"
-              options={positions}
-              handleChange={handleChange}
-              value={scoreCardFormik.values.position}
-              stateKey="position"
-              placeholder=""
-              errorMessage={scoreCardFormik.errors.position}
-            />
-
-            <CustomInput
-              title="Runs"
-              type="number"
-              handleChange={handleChange}
-              value={scoreCardFormik.values.bat_Runs}
-              stateKey="bat_Runs"
-              placeholder=""
-              errorMessage={scoreCardFormik.errors.bat_Runs}
-            />
-            <CustomInput
-              title="Balls"
-              type="number"
-              handleChange={handleChange}
-              value={scoreCardFormik.values.bat_Balls}
-              stateKey="bat_Balls"
-              placeholder=""
-              errorMessage={scoreCardFormik.errors.bat_Balls}
-            />
-            <CustomInput
-              title="Four"
-              type="number"
-              handleChange={handleChange}
-              value={scoreCardFormik.values.four}
-              stateKey="four"
-              placeholder=""
-              errorMessage={scoreCardFormik.errors.four}
-            />
-            <CustomInput
-              title="Six"
-              type="number"
-              handleChange={handleChange}
-              value={scoreCardFormik.values.six}
-              stateKey="six"
-              placeholder=""
-              errorMessage={scoreCardFormik.errors.six}
-            />
-            <Divider orientation="left">Bowling</Divider>
-            <CustomInput
-              title="Overs"
-              type="number"
-              handleChange={handleChange}
-              value={scoreCardFormik.values.overs}
-              stateKey="overs"
-              placeholder=""
-              errorMessage={scoreCardFormik.errors.overs}
-            />
-            <CustomInput
-              title="Runs"
-              type="number"
-              handleChange={handleChange}
-              value={scoreCardFormik.values.ball_Runs}
-              stateKey="ball_Runs"
-              placeholder=""
-              errorMessage={scoreCardFormik.errors.ball_Runs}
-            />
-            <CustomInput
-              title="Wickets"
-              type="number"
-              handleChange={handleChange}
-              value={scoreCardFormik.values.wickets}
-              stateKey="wickets"
-              placeholder=""
-              errorMessage={scoreCardFormik.errors.wickets}
-            />
-            <CustomInput
-              title="Maiden"
-              type="number"
-              handleChange={handleChange}
-              value={scoreCardFormik.values.maiden}
-              stateKey="maiden"
-              placeholder=""
-              errorMessage={scoreCardFormik.errors.maiden}
-            />
-
-            <Divider orientation="left">Fielding</Divider>
-            <CustomInput
-              title="Catches"
-              type="number"
-              handleChange={handleChange}
-              value={scoreCardFormik.values.catches}
-              stateKey="catches"
-              placeholder=""
-              errorMessage={scoreCardFormik.errors.catches}
-            />
-            <CustomInput
-              title="runOut"
-              type="number"
-              handleChange={handleChange}
-              value={scoreCardFormik.values.runOut}
-              stateKey="runOut"
-              placeholder=""
-              errorMessage={scoreCardFormik.errors.runOut}
-            />
-            <CustomInput
-              title="stump"
-              type="number"
-              handleChange={handleChange}
-              value={scoreCardFormik.values.stump}
-              stateKey="stump"
-              placeholder=""
-              errorMessage={scoreCardFormik.errors.stump}
-            />
+            </Col>
+            <Col span={8}>
+              {scoreCardFormik.values.howOutId == 2 ||
+              scoreCardFormik.values.howOutId == 3 ||
+              scoreCardFormik.values.howOutId == 4 ||
+              scoreCardFormik.values.howOutId == 5 ||
+              scoreCardFormik.values.howOutId == 6 ? (
+                <CustomInput
+                  title="Got out by"
+                  type="select"
+                  options={playerList}
+                  handleChange={handleChange}
+                  value={scoreCardFormik.values.bowlerId}
+                  stateKey="bowlerId"
+                  placeholder="Select"
+                  errorMessage={scoreCardFormik.errors.bowlerId}
+                />
+              ) : null}
+            </Col>
           </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              {scoreCardFormik.values.howOutId == 3 || scoreCardFormik.values.howOutId == 4 || scoreCardFormik.values.howOutId == 7 ? (
+                <CustomInput
+                  title="Fielder"
+                  type="text"
+                  handleChange={handleChange}
+                  value={scoreCardFormik.values.fielder}
+                  stateKey="fielder"
+                  placeholder=""
+                  errorMessage={scoreCardFormik.errors.fielder}
+                />
+              ) : null}
+            </Col>
+            <Col span={12}>
+              <CustomInput
+                title="Inning"
+                type="checkbox"
+                handleChange={handleChange}
+                value={scoreCardFormik.values.isPlayedInning}
+                stateKey="isPlayedInning"
+                placeholder=""
+                errorMessage={scoreCardFormik.errors.isPlayedInning}
+              />
+            </Col>
+          </Row>
+
+          <Divider orientation="left">Batting</Divider>
+          <Row gutter={16}>
+            <Col span={8}>
+              <CustomInput
+                title="Position"
+                type="select"
+                options={positions}
+                handleChange={handleChange}
+                value={scoreCardFormik.values.position}
+                stateKey="position"
+                placeholder=""
+                errorMessage={scoreCardFormik.errors.position}
+              />
+            </Col>
+            <Col span={8}>
+              <CustomInput
+                title="Runs"
+                type="number"
+                handleChange={handleChange}
+                value={scoreCardFormik.values.bat_Runs}
+                stateKey="bat_Runs"
+                placeholder=""
+                errorMessage={scoreCardFormik.errors.bat_Runs}
+              />
+            </Col>
+            <Col span={8}>
+              <CustomInput
+                title="Balls"
+                type="number"
+                handleChange={handleChange}
+                value={scoreCardFormik.values.bat_Balls}
+                stateKey="bat_Balls"
+                placeholder=""
+                errorMessage={scoreCardFormik.errors.bat_Balls}
+              />
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={8}>
+              <CustomInput
+                title="Four"
+                type="number"
+                handleChange={handleChange}
+                value={scoreCardFormik.values.four}
+                stateKey="four"
+                placeholder=""
+                errorMessage={scoreCardFormik.errors.four}
+              />
+            </Col>
+            <Col span={8}>
+              {' '}
+              <CustomInput
+                title="Six"
+                type="number"
+                handleChange={handleChange}
+                value={scoreCardFormik.values.six}
+                stateKey="six"
+                placeholder=""
+                errorMessage={scoreCardFormik.errors.six}
+              />
+            </Col>
+            <Col span={8}></Col>
+          </Row>
+
+          <Divider orientation="left">Bowling</Divider>
+          <Row gutter={16}>
+            <Col span={12}>
+              <CustomInput
+                title="Overs"
+                type="number"
+                handleChange={handleChange}
+                value={scoreCardFormik.values.overs}
+                stateKey="overs"
+                placeholder=""
+                errorMessage={scoreCardFormik.errors.overs}
+              />
+            </Col>
+            <Col span={12}>
+              {' '}
+              <CustomInput
+                title="Runs"
+                type="number"
+                handleChange={handleChange}
+                value={scoreCardFormik.values.ball_Runs}
+                stateKey="ball_Runs"
+                placeholder=""
+                errorMessage={scoreCardFormik.errors.ball_Runs}
+              />
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <CustomInput
+                title="Wickets"
+                type="number"
+                handleChange={handleChange}
+                value={scoreCardFormik.values.wickets}
+                stateKey="wickets"
+                placeholder=""
+                errorMessage={scoreCardFormik.errors.wickets}
+              />
+            </Col>
+            <Col span={12}>
+              <CustomInput
+                title="Maiden"
+                type="number"
+                handleChange={handleChange}
+                value={scoreCardFormik.values.maiden}
+                stateKey="maiden"
+                placeholder=""
+                errorMessage={scoreCardFormik.errors.maiden}
+              />
+            </Col>
+          </Row>
+
+          <Divider orientation="left">Fielding</Divider>
+          <Row gutter={16}>
+            <Col span={8}>
+              <CustomInput
+                title="Catches"
+                type="number"
+                handleChange={handleChange}
+                value={scoreCardFormik.values.catches}
+                stateKey="catches"
+                placeholder=""
+                errorMessage={scoreCardFormik.errors.catches}
+              />
+            </Col>
+            <Col span={8}>
+              {' '}
+              <CustomInput
+                title="runOut"
+                type="number"
+                handleChange={handleChange}
+                value={scoreCardFormik.values.runOut}
+                stateKey="runOut"
+                placeholder=""
+                errorMessage={scoreCardFormik.errors.runOut}
+              />
+            </Col>
+            <Col span={8}>
+              <CustomInput
+                title="stump"
+                type="number"
+                handleChange={handleChange}
+                value={scoreCardFormik.values.stump}
+                stateKey="stump"
+                placeholder=""
+                errorMessage={scoreCardFormik.errors.stump}
+              />
+            </Col>
+          </Row>
+
           <Form.Item>
             <Button type="primary" htmlType="submit">
               Add
