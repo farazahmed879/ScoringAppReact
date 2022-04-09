@@ -154,6 +154,11 @@ const ScoreCard = (prop) => {
   };
 
   const getTeamScore = (teamId, matchId) => {
+    setTeam1Score({});
+    // teamScoreFormik.setValues({
+    //   ...teamScoreFormik.values,
+    //   ...{},
+    // });
     TeamScoreCardService.getByTeamIdAndMatchId(teamId, matchId).then((res) => {
       if (!res) return;
       console.log('PLayer Scores 1', res);
@@ -275,6 +280,10 @@ const ScoreCard = (prop) => {
     });
   };
 
+  const viewPlayerProfile = () => {
+    setIsOpenModal(true);
+  };
+
   const columns = [
     {
       title: 'Position',
@@ -293,7 +302,6 @@ const ScoreCard = (prop) => {
       key: 'playerId',
       fixed: 'left',
     },
-
     {
       title: 'How-out',
       width: 250,
@@ -324,7 +332,7 @@ const ScoreCard = (prop) => {
             trigger={['click']}
             overlay={
               <Menu>
-                <Menu.Item>{L('Edit')}</Menu.Item>
+                <Menu.Item onClick={viewPlayerProfile}>{L('Edit')}</Menu.Item>
               </Menu>
             }
             placement="bottomLeft"
