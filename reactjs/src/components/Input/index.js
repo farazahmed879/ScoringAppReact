@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Input from 'antd/lib/input';
 //import PropTypes from 'prop-types';
-import { DatePicker, Select } from 'antd';
+import { Checkbox, DatePicker, Select } from 'antd';
 const { Option } = Select;
 const OptionGenerator =
     (data) => data.map((e, index) =>
@@ -18,8 +18,12 @@ const CustomInput = ({ options = [], title, handleChange = (a, b) => { }, value,
                 </Select>
                 : type == "datePicker" ?
                     <DatePicker style={{ width: width }} onChange={(e)=> handleChange(e, stateKey)} name={stateKey}></DatePicker> :
+                    type == "checkbox" ?
+                    <Checkbox ></Checkbox> : 
                     <Input  type={type} onChange={(e) => handleChange(e.target.value, stateKey)} value={value || undefined} name={stateKey} >
-                    </Input >
+                    </Input > 
+                    
+
             }
         </div>
     );

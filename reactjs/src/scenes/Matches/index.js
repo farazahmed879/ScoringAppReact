@@ -16,20 +16,20 @@ import GroundService from '../../services/ground/GroundService';
 const matchValidation = Yup.object().shape({
   team1: Yup.string().required('Required'),
   team2: Yup.string().required('Required'),
-  matchTypeId: Yup.string().required('Required')
+  matchTypeId: Yup.string().required('Required'),
 });
 
 const matchInitial = {
   matchOvers: 0,
   matchDescription: '',
   season: 0,
-  eventId: null,
+  eventId: '',
   team1: '',
   team2: '',
   groundId: '',
   matchTypeId: '',
   eventType: '',
-  eventStage: null,
+  eventStage: '',
   datePicker: '',
   tossWinningTeam: '',
   playerOTM: '',
@@ -44,14 +44,13 @@ const Matches = () => {
   const [filter] = useState('');
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [matchList, setMatchList] = useState([]);
- // const [match, setPlayer] = useState(matchInitial);
+  // const [match, setPlayer] = useState(matchInitial);
   const [teamList, setTeamList] = useState([]);
   const [groundList, setGroundList] = useState([]);
   const [playerList, setPlayerList] = useState([]);
   const [eventList, setEventList] = useState([]);
 
   const handleSubmit = (e) => {
-    debugger;
     if (!matchFormik.isValid) return;
     let req = {
       id: 0,
@@ -78,7 +77,6 @@ const Matches = () => {
     });
   };
   // const handleSubmit = () => {
-  //   debugger;
   //   if (!matchFormik.isValid) return;
 
   //   // let matchObject = {
@@ -155,13 +153,6 @@ const Matches = () => {
   };
 
   const handleChange = (value, key) => {
-    debugger;
-    // if (key == "team1") {
-    //     var selectedTeam = teamList.filter((i) => i.id == value)[0];
-    //     matchFormik.setValues({ ...matchFormik.values, [key]: { id: selectedTeam.id, name: selectedTeam.name } })
-    //     return;
-    // }
-    //console.log("value", e.target.name, e.target.value);
     matchFormik.setValues({ ...matchFormik.values, [key]: value });
   };
 
@@ -172,9 +163,9 @@ const Matches = () => {
       dataIndex: 'ground',
       key: 'name',
       fixed: 'left',
-      render: (text,item) => {
+      render: (text, item) => {
         return item && item.ground ? item.ground : 'N/A';
-      }
+      },
     },
     {
       title: 'Team 1',
@@ -195,19 +186,17 @@ const Matches = () => {
       title: 'Type',
       width: 250,
       dataIndex: 'matchType',
-      render: (text,item) => {
-        debugger;
-       // return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
-        return item && item.matchType ? matchType.filter(i=> i.id == item.matchType)[0].name  : 'N/A';
+      render: (text, item) => {
+        // return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
+        return item && item.matchType ? matchType.filter((i) => i.id == item.matchType)[0].name : 'N/A';
       },
     },
     {
       title: 'Date',
       width: 250,
       dataIndex: 'date',
-      render: (text,item) => {
-        debugger;
-       // return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
+      render: (text, item) => {
+        // return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
         return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
       },
     },
@@ -225,7 +214,10 @@ const Matches = () => {
               <Menu>
                 <Menu.Item>{L('Edit')}</Menu.Item>
                 <Menu.Item>{L('Delete')}</Menu.Item>
-                <Menu.Item> <Link to="/scoreCard">{L('Score Card')}</Link></Menu.Item>
+                <Menu.Item>
+                  {' '}
+                  <Link to={'/scoreCard/team1/' + item.team1Id + '/team2/' + item.team2Id + '/match/' + item.id}>{L('Score Card')}</Link>
+                </Menu.Item>
               </Menu>
             }
             placement="bottomLeft"

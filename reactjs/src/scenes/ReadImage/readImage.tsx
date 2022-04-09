@@ -25,7 +25,6 @@ function ReadImage() {
     .then((result: any) => {
       // Get Confidence score
       //let confidence = result.confidence
-     debugger
       let text = result.data.text
       setText(text);
   

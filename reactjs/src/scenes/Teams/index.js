@@ -138,7 +138,6 @@ const Team = (Props) => {
   };
 
   const handleUpload = (e) => {
-    debugger;
   };
   const fileList = [
     {

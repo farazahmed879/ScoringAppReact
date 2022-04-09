@@ -65,7 +65,6 @@ const Player = (props) => {
   //const [players, setPlayers] = useState(playerInitial[]);
 
   const handleSubmit = () => {
-    debugger
     if (!playerFormik.isValid)
       return;
     let playerObject = {
