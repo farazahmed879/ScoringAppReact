@@ -14,7 +14,7 @@ class TeamService {
     return result.data;
   }
 
-  public async getPlayerById(id: Number): Promise<TeamDto> {
+  public async getTeamById(id: Number): Promise<TeamDto> {
     let result = await http.get(`api/services/app/Team/GetById?id=${id}`);
     return result.data.result;
   }

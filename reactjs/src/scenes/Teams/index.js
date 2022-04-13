@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload } from 'antd';
+import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload,Row,Col } from 'antd';
 import { L } from '../../lib/abpUtility';
 import TeamService from '../../services/team/TeamService';
 import CustomModal from '../../components/Modal';
@@ -27,7 +27,7 @@ const Team = (Props) => {
   const teamFormHandler = () => {
     if (!teamFormik.isValid) return;
     let teamForm = {
-      id: 0,
+      id: teamFormik.values.id,
       name: teamFormik.values.name,
       place: teamFormik.values.place,
       zone: teamFormik.values.zone,
@@ -48,8 +48,8 @@ const Team = (Props) => {
   const teamValidation = Yup.object().shape({
     name: Yup.string().required('Required'),
   });
- // const [maxResultCount] = useState(10);
- // const [skipCount] = useState(0);
+  // const [maxResultCount] = useState(10);
+  // const [skipCount] = useState(0);
   const [filter] = useState('');
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [teamList, setTeamList] = useState([]);
@@ -58,6 +58,7 @@ const Team = (Props) => {
     pageSize: 5,
     total: 0,
   });
+  const [mode, setModalMode] = useState('');
   //const [reqPlayer, setReqPlayer] = useState(playerReq);
   //const [validation, setPlayerValidation] = useState(playerValidation);
 
@@ -71,11 +72,11 @@ const Team = (Props) => {
     getAll();
   }, [pagination.current]);
 
-//   useEffect(() => {
-//     if (isOpenModal) {
-//       getAll();
-//     }
-//   }, [isOpenModal]);
+  //   useEffect(() => {
+  //     if (isOpenModal) {
+  //       getAll();
+  //     }
+  //   }, [isOpenModal]);
 
   const getAll = () => {
     TeamService.getPaginatedAll({
@@ -110,14 +111,14 @@ const Team = (Props) => {
       width: 150,
       fixed: 'right',
       key: 'action',
-      render: () => {
+      render: (text,item) => {
         return (
           <div>
             <Dropdown
               trigger={['click']}
               overlay={
                 <Menu>
-                  <Menu.Item>{L('Edit')}</Menu.Item>
+                  <Menu.Item onClick={()=> editTeam(item)}>{L('Edit')}</Menu.Item>
                   <Menu.Item>{L('Delete')}</Menu.Item>
                 </Menu>
               }
@@ -137,8 +138,7 @@ const Team = (Props) => {
     teamFormik.setValues({ ...teamFormik.values, [key]: value });
   };
 
-  const handleUpload = (e) => {
-  };
+  const handleUpload = (e) => {};
   const fileList = [
     {
       uid: '-1',
@@ -161,13 +161,33 @@ const Team = (Props) => {
     });
   };
 
+  const editTeam = (item) => {
+    setIsOpenModal(true);
+    setModalMode('Edit Team');
+    TeamService.getTeamById(item.id).then((res) => {
+      if (res) {
+        debugger;
+        console.log('player', res);
+        teamFormik.setValues({
+          ...teamFormik.values,
+          ...res,
+        });
+      }
+    });
+  };
+
+  const addTeam = () => {
+    setIsOpenModal(true);
+    setModalMode('Create Team');
+  }
+
   console.log('validations', teamFormik);
 
   return (
     <Card>
       <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px' }}>
         <h1>Manage Teams</h1>{' '}
-        <Button type="primary" shape="round" icon="plus" onClick={() => setIsOpenModal(true)}>
+        <Button type="primary" shape="round" icon="plus" onClick={addTeam}>
           Add
         </Button>
       </div>
@@ -175,7 +195,7 @@ const Team = (Props) => {
       <Table pagination={pagination} columns={columns} dataSource={teamList} scroll={{ x: 1500, y: 1000 }} onChange={handleTableChange} />
 
       <CustomModal
-        title="Create Team"
+        title= {mode}
         isModalVisible={isOpenModal}
         handleCancel={() => {
           setIsOpenModal(false);
@@ -183,35 +203,56 @@ const Team = (Props) => {
         handleSubmit={teamFormHandler}
       >
         <Form className="form" onSubmit={teamFormik.handleSubmit}>
-          <CustomInput
-            title="Name"
-            type="text"
-            handleChange={handleChange}
-            value={teamFormik.values.name}
-            stateKey="name"
-            placeholder=""
-            errorMessage={teamFormik.errors.name}
-          />
-          <CustomInput title="Zone" type="number" handleChange={handleChange} value={teamFormik.values.zone} stateKey="zone" placeholder="" />
-          <CustomInput
-            title="Contact"
-            type="number"
-            handleChange={handleChange}
-            value={teamFormik.values.contact}
-            stateKey="contact"
-            placeholder=""
-          />
-          <CustomInput
-            title="Type"
-            type="select"
-            options={teamTypeOptions}
-            handleChange={handleChange}
-            value={teamFormik.values.type}
-            stateKey="type"
-            placeholder=""
-          />
-          <CustomInput title="City" type="text" handleChange={handleChange} value={teamFormik.values.city} stateKey="city" placeholder="" />
-          <CustomInput title="Area" type="text" handleChange={handleChange} value={teamFormik.values.place} stateKey="place" placeholder="" />
+          <Row gutter={16}>
+            <Col span={12}>
+              <CustomInput
+                title="Name"
+                type="text"
+                handleChange={handleChange}
+                value={teamFormik.values.name}
+                stateKey="name"
+                placeholder=""
+                errorMessage={teamFormik.errors.name}
+              />
+            </Col>
+            <Col span={12}>
+              <CustomInput title="Zone" type="number" handleChange={handleChange} value={teamFormik.values.zone} stateKey="zone" placeholder="" />
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <CustomInput
+                title="Contact"
+                type="number"
+                handleChange={handleChange}
+                value={teamFormik.values.contact}
+                stateKey="contact"
+                placeholder=""
+              />
+            </Col>
+            <Col span={12}>
+              {' '}
+              <CustomInput
+                title="Type"
+                type="select"
+                options={teamTypeOptions}
+                handleChange={handleChange}
+                value={teamFormik.values.type}
+                stateKey="type"
+                placeholder=""
+              />
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              {' '}
+              <CustomInput title="City" type="text" handleChange={handleChange} value={teamFormik.values.city} stateKey="city" placeholder="" />
+            </Col>
+            <Col span={12}>
+              <CustomInput title="Area" type="text" handleChange={handleChange} value={teamFormik.values.place} stateKey="place" placeholder="" />
+            </Col>
+          </Row>
+
           <Upload
             action="https://run.mocky.io/v3/418c5840-7f93-4be9-833f-fe11c4d47116"
             listType="picture"
@@ -229,8 +270,8 @@ const Team = (Props) => {
             placeholder=""
           />
           <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Add
+            <Button type="primary" htmlType="submit" disabled={!teamFormik.isValid} onClick={teamFormik.handleSubmit}>
+              {mode == "Create Team" ? 'Add' : 'Update'}
             </Button>
             <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
               Cancel
