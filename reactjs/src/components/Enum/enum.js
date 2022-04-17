@@ -23,8 +23,8 @@ export const teamTypeOptions = [
   { id: 4, name: 'Departmental' },
   { id: 5, name: 'School' },
   { id: 6, name: 'College' },
-  { id: 4, name: 'University' },
-  { id: 4, name: 'Office' },
+  { id: 7, name: 'University' },
+  { id: 8, name: 'Office' },
 ];
 export const matchType = [
   { id: 1, name: 'Friendly' },

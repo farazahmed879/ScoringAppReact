@@ -119,7 +119,7 @@ const Team = (Props) => {
               trigger={['click']}
               overlay={
                 <Menu>
-                  <Menu.Item onClick={() => editTeam(item)}>{L('Edit')}</Menu.Item>
+                  <Menu.Item onClick={() => handleEditTeam(item)}>{L('Edit')}</Menu.Item>
                   <Menu.Item>{L('Delete')}</Menu.Item>
                 </Menu>
               }

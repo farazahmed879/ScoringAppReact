@@ -251,7 +251,7 @@ const Matches = () => {
       <Table columns={columns} dataSource={matchList} scroll={{ x: 1500, y: 1000 }} />
 
       <CustomModal
-        data={Object.keys(editMatch).length ? 'Edit Match' : 'Add Match'}
+        title={Object.keys(editMatch).length ? 'Edit Match' : 'Add Match'}
         isModalVisible={isOpenModal}
         handleCancel={() => {
           setIsOpenModal(false);
