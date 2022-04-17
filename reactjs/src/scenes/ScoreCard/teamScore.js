@@ -1,28 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Tabs, Divider, Drawer, Col, DatePicker, Input, Space } from 'antd';
-import { L } from '../../lib/abpUtility';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import moment from 'moment';
-import CustomModal from '../../components/Modal';
+import React from 'react';
+import { Button, Card, Form, Row, Drawer, Col } from 'antd';
 import CustomInput from '../../components/Input';
-import matchService from '../../services/match/matchService';
-import TeamService from '../../services/team/TeamService';
-import playerService from '../../services/player/playerService';
-import { howOutOptions, positions } from '../../components/Enum/enum';
-import GroundService from '../../services/ground/GroundService';
-import ScoreCardService from '../../services/scoreCard/ScoreCardService';
-import { useHistory, useParams } from 'react-router-dom';
-import TeamScoreCardService from '../../services/teamScore/TeamScoreCardService';
 
-const TeamScoreDrawer = ({ visible = false, onClose, formikData }) => {
-  
-    const handleChangeTeamScore = (value, key) => {
+const TeamScoreDrawer = ({ visible = false, onClose, formikData, data }) => {
+  const handleChangeTeamScore = (value, key) => {
     formikData.setValues({ ...formikData.values, [key]: value });
   };
 
   return (
-    <Drawer title="Add Team Score" width={360} onClose={onClose} visible={visible} bodyStyle={{ paddingBottom: 80 }}>
+    <Drawer
+      title={Object.keys(data).length ? 'Edit Team Score' : 'Add Team Score'}
+      width={360}
+      onClose={onClose}
+      visible={visible}
+      bodyStyle={{ paddingBottom: 80 }}
+    >
       <Form layout="vertical" hideRequiredMark>
         <Row gutter={16}>
           <Col span={8}>

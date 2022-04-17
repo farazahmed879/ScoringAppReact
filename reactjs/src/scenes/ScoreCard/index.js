@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Tabs, Divider, Drawer, Col, DatePicker, Input, Space } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Tabs, Divider, Col } from 'antd';
 import { L } from '../../lib/abpUtility';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -14,47 +14,37 @@ import GroundService from '../../services/ground/GroundService';
 import ScoreCardService from '../../services/scoreCard/ScoreCardService';
 import { useHistory, useParams } from 'react-router-dom';
 import TeamScoreCardService from '../../services/teamScore/TeamScoreCardService';
+import FallofWicketService from '../../services/fallofWicket/TeamScoreCardService';
 import TeamScoreDrawer from './teamScore';
+import ViewTeamScore from './viewTeamScore';
+import FallofWicket from './fallofWicket';
+import ViewFallOfWicket from './viewFallofWicket';
 
 const { TabPane } = Tabs;
 
 const success = Modal.success;
 const error = Modal.error;
 const ScoreCard = (prop) => {
-  const teamScoreInitial = {
+  const fallofWicketInitial = {
     id: 0,
-    totalScore: null,
-    overs: null,
-    wickets: null,
-    wideballs: null,
-    noBalls: null,
-    byes: null,
-    legByes: null,
+    first: null,
+    second: null,
+    third: null,
+    fourth: null,
+    fifth: null,
+    sixth: null,
+    seventh: null,
+    eight: null,
+    ninth: null,
+    tenth: null,
     teamId: null,
     matchId: null,
-    tenantId: null,
   };
-
-  const [filter] = useState('');
-  const [isOpenModal, setIsOpenModal] = useState(false);
-  const [visible, setIsTeamScoreModal] = useState(false);
-  const [scoreCardListTeam1, setScoreCardListTeam1] = useState([]);
-  const [scoreCardListTeam2, setScoreCardListTeam2] = useState([]);
-  const [teamList, setTeamList] = useState([]);
-  const [groundList, setGroundList] = useState([]);
-  const [playerList, setPlayerList] = useState([]);
-  const [eventList, setEventList] = useState([]);
-  const [modalMode, setModalMode] = useState();
-  const [activeTag, setActiveTag] = useState('1');
-
-  const [teamScore, setTeam1Score] = useState({});
-  const [scoreCard, setScoreCard] = useState({});
-  //const history = useHistory();
-  const param = useParams();
 
   const scoreCardInitial = {
     id: 0,
     playerId: '',
+    playerName: '',
     position: null,
     matchId: '',
     teamId: '',
@@ -75,6 +65,53 @@ const ScoreCard = (prop) => {
     isPlayedInning: false,
   };
 
+  const teamScoreCardInitial = {
+    totalScore: '',
+    overs: '',
+    wickets: '',
+    wideballs: '',
+    noBalls: '',
+    byes: '',
+    legByes: '',
+  };
+
+  const [filter] = useState('');
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [teamScoreModal, setIsTeamScoreModal] = useState(false);
+  const [fallofwciketModal, setIsFallofWicketModal] = useState(false);
+
+  const [scoreCardListTeam1, setScoreCardListTeam1] = useState([]);
+  const [scoreCardListTeam2, setScoreCardListTeam2] = useState([]);
+  const [teamList, setTeamList] = useState([]);
+  const [groundList, setGroundList] = useState([]);
+  const [playerList, setPlayerList] = useState([]);
+  const [eventList, setEventList] = useState([]);
+  const [modalMode, setModalMode] = useState();
+  const [activeTag, setActiveTag] = useState('1');
+
+  const [team1Score, setTeam1Score] = useState({});
+  const [team2Score, setTeam2Score] = useState({});
+
+  const [team1FallofWicket, setTeam1FallofWicket] = useState([]);
+  const [team2FallofWicket, setTeam2FallofWicket] = useState([]);
+
+  const [editScoreCard, setEditScoreCard] = useState({});
+  //const history = useHistory();
+  const param = useParams();
+
+  //yup Validations
+  const scoreCardValidation = Yup.object().shape({
+    playerId: Yup.string().required('Required'),
+    howOutId: Yup.string().required('Required'),
+  });
+
+  const teamScoreCardValidation = Yup.object().shape({
+    totalScore: Yup.string().required('Required'),
+    overs: Yup.string().required('Required'),
+    wickets: Yup.string().required('Required'),
+  });
+
+  //handle Submit
   const handleSubmit = (e) => {
     if (!scoreCardFormik.isValid) return;
     let req = {
@@ -100,20 +137,62 @@ const ScoreCard = (prop) => {
       isPlayedInning: scoreCardFormik.values.isPlayedInning,
     };
 
-    console.log('Match Object', req);
+    //console.log('Match Object', req);
     ScoreCardService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);
-      getAllTeam1();
-      getAllTeam2();
+      getScoreCard(+param.team1Id, +param.matchId);
+      getScoreCard(+param.team2Id, +param.matchId);
     });
   };
 
-  const scoreCardValidation = Yup.object().shape({
-    playerId: Yup.string().required('Required'),
-    howOutId: Yup.string().required('Required'),
-  });
+  const teamScoreCardhandleSubmit = (e) => {
+    let req = {
+      id: e.id || 0,
+      totalScore: e.totalScore,
+      overs: +e.overs,
+      wickets: +e.wickets,
+      wideballs: e.wideballs,
+      noBalls: e.noBalls,
+      byes: e.byes,
+      legByes: e.legByes,
+      teamId: activeTag == '1' ? +param.team1Id : activeTag == '2' ? +param.team2Id : 0,
+      matchId: +param.matchId,
+    };
 
+    //console.log('Team SCore Object', req);
+    TeamScoreCardService.createOrUpdate(req).then((res) => {
+      res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
+      setTeamScoreStateUpdate(res.result);
+      setIsTeamScoreModal(false);
+    });
+  };
+
+  const fallofWicketHandleSubmit = (e) => {
+    let req = {
+      id: e.id || 0,
+      first: +e.first,
+      second: +e.second,
+      third: +e.third,
+      fourth: +e.fourth,
+      fifth: +e.fifth,
+      sixth: +e.sixth,
+      seventh: +e.seventh,
+      eight: +e.eight,
+      ninth: +e.ninth,
+      tenth: +e.tenth,
+      teamId: activeTag == '1' ? +param.team1Id : activeTag == '2' ? +param.team2Id : 0,
+      matchId: +param.matchId,
+    };
+    //console.log('Team SCore Object', req);
+    FallofWicketService.createOrUpdate(req).then((res) => {
+      res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
+      setFallofWicketStateUpdate(res.result || res.array);
+      setIsFallofWicketModal(false);
+    });
+  };
+
+  //Formik Objects
   const scoreCardFormik = useFormik({
     enableReinitialize: true,
     initialValues: scoreCardInitial,
@@ -121,52 +200,58 @@ const ScoreCard = (prop) => {
     onSubmit: handleSubmit,
   });
 
-  useEffect(() => {
-    if (activeTag == 1) {
-      getAllTeam1(+param.team1Id, +param.matchId);
-      getTeamScore(+param.team1Id, +param.matchId);
-    }
-    if (activeTag == 2) {
-      getAllTeam2(+param.team2Id, +param.matchId);
-      getTeamScore(+param.team2Id, +param.matchId);
-    }
-  }, [activeTag]);
+  const team1ScoreFormik = useFormik({
+    enableReinitialize: true,
+    initialValues: teamScoreCardInitial,
+    validationSchema: teamScoreCardValidation,
+    onSubmit: teamScoreCardhandleSubmit,
+  });
 
-  useEffect(() => {
-    if (isOpenModal) {
-      getAllPlayers();
-    }
-  }, [isOpenModal]);
+  const team2ScoreFormik = useFormik({
+    enableReinitialize: true,
+    initialValues: teamScoreCardInitial,
+    validationSchema: teamScoreCardValidation,
+    onSubmit: teamScoreCardhandleSubmit,
+  });
 
-  console.log('teamScore', teamScore);
-  const getAllTeam1 = (teamId, matchId) => {
+  const fallofWicketTeam1Formik = useFormik({
+    enableReinitialize: true,
+    initialValues: fallofWicketInitial,
+    validationSchema: '',
+    onSubmit: fallofWicketHandleSubmit,
+  });
+
+  const fallofWicketTeam2Formik = useFormik({
+    enableReinitialize: true,
+    initialValues: fallofWicketInitial,
+    validationSchema: '',
+    onSubmit: fallofWicketHandleSubmit,
+  });
+
+  //get Calls
+  const getScoreCard = (teamId, matchId) => {
     ScoreCardService.getAll(teamId, matchId).then((res) => {
-      console.log('PLayer Scores 1', res);
+      //console.log('PLayer Scores 1', res);
       if (!res) return;
-      setScoreCardListTeam1(
-        res.map((r) => ({
-          ...r,
-          key: r.id,
-        }))
-      );
+      setScoreCardStateUpdate(res, teamId);
     });
     //
   };
 
   const getTeamScore = (teamId, matchId) => {
-    setTeam1Score({});
-    // teamScoreFormik.setValues({
-    //   ...teamScoreFormik.values,
-    //   ...{},
-    // });
     TeamScoreCardService.getByTeamIdAndMatchId(teamId, matchId).then((res) => {
       if (!res) return;
       console.log('PLayer Scores 1', res);
-      setTeam1Score(res);
-      teamScoreFormik.setValues({
-        ...teamScoreFormik.values,
-        ...res,
-      });
+      setTeamScoreStateUpdate(res);
+    });
+    //
+  };
+
+  const getFallofWicket = (teamId, matchId) => {
+    FallofWicketService.getByTeamIdAndMatchId(teamId, matchId).then((res) => {
+      if (!res) return;
+      //console.log('Fall of wickets', res);
+      setFallofWicketStateUpdate(res);
     });
     //
   };
@@ -174,7 +259,7 @@ const ScoreCard = (prop) => {
   const getAllTeam2 = (teamId, matchId) => {
     ScoreCardService.getAll(teamId, matchId).then((res) => {
       if (!res.items) return;
-      console.log('PLayer Scores 2', res.items);
+      //console.log('PLayer Scores 2', res.items);
       setScoreCardListTeam2(
         res.items.map((r) => ({
           ...r,
@@ -185,13 +270,130 @@ const ScoreCard = (prop) => {
     //
   };
 
+  const getAllPlayers = () => {
+    playerService.getAllByTeamId(activeTag == 1 ? +param.team1Id : activeTag == 2 ? +param.team2Id : null).then((res) => {
+      // console.log('Players', res);
+      setPlayerList(res);
+    });
+  };
+
+  const getPlayeScore = (id) => {
+    //setIsOpenModal(true);
+    ScoreCardService.getPlayerScoreById(id).then((res) => {
+      debugger;
+      if (!res) return;
+      //res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
+      setEditScoreCard(res);
+      scoreCardFormik.setValues({
+        ...scoreCardFormik.values,
+        ...res,
+      });
+    });
+  };
+
+  //handleChange
+  const handleChange = (value, key) => {
+    scoreCardFormik.setValues({ ...scoreCardFormik.values, [key]: value });
+  };
+
+  const handleChangeTeamScore = (value, key) => {
+    team1ScoreFormik.setValues({ ...team1ScoreFormik.values, [key]: value });
+  };
+  //UseEffects
+  useEffect(() => {
+    getScoreCard(+param.team2Id, +param.matchId);
+    getScoreCard(+param.team1Id, +param.matchId);
+    getTeamScore(+param.team1Id, +param.matchId);
+    getTeamScore(+param.team2Id, +param.matchId);
+    getFallofWicket(+param.team1Id, +param.matchId);
+    getFallofWicket(+param.team2Id, +param.matchId);
+  }, []);
+
+  useEffect(() => {
+    if (isOpenModal) {
+      getAllPlayers();
+    }
+  }, [isOpenModal]);
+
+  //set States
+
+  const setTeamScoreStateUpdate = (res) => {
+    if (res.teamId == +param.team1Id) {
+      setTeam1Score(res);
+      team1ScoreFormik.setValues({
+        ...team1ScoreFormik.values,
+        ...res,
+      });
+    }
+    if (res.teamId == +param.team2Id) {
+      setTeam2Score(res);
+      team2ScoreFormik.setValues({
+        ...team2ScoreFormik.values,
+        ...res,
+      });
+    }
+  };
+
+  const setFallofWicketStateUpdate = (res) => {
+    debugger;
+    if (!res || !res[0]) return;
+    if (res[0].teamId == +param.team1Id) {
+      // setTeam1FallofWicket(res[0]);
+      fallofWicketTeam1Formik.setValues({
+        ...fallofWicketTeam1Formik.values,
+        ...res[0],
+      });
+      setTeam1FallofWicket(
+        res.map((r) => ({
+          ...r,
+          key: r.id,
+        }))
+      );
+    }
+    if (res[0].teamId == +param.team2Id) {
+      fallofWicketTeam2Formik.setValues({
+        ...fallofWicketTeam2Formik.values,
+        ...res[0],
+      });
+      setTeam2FallofWicket(
+        res.map((r) => ({
+          ...r,
+          key: r.id,
+        }))
+      );
+    }
+  };
+
+  const setScoreCardStateUpdate = (res, teamId) => {
+    if (teamId == +param.team1Id) {
+      setScoreCardListTeam1(
+        res.map((r) => ({
+          ...r,
+          key: r.id,
+        }))
+      );
+    }
+    if (teamId == +param.team2Id) {
+      setScoreCardListTeam2(
+        res.map((r) => ({
+          ...r,
+          key: r.id,
+        }))
+      );
+    }
+  };
+
   const openModal = () => {
     setIsOpenModal(true);
     setModalMode('Add Score');
   };
 
-  const onClose = () => {
+  const onTeamScoreModalClose = () => {
     setIsTeamScoreModal(false);
+  };
+
+  const onFallofWicketModalClose = () => {
+    setIsFallofWicketModal(false);
   };
   const onTabChange = (e) => {
     setActiveTag(e);
@@ -201,87 +403,13 @@ const ScoreCard = (prop) => {
     setIsTeamScoreModal(true);
   };
 
-  const getAllPlayers = () => {
-    playerService.getAllByTeamId(activeTag == 1 ? +param.team1Id : activeTag == 2 ? +param.team2Id : null).then((res) => {
-      console.log('Players', res);
-      setPlayerList(res);
-    });
-  };
-
-  const handleChange = (value, key) => {
-    scoreCardFormik.setValues({ ...scoreCardFormik.values, [key]: value });
-  };
-
-  const teamScoreCardInitial = {
-    totalScore: '',
-    overs: '',
-    wickets: '',
-    wideballs: '',
-    noBalls: '',
-    byes: '',
-    legByes: '',
-  };
-
-  const teamScoreCardhandleSubmit = (e) => {
-    let req = {
-      id: teamScore.id || 0,
-      totalScore: teamScoreFormik.values.totalScore,
-      overs: +teamScoreFormik.values.overs,
-      wickets: +teamScoreFormik.values.wickets,
-      wideballs: teamScoreFormik.values.wideballs,
-      noBalls: teamScoreFormik.values.noBalls,
-      byes: teamScoreFormik.values.byes,
-      legByes: teamScoreFormik.values.legByes,
-      teamId: activeTag == '1' ? +param.team1Id : activeTag == '2' ? +param.team2Id : 0,
-      matchId: +param.matchId,
-    };
-
-    console.log('Team SCore Object', req);
-    TeamScoreCardService.createOrUpdate(req).then((res) => {
-      res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
-      setTeam1Score(res.result);
-      teamScoreFormik.setValues({
-        ...teamScoreFormik.values,
-        ...res.result,
-      });
-      //getTeamScore(+param.team1Id, +param.matchId);
-      setIsTeamScoreModal(false);
-    });
-  };
-
-  const teamScoreCardValidation = Yup.object().shape({
-    totalScore: Yup.string().required('Required'),
-    overs: Yup.string().required('Required'),
-    wickets: Yup.string().required('Required'),
-  });
-
-  const teamScoreFormik = useFormik({
-    enableReinitialize: true,
-    initialValues: teamScoreCardInitial,
-    validationSchema: teamScoreCardValidation,
-    onSubmit: teamScoreCardhandleSubmit,
-  });
-
-  const handleChangeTeamScore = (value, key) => {
-    teamScoreFormik.setValues({ ...teamScoreFormik.values, [key]: value });
-  };
-
-  const getPlayeScore = (id) => {
-    debugger;
+  const editPlayerScore = (item) => {
     setIsOpenModal(true);
-    ScoreCardService.getPlayerScoreById(id).then((res) => {
-      if (!res) return;
-      res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
-      setScoreCard(res);
-      scoreCardFormik.setValues({
-        ...scoreCardFormik.values,
-        ...res,
-      });
-    });
+    getPlayeScore(item.id);
   };
 
-  const viewPlayerProfile = () => {
-    setIsOpenModal(true);
+  const openFallofWicketDrawer = () => {
+    setIsFallofWicketModal(true);
   };
 
   const columns = [
@@ -291,15 +419,12 @@ const ScoreCard = (prop) => {
       dataIndex: 'position',
       key: 'position',
       fixed: 'left',
-      render: (text, item) => {
-        return item;
-      },
     },
     {
       title: 'Player',
       width: 250,
-      dataIndex: 'playerId',
-      key: 'playerId',
+      dataIndex: 'playerName',
+      key: 'playerName',
       fixed: 'left',
     },
     {
@@ -332,7 +457,7 @@ const ScoreCard = (prop) => {
             trigger={['click']}
             overlay={
               <Menu>
-                <Menu.Item onClick={viewPlayerProfile}>{L('Edit')}</Menu.Item>
+                <Menu.Item onClick={() => editPlayerScore(item)}>{L('Edit')}</Menu.Item>
               </Menu>
             }
             placement="bottomLeft"
@@ -345,7 +470,7 @@ const ScoreCard = (prop) => {
       ),
     },
   ];
-  console.log('scoreCardFormik', scoreCardFormik);
+  console.log('fallofWicketTeam1Formik', fallofWicketTeam2Formik);
   console.log('param', param);
 
   const { tabPosition } = { tabPosition: 'left' };
@@ -359,42 +484,30 @@ const ScoreCard = (prop) => {
       </div>
       <Tabs tabPosition={tabPosition} onChange={onTabChange}>
         <TabPane tab="Team-1" key="1">
-          <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px' }}>
-            <h1>
-              {teamScore.teamId || 'N/A'} Score {teamScore.totalScore ? teamScore.totalScore : 'N/A'} runs in{' '}
-              {teamScore.overs ? teamScore.overs : 'N/A'} overs and lost
-              {teamScore.wickets ? teamScore.wickets : 'N/A'} wickets
-            </h1>
+          <ViewTeamScore data={team1Score} opemTeamScoreModal={opemTeamScoreModal}></ViewTeamScore>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '10px' }}>
             <Button type="primary" shape="round" icon="plus" onClick={openModal}>
               Add
-            </Button>
-            <Button type="primary" shape="round" icon="plus" onClick={opemTeamScoreModal}>
-              {Object.keys(teamScore).length ? 'Edit Team Score' : 'Add Team Score'}
             </Button>
           </div>
           <Table columns={columns} dataSource={scoreCardListTeam1} scroll={{ x: 1500, y: 1000 }} pagination={false} />
+          <ViewFallOfWicket data={team1FallofWicket} visible={openFallofWicketDrawer} openModal={openModal}></ViewFallOfWicket>
         </TabPane>
         <TabPane tab="Team-2" key="2">
-          <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px' }}>
-            <h1>
-              {teamScore.teamId ? teamScore.teamId : 'N/A'} Score {teamScore.totalScore ? teamScore.totalScore : 'N/A'} runs in{' '}
-              {teamScore.overs ? teamScore.overs : 'N/A'} overs and lost
-              {teamScore.wickets ? teamScore.wickets : 'N/A'} wickets
-            </h1>
+          <ViewTeamScore data={team2Score} opemTeamScoreModal={opemTeamScoreModal}></ViewTeamScore>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '10px' }}>
             <Button type="primary" shape="round" icon="plus" onClick={openModal}>
               Add
             </Button>
-            <Button type="primary" shape="round" icon="plus" onClick={opemTeamScoreModal}>
-              {Object.keys(teamScore).length ? 'Add Team Score' : 'Edit Team Score'}
-            </Button>
           </div>
-          <Table columns={columns} dataSource={scoreCardListTeam2} scroll={{ x: 1500, y: 1000 }} />
+          <Table columns={columns} dataSource={scoreCardListTeam2} scroll={{ x: 1500, y: 1000 }} pagination={false} />
+          <ViewFallOfWicket data={team2FallofWicket} visible={openFallofWicketDrawer} openModal={openModal}></ViewFallOfWicket>
         </TabPane>
-        <TabPane tab="Match Result" key="3"></TabPane>
+        {/* <TabPane tab="Fall of wickets" key="3"></TabPane> */}
       </Tabs>
 
       <CustomModal
-        title={modalMode}
+        title={Object.keys(editScoreCard).length ? 'Edit Player Score' : 'Add Player Score'}
         isModalVisible={isOpenModal}
         handleCancel={() => {
           setIsOpenModal(false);
@@ -462,7 +575,7 @@ const ScoreCard = (prop) => {
             <Col span={12}>
               <CustomInput
                 title="Inning"
-                type="checkbox"
+                type="switch"
                 handleChange={handleChange}
                 value={scoreCardFormik.values.isPlayedInning}
                 stateKey="isPlayedInning"
@@ -627,7 +740,7 @@ const ScoreCard = (prop) => {
 
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Add
+              {Object.keys(editScoreCard).length ? 'Update' : 'Add'}
             </Button>
             <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
               Cancel
@@ -636,7 +749,18 @@ const ScoreCard = (prop) => {
         </Form>
       </CustomModal>
 
-      <TeamScoreDrawer visible={visible} onClose={onClose} formikData={teamScoreFormik} />
+      <TeamScoreDrawer
+        data={activeTag == 1 ? team1Score : team2Score}
+        visible={teamScoreModal}
+        onClose={onTeamScoreModalClose}
+        formikData={activeTag == 1 ? team1ScoreFormik : team2ScoreFormik}
+      />
+      <FallofWicket
+        data={activeTag == 1 ? team1FallofWicket : team2FallofWicket}
+        visible={fallofwciketModal}
+        onClose={onFallofWicketModalClose}
+        formikData={activeTag == 1 ? fallofWicketTeam1Formik : fallofWicketTeam2Formik}
+      ></FallofWicket>
     </Card>
   );
 };

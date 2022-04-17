@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload,Row,Col } from 'antd';
+import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload, Row, Col } from 'antd';
 import { L } from '../../lib/abpUtility';
 import TeamService from '../../services/team/TeamService';
 import CustomModal from '../../components/Modal';
@@ -59,6 +59,7 @@ const Team = (Props) => {
     total: 0,
   });
   const [mode, setModalMode] = useState('');
+  const [editTeam, setEditTeam] = useState({});
   //const [reqPlayer, setReqPlayer] = useState(playerReq);
   //const [validation, setPlayerValidation] = useState(playerValidation);
 
@@ -111,14 +112,14 @@ const Team = (Props) => {
       width: 150,
       fixed: 'right',
       key: 'action',
-      render: (text,item) => {
+      render: (text, item) => {
         return (
           <div>
             <Dropdown
               trigger={['click']}
               overlay={
                 <Menu>
-                  <Menu.Item onClick={()=> editTeam(item)}>{L('Edit')}</Menu.Item>
+                  <Menu.Item onClick={() => editTeam(item)}>{L('Edit')}</Menu.Item>
                   <Menu.Item>{L('Delete')}</Menu.Item>
                 </Menu>
               }
@@ -161,12 +162,12 @@ const Team = (Props) => {
     });
   };
 
-  const editTeam = (item) => {
+  const handleEditTeam = (item) => {
     setIsOpenModal(true);
     setModalMode('Edit Team');
     TeamService.getTeamById(item.id).then((res) => {
       if (res) {
-        debugger;
+        setEditTeam(res);
         console.log('player', res);
         teamFormik.setValues({
           ...teamFormik.values,
@@ -179,7 +180,7 @@ const Team = (Props) => {
   const addTeam = () => {
     setIsOpenModal(true);
     setModalMode('Create Team');
-  }
+  };
 
   console.log('validations', teamFormik);
 
@@ -195,7 +196,7 @@ const Team = (Props) => {
       <Table pagination={pagination} columns={columns} dataSource={teamList} scroll={{ x: 1500, y: 1000 }} onChange={handleTableChange} />
 
       <CustomModal
-        title= {mode}
+        title={Object.keys(editTeam).length ? 'Edit Team' : 'Add Team'}
         isModalVisible={isOpenModal}
         handleCancel={() => {
           setIsOpenModal(false);
@@ -271,7 +272,7 @@ const Team = (Props) => {
           />
           <Form.Item>
             <Button type="primary" htmlType="submit" disabled={!teamFormik.isValid} onClick={teamFormik.handleSubmit}>
-              {mode == "Create Team" ? 'Add' : 'Update'}
+              {mode == 'Create Team' ? 'Add' : 'Update'}
             </Button>
             <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
               Cancel

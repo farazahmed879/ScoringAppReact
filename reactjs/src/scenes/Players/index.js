@@ -65,9 +65,10 @@ const Player = (props) => {
   const [visible, setIsSetDrawerVisible] = useState(false);
   //const [teamList, setTeamList] = useState([]);
   const [mode, setModalMode] = useState('');
+  const [editPlayer, setEditPlayer] = useState({});
 
   const handleSubmit = () => {
-    debugger
+    debugger;
     if (!playerFormik.isValid) return;
     let playerObject = {
       id: playerFormik.values.id || 0,
@@ -174,12 +175,13 @@ const Player = (props) => {
     setIsSetDrawerVisible(true);
   };
 
-  const editPlayer = (item) => {
+  const handleEditPlayer = (item) => {
     setIsOpenModal(true);
     setModalMode('Edit Player');
     playerService.getPlayerById(item.id).then((res) => {
       if (res) {
         debugger;
+        setEditPlayer(res);
         console.log('player', res);
         playerFormik.setValues({
           ...playerFormik.values,
@@ -251,7 +253,7 @@ const Player = (props) => {
             trigger={['click']}
             overlay={
               <Menu>
-                <Menu.Item onClick={(e) => editPlayer(item)}>{L('Edit')}</Menu.Item>
+                <Menu.Item onClick={(e) => handleEditPlayer(item)}>{L('Edit')}</Menu.Item>
                 <Menu.Item>{L('Delete')}</Menu.Item>
                 <Menu.Item onClick={viewPlayerProfile}>{L('Profile')}</Menu.Item>
               </Menu>
@@ -281,7 +283,7 @@ const Player = (props) => {
       <Table columns={columns} dataSource={playerList} scroll={{ x: 1500, y: 1000 }} />
 
       <CustomModal
-        title={mode}
+        title={Object.keys(editPlayer).length ? 'Edit Player' : 'Add Player'}
         isModalVisible={isOpenModal}
         handleCancel={() => {
           setIsOpenModal(false);

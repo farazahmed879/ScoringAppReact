@@ -9,7 +9,7 @@ type Props = {
     children: JSX.Element
 };
 
-const CustomModal: React.FC<Props> = ({ children, title = "Modal Header", isModalVisible = true, handleSubmit = () => { }, handleCancel = (e: boolean) => { } }) => {
+const CustomModal: React.FC<Props> = ({ children, title="Add Score" , isModalVisible = true, handleSubmit = () => { }, handleCancel = (e: boolean) => { } }) => {
 
 
     return (

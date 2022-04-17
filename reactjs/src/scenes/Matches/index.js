@@ -14,8 +14,8 @@ import playerService from '../../services/player/playerService';
 import { matchType, eventStage } from '../../components/Enum/enum';
 import GroundService from '../../services/ground/GroundService';
 const matchValidation = Yup.object().shape({
-  team1: Yup.string().required('Required'),
-  team2: Yup.string().required('Required'),
+  team1Id: Yup.string().required('Required'),
+  team2Id: Yup.string().required('Required'),
   matchTypeId: Yup.string().required('Required'),
 });
 
@@ -50,6 +50,7 @@ const Matches = () => {
   const [groundList, setGroundList] = useState([]);
   const [playerList, setPlayerList] = useState([]);
   const [eventList, setEventList] = useState([]);
+  const [editMatch, setEditMatch] = useState({});
   const [mode, setModalMode] = useState('');
 
   const handleSubmit = (e) => {
@@ -143,16 +144,17 @@ const Matches = () => {
     matchFormik.setValues({ ...matchFormik.values, [key]: value });
   };
 
-  const editMatch = (item) => {
+  const handleEditMatch = (item) => {
     setIsOpenModal(true);
     setModalMode('Edit Match');
     matchService.getMatchById(item.id).then((res) => {
       if (res) {
+        setEditMatch(res);
         matchFormik.setValues({
           ...matchFormik.values,
           ...res,
         });
-        debugger
+        debugger;
       }
     });
   };
@@ -218,7 +220,7 @@ const Matches = () => {
             trigger={['click']}
             overlay={
               <Menu>
-                <Menu.Item onClick={() => editMatch(item)}>{L('Edit')}</Menu.Item>
+                <Menu.Item onClick={() => handleEditMatch(item)}>{L('Edit')}</Menu.Item>
                 <Menu.Item>{L('Delete')}</Menu.Item>
                 <Menu.Item>
                   {' '}
@@ -249,7 +251,7 @@ const Matches = () => {
       <Table columns={columns} dataSource={matchList} scroll={{ x: 1500, y: 1000 }} />
 
       <CustomModal
-        title={mode}
+        data={Object.keys(editMatch).length ? 'Edit Match' : 'Add Match'}
         isModalVisible={isOpenModal}
         handleCancel={() => {
           setIsOpenModal(false);
@@ -406,7 +408,7 @@ const Matches = () => {
           </Row>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" disabled={!matchFormik.isValid} onClick={matchFormik.handleSubmit}>
               {mode == 'Add Match' ? 'Add' : 'Update'}
             </Button>
             <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
