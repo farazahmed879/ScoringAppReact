@@ -12,7 +12,7 @@ class MatchService {
   }
 
   public async getMatchById(matchId: Number): Promise<any> {
-    let result = await http.get(`api/services/app/Role/GetRoleForEdit?matchId=${matchId}`);
+    let result = await http.get(`api/services/app/Match/GetById?id=${matchId}`);
     return result.data.result;
   }
 

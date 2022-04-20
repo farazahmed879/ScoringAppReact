@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col } from 'antd';
 import { L } from '../../lib/abpUtility';
 import playerService from '../../services/player/playerService';
 import CustomModal from '../../components/Modal';
@@ -10,43 +10,43 @@ import moment from 'moment';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import TeamService from '../../services/team/TeamService';
+import PlayerProfile from './player-profile';
 
 //const { Option } = Select;
 const playerInitial = {
-  name: "",
-  contact: "",
+  id: 0,
+  name: '',
+  contact: '',
   gender: {
     id: 1,
-    name: 'Male'
+    name: 'Male',
   },
-  address: "",
-  cnic: "",
+  address: '',
+  cnic: '',
   battingStyle: {
     id: 0,
-    name: 'Right-Handed'
+    name: 'Right-Handed',
   },
   bowlingStyle: {
     id: 0,
-    name: 'Right-Arm-Fast'
+    name: 'Right-Arm-Fast',
   },
   playingRole: {
     id: 0,
-    name: 'Batsman'
+    name: 'Batsman',
   },
   team: {
     id: 0,
-    name: 'Select Team'
+    name: 'Select Team',
   },
   dob: Date(),
-  fileName: ''
-}
+  fileName: '',
+};
 
 const playerValidation = Yup.object().shape({
-  name: Yup.string().required("Required"),
-  gender: Yup.object().required("Required")
-})
-
-
+  name: Yup.string().required('Required'),
+  gender: Yup.object().required('Required'),
+});
 
 const success = Modal.success;
 const error = Modal.error;
@@ -62,13 +62,16 @@ const Player = (props) => {
   const [player, setPlayer] = useState(playerInitial);
   const [playerList, setPlayerList] = useState([]);
   const [teamList, setTeamList] = useState([]);
-  //const [players, setPlayers] = useState(playerInitial[]);
+  const [visible, setIsSetDrawerVisible] = useState(false);
+  //const [teamList, setTeamList] = useState([]);
+  const [mode, setModalMode] = useState('');
+  const [editPlayer, setEditPlayer] = useState({});
 
   const handleSubmit = () => {
-    debugger
-    if (!playerFormik.isValid)
-      return;
+    debugger;
+    if (!playerFormik.isValid) return;
     let playerObject = {
+      id: playerFormik.values.id || 0,
       name: playerFormik.values.name,
       address: playerFormik.values.address,
       cnic: playerFormik.values.cnic,
@@ -79,93 +82,119 @@ const Player = (props) => {
       battingStyleId: playerFormik.values.battingStyle.id,
       bowlingStyleId: playerFormik.values.bowlingStyle.id,
       isDeactivated: false,
-      isGuestOrRegisterd: "Registered",
+      isGuestOrRegisterd: 'Registered',
       teamId: playerFormik.values.team.id,
-      fileName: playerFormik.values.fileName
-    }
+      fileName: playerFormik.values.fileName,
+    };
 
-    console.log("Player Object", playerObject);
-    playerService.createOrUpdate(playerObject).then(res => {
-      res.success ?
-        success({ title: res.successMessage }) :
-        error({ title: res.successMessage });
+    console.log('Player Object', playerObject);
+    playerService.createOrUpdate(playerObject).then((res) => {
+      res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);
+      getAll();
     });
-  }
+  };
 
-  const playerFormik = useFormik(
-    {
-      enableReinitialize: true,
-      initialValues: playerInitial,
-      validationSchema: playerValidation,
-      onSubmit: handleSubmit
-    }
-  );
+  const playerFormik = useFormik({
+    enableReinitialize: true,
+    initialValues: playerInitial,
+    validationSchema: playerValidation,
+    onSubmit: handleSubmit,
+  });
 
   useEffect(() => {
     getAll();
   }, []);
 
   useEffect(() => {
-    if (isOpenModal)
-      getAllTeams();
+    if (isOpenModal) getAllTeams();
   }, [isOpenModal]);
 
-
   const getAll = () => {
-    playerService.getPaginatedAll({ maxResultCount: maxResultCount, skipCount: skipCount, name: filter }).then(res => {
-      console.log("Players", res.items);
-      setPlayerList(res.items.map((r) => ({
-        ...r, key: r.id
-      })));
+    playerService.getPaginatedAll({ maxResultCount: maxResultCount, skipCount: skipCount, name: filter }).then((res) => {
+      console.log('Players', res.items);
+      setPlayerList(
+        res.items.map((r) => ({
+          ...r,
+          key: r.id,
+        }))
+      );
     });
-    //  
-  }
-
+    //
+  };
 
   const getAllTeams = () => {
-    TeamService.getAll().then(res => {
-      console.log("Teams", res);
+    TeamService.getAll().then((res) => {
+      console.log('Teams', res);
       setTeamList(res);
-    })
-  }
+    });
+  };
 
   const handleChange = (value, key) => {
-    if (key == "gender") {
-      var genderObj = genderOptions.filter(i => i.id == value)[0];
-      playerFormik.setValues({ ...playerFormik.values, [key]: { id: genderObj.id, name: genderObj.name } })
+    if (key == 'gender') {
+      var genderObj = genderOptions.filter((i) => i.id == value)[0];
+      playerFormik.setValues({ ...playerFormik.values, [key]: { id: genderObj.id, name: genderObj.name } });
       return;
     }
-    if (key == "battingStyle") {
-      var selectedBattingStyle = battingStyleOptions.filter(i => i.id == value)[0];
-      playerFormik.setValues({ ...playerFormik.values, [key]: { id: selectedBattingStyle.id, name: selectedBattingStyle.name } })
-      return;
-    }
-
-    if (key == "bowlingStyle") {
-      var selectedBowlingStyle = bowlingStyleOptions.filter(i => i.id == value)[0];
-      playerFormik.setValues({ ...playerFormik.values, [key]: { id: selectedBowlingStyle.id, name: selectedBowlingStyle.name } })
+    if (key == 'battingStyle') {
+      var selectedBattingStyle = battingStyleOptions.filter((i) => i.id == value)[0];
+      playerFormik.setValues({ ...playerFormik.values, [key]: { id: selectedBattingStyle.id, name: selectedBattingStyle.name } });
       return;
     }
 
-    if (key == "playingRole") {
-      var selectedPlayingRole = playingRoleOptions.filter(i => i.id == value)[0];
-      playerFormik.setValues({ ...playerFormik.values, [key]: { id: selectedPlayingRole.id, name: selectedPlayingRole.name } })
+    if (key == 'bowlingStyle') {
+      var selectedBowlingStyle = bowlingStyleOptions.filter((i) => i.id == value)[0];
+      playerFormik.setValues({ ...playerFormik.values, [key]: { id: selectedBowlingStyle.id, name: selectedBowlingStyle.name } });
       return;
     }
 
-    if (key == "team") {
+    if (key == 'playingRole') {
+      var selectedPlayingRole = playingRoleOptions.filter((i) => i.id == value)[0];
+      playerFormik.setValues({ ...playerFormik.values, [key]: { id: selectedPlayingRole.id, name: selectedPlayingRole.name } });
+      return;
+    }
+
+    if (key == 'team') {
       var selectedTeam = teamList.filter((i) => i.id == value)[0];
-      playerFormik.setValues({ ...playerFormik.values, [key]: { id: selectedTeam.id, name: selectedTeam.name } })
+      playerFormik.setValues({ ...playerFormik.values, [key]: { id: selectedTeam.id, name: selectedTeam.name } });
       return;
     }
     //console.log("value", e.target.name, e.target.value);
-    playerFormik.setValues({ ...playerFormik.values, [key]: value })
-  }
+    playerFormik.setValues({ ...playerFormik.values, [key]: value });
+  };
 
   const handleChangeDatePicker = (date, dateString) => {
-    setPlayer({ ...player, dob: date })
-  }
+    setPlayer({ ...player, dob: date });
+  };
+
+  const onClose = () => {
+    setIsSetDrawerVisible(false);
+  };
+
+  const viewPlayerProfile = () => {
+    setIsSetDrawerVisible(true);
+  };
+
+  const handleEditPlayer = (item) => {
+    setIsOpenModal(true);
+    setModalMode('Edit Player');
+    playerService.getPlayerById(item.id).then((res) => {
+      if (res) {
+        debugger;
+        setEditPlayer(res);
+        console.log('player', res);
+        playerFormik.setValues({
+          ...playerFormik.values,
+          ...res,
+        });
+      }
+    });
+  };
+
+  const addPlayer = () => {
+    setIsOpenModal(true);
+    setModalMode('Create Player');
+  };
 
   const columns = [
     {
@@ -224,8 +253,9 @@ const Player = (props) => {
             trigger={['click']}
             overlay={
               <Menu>
-                <Menu.Item >{L('Edit')}</Menu.Item>
-                <Menu.Item >{L('Delete')}</Menu.Item>
+                <Menu.Item onClick={(e) => handleEditPlayer(item)}>{L('Edit')}</Menu.Item>
+                <Menu.Item>{L('Delete')}</Menu.Item>
+                <Menu.Item onClick={viewPlayerProfile}>{L('Profile')}</Menu.Item>
               </Menu>
             }
             placement="bottomLeft"
@@ -240,30 +270,136 @@ const Player = (props) => {
   ];
 
   // const { getFieldDecorator } = this.props.form;
-  console.log("validations", playerFormik);
+  console.log('validations', playerFormik);
 
   return (
     <Card>
-       <div style={{display : 'flex' , justifyContent: 'space-between' , margin: '10px'}}>
-               <h1>Manage Players</h1> <Button type="primary" shape="round" icon="plus" onClick={() => setIsOpenModal(true)} >Add</Button>
-            </div>
-      <Table columns={columns} dataSource={playerList} scroll={{ x: 1500 , y: 1000}} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px' }}>
+        <h1>Manage Players</h1>{' '}
+        <Button type="primary" shape="round" icon="plus" onClick={addPlayer}>
+          Add
+        </Button>
+      </div>
+      <Table columns={columns} dataSource={playerList} scroll={{ x: 1500, y: 1000 }} />
 
-      <CustomModal title="Create Player" isModalVisible={isOpenModal} handleCancel={() => { setIsOpenModal(false) }} handleSubmit={handleSubmit} >
+      <CustomModal
+        title={Object.keys(editPlayer).length ? 'Edit Player' : 'Add Player'}
+        isModalVisible={isOpenModal}
+        handleCancel={() => {
+          setIsOpenModal(false);
+        }}
+        handleSubmit={handleSubmit}
+      >
         <Form>
-          <CustomInput title="Name" type="text" handleChange={handleChange} value={playerFormik.values.name} stateKey="name" placeholder="" errorMessage={playerFormik.errors.name} />
-          <CustomInput title="Gender" type="select" options={genderOptions} handleChange={handleChange} value={playerFormik.values.gender.id} stateKey="gender" />
-          <CustomInput title="Contact" type="text" handleChange={handleChange} value={playerFormik.values.contact} stateKey="contact" placeholder="" />
-          <CustomInput title="Address" type="text" handleChange={handleChange} value={playerFormik.values.address} stateKey="address" placeholder="" />
-          <CustomInput title="Cnic" type="text" handleChange={handleChange} value={playerFormik.values.cnic} stateKey="cnic" placeholder="" />
-          <CustomInput title="Birth" type="datePicker" handleChange={handleChangeDatePicker} value={playerFormik.values.dob} stateKey="dob" placeholder="" />
-          <CustomInput title="Team" type="select" options={teamList} handleChange={handleChange} value={playerFormik.values.team.name} stateKey="team" placeholder="" />
-          <CustomInput title="Player Role" type="select" options={playingRoleOptions} handleChange={handleChange} value={playerFormik.values.playingRole.name} stateKey="playingRole" placeholder="" />
-          <CustomInput title="Batting Style" type="select" options={battingStyleOptions} handleChange={handleChange} value={playerFormik.values.battingStyle.name} stateKey="battingStyle" placeholder="" />
-          <CustomInput title="Bowling Style" type="select" options={bowlingStyleOptions} handleChange={handleChange} value={playerFormik.values.bowlingStyle.name} stateKey="bowlingStyle" placeholder="" />
+          <Row gutter={16}>
+            <Col span={12}>
+              <CustomInput
+                title="Name"
+                type="text"
+                handleChange={handleChange}
+                value={playerFormik.values.name}
+                stateKey="name"
+                placeholder=""
+                errorMessage={playerFormik.errors.name}
+              />
+            </Col>
+            <Col span={12}>
+              <CustomInput
+                title="Gender"
+                type="select"
+                options={genderOptions}
+                handleChange={handleChange}
+                value={playerFormik.values.gender.id}
+                stateKey="gender"
+              />
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={8}>
+              <CustomInput
+                title="Player Role"
+                type="select"
+                options={playingRoleOptions}
+                handleChange={handleChange}
+                value={playerFormik.values.playingRole.name}
+                stateKey="playingRole"
+                placeholder=""
+              />
+            </Col>
+            <Col span={8}>
+              <CustomInput
+                title="Batting Style"
+                type="select"
+                options={battingStyleOptions}
+                handleChange={handleChange}
+                value={playerFormik.values.battingStyle.name}
+                stateKey="battingStyle"
+                placeholder=""
+              />
+            </Col>
+            <Col span={8}>
+              <CustomInput
+                title="Bowling Style"
+                type="select"
+                options={bowlingStyleOptions}
+                handleChange={handleChange}
+                value={playerFormik.values.bowlingStyle.name}
+                stateKey="bowlingStyle"
+                placeholder=""
+              />
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={8}>
+              <CustomInput
+                title="Contact"
+                type="text"
+                handleChange={handleChange}
+                value={playerFormik.values.contact}
+                stateKey="contact"
+                placeholder=""
+              />
+            </Col>
+            <Col span={8}>
+              <CustomInput title="Cnic" type="text" handleChange={handleChange} value={playerFormik.values.cnic} stateKey="cnic" placeholder="" />
+            </Col>
+            <Col span={8}>
+              <CustomInput
+                title="Birth"
+                type="datePicker"
+                handleChange={handleChangeDatePicker}
+                value={playerFormik.values.dob}
+                stateKey="dob"
+                placeholder=""
+              />
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={24}>
+              <CustomInput
+                title="Address"
+                type="text"
+                handleChange={handleChange}
+                value={playerFormik.values.address}
+                stateKey="address"
+                placeholder=""
+              />
+            </Col>
+          </Row>
+
+          <CustomInput
+            title="Team"
+            type="select"
+            options={teamList}
+            handleChange={handleChange}
+            value={playerFormik.values.team.name}
+            stateKey="team"
+            placeholder=""
+          />
+
           <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Add
+            <Button type="primary" htmlType="submit" disabled={!playerFormik.isValid} onClick={playerFormik.handleSubmit}>
+              {mode == 'Create Player' ? 'Add' : 'Update'}
             </Button>
             <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
               Cancel
@@ -271,10 +407,10 @@ const Player = (props) => {
           </Form.Item>
         </Form>
       </CustomModal>
-    </Card >
+
+      <PlayerProfile visible={visible} onClose={onClose} />
+    </Card>
   );
-}
+};
 
 export default Player;
-
-

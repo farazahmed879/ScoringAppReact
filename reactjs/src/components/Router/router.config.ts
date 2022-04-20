@@ -1,3 +1,4 @@
+
 import LoadableComponent from './../Loadable/index';
 
 export const userRouter: any = [
@@ -128,15 +129,17 @@ export const appRouters: any = [
     icon: 'info-circle',
     showInMenu: false,
     component: LoadableComponent(() => import('../../components/Logout')),
+   
   },
   {
-    path: '/scoreCard',
+    path: '/scoreCard/team1/:team1Id/team2/:team2Id/match/:matchId',
     permission: '',
     title: 'ScoreCard',
     name: 'scoreCard',
     icon: 'info-circle',
     showInMenu: false,
     component: LoadableComponent(() => import('../../scenes/ScoreCard')),
+    //component: (prop: any)=> <ScoreCard {...prop} /> ,
   },
   {
     path: '/exception?:type',

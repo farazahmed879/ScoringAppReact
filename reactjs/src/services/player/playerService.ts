@@ -9,18 +9,23 @@ class PlayerService {
     return result.data.result;
   }
 
-  public async delete( playerId: Number) {
-    let result = await http.delete(`api/services/app/Player/DeleteplayerId=${playerId}`);
+  public async delete(id: Number) {
+    let result = await http.delete(`api/services/app/Player/Delete=${id}`);
     return result.data;
   }
 
   public async getPlayerById(playerId: Number): Promise<PlayerDto> {
-    let result = await http.get(`api/services/app/Role/GetRoleForEdit?playerId=${playerId}`);
+    let result = await http.get(`api/services/app/Player/GetById?id=${playerId}`);
     return result.data.result;
   }
 
   public async getAll() {
     let result = await http.get('/api/services/app/Player/GetAll');
+    return result.data.result;
+  }
+
+  public async getAllByTeamId(teamId: number) {
+    let result = await http.get(`/api/services/app/Player/GetAllByTeamId?teamId=${teamId}`);
     return result.data.result;
   }
 
