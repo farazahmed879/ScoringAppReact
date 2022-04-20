@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload, Row, Col } from 'antd';
+import { Link } from 'react-router-dom';
 import { L } from '../../lib/abpUtility';
 import TeamService from '../../services/team/TeamService';
 import CustomModal from '../../components/Modal';
-//import CustomInput from '../../components/Input';
 import { useFormik } from 'formik';
 import CustomInput from '../../components/Input';
 import { teamTypeOptions } from '../../components/Enum/enum';
 import * as Yup from 'yup';
 
-const Team = (Props) => {
+const Team = () => {
   const success = Modal.success;
   const error = Modal.error;
 
@@ -60,7 +60,6 @@ const Team = (Props) => {
   });
   const [mode, setModalMode] = useState('');
   const [editTeam, setEditTeam] = useState({});
-  //const [reqPlayer, setReqPlayer] = useState(playerReq);
   //const [validation, setPlayerValidation] = useState(playerValidation);
 
   const teamFormik = useFormik({
@@ -72,12 +71,6 @@ const Team = (Props) => {
   useEffect(() => {
     getAll();
   }, [pagination.current]);
-
-  //   useEffect(() => {
-  //     if (isOpenModal) {
-  //       getAll();
-  //     }
-  //   }, [isOpenModal]);
 
   const getAll = () => {
     TeamService.getPaginatedAll({
@@ -106,7 +99,6 @@ const Team = (Props) => {
     { title: 'Contact', width: 150, dataIndex: 'contact', key: 'contact' },
     { title: 'Place', width: 150, dataIndex: 'place', key: 'place' },
     { title: 'Zone', width: 150, dataIndex: 'zone', key: 'zone' },
-
     {
       title: L('Actions'),
       width: 150,
@@ -121,6 +113,9 @@ const Team = (Props) => {
                 <Menu>
                   <Menu.Item onClick={() => handleEditTeam(item)}>{L('Edit')}</Menu.Item>
                   <Menu.Item>{L('Delete')}</Menu.Item>
+                  <Menu.Item>
+                    <Link to={'/team-player/' + item.id + '/' + item.name}>{L('Players')}</Link>
+                  </Menu.Item>
                 </Menu>
               }
               placement="bottomLeft"

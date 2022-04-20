@@ -113,6 +113,15 @@ export const appRouters: any = [
     component: LoadableComponent(() => import('../../scenes/About')),
   },
   {
+    path: '/team-player/:teamId/:teamName',
+    permission: '',
+    title: 'Team Players',
+    name: 'team-player',
+    icon: 'info-circle',
+    showInMenu: false,
+    component: LoadableComponent(() => import('../../scenes/Teams/teamPlayers')),
+  },
+  {
     path: '/logout',
     permission: '',
     title: 'Logout',

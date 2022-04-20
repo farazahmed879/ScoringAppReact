@@ -11,5 +11,5 @@ export interface PlayerDto {
   isGuestOrRegisterd: boolean;
   isDeactivated: boolean;
   fileName: string;
-  teamId: string;
+  teamIds: [];
 }

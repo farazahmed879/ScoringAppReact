@@ -25,7 +25,14 @@ const CustomInput = ({
     <div style={{ width: width }}>
       <label>{title}</label> <em style={{ float: 'right', color: '#b10505e0' }}>{errorMessage}</em>
       {type == 'select' ? (
-        <Select placeholder={placeholder} value={value || undefined} style={{ width: width }} onChange={(e) => handleChange(e, stateKey)}>
+        <Select
+          showSearch
+          placeholder={placeholder}
+          value={value || undefined}
+          style={{ width: width }}
+          onChange={(e) => handleChange(e, stateKey)}
+          filterOption={(input, option) => option.name.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+        >
           {OptionGenerator(options)}
         </Select>
       ) : type == 'datePicker' ? (
@@ -33,7 +40,18 @@ const CustomInput = ({
       ) : type == 'checkbox' ? (
         <Checkbox></Checkbox>
       ) : type == 'switch' ? (
-        <Switch style={{margin: '20px'}} checkedChildren={<Icon type="check" />} onChange={(e) => handleChange(e, stateKey)} unCheckedChildren={<Icon type="close" />} defaultChecked name={stateKey} />
+        <Switch
+          style={{ margin: '20px' }}
+          checkedChildren={<Icon type="check" />}
+          onChange={(e) => handleChange(e, stateKey)}
+          unCheckedChildren={<Icon type="close" />}
+          defaultChecked
+          name={stateKey}
+        />
+      ) : type == 'multiple' ? (
+        <Select mode="multiple" style={{ width: '100%' }} placeholder="Please select" onChange={(e)=> handleChange(e, stateKey)}>
+          {OptionGenerator(options)}
+        </Select>
       ) : (
         <Input type={type} onChange={(e) => handleChange(e.target.value, stateKey)} value={value || undefined} name={stateKey}></Input>
       )}

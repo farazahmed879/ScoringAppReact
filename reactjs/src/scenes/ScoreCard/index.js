@@ -12,7 +12,7 @@ import playerService from '../../services/player/playerService';
 import { howOutOptions, positions } from '../../components/Enum/enum';
 import GroundService from '../../services/ground/GroundService';
 import ScoreCardService from '../../services/scoreCard/ScoreCardService';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import TeamScoreCardService from '../../services/teamScore/TeamScoreCardService';
 import FallofWicketService from '../../services/fallofWicket/TeamScoreCardService';
 import TeamScoreDrawer from './teamScore';
@@ -280,7 +280,6 @@ const ScoreCard = (prop) => {
   const getPlayeScore = (id) => {
     //setIsOpenModal(true);
     ScoreCardService.getPlayerScoreById(id).then((res) => {
-      debugger;
       if (!res) return;
       //res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setEditScoreCard(res);
@@ -335,7 +334,6 @@ const ScoreCard = (prop) => {
   };
 
   const setFallofWicketStateUpdate = (res) => {
-    debugger;
     if (!res || !res[0]) return;
     if (res[0].teamId == +param.team1Id) {
       // setTeam1FallofWicket(res[0]);

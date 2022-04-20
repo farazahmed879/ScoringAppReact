@@ -154,7 +154,6 @@ const Matches = () => {
           ...matchFormik.values,
           ...res,
         });
-        debugger;
       }
     });
   };
@@ -182,7 +181,6 @@ const Matches = () => {
       key: 'team1',
       fixed: 'left',
     },
-
     {
       title: 'Team 2',
       width: 250,
@@ -208,7 +206,6 @@ const Matches = () => {
         return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
       },
     },
-
     {
       title: 'Action',
       key: 'operation',

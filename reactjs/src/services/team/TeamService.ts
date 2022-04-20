@@ -28,6 +28,11 @@ class TeamService {
     let result = await http.get('/api/services/app/Team/GetPaginatedAll', { params: pagedFilterAndSortedRequest });
     return result.data.result;
   }
+
+  public async createTeamPlayers(model: any) {
+    let result = await http.post('/api/services/app/Player/CreateOrUpdateTeamPlayers', model);
+    return result.data.result;
+  }
 }
 
 export default new TeamService();

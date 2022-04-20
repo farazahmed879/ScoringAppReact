@@ -1,20 +1,27 @@
 export const genderOptions = [
-  { id: 0, name: 'Female' },
-  { id: 1, name: 'Male' },
+  { id: 1, name: 'Female' },
+  { id: 2, name: 'Male' },
 ];
 export const battingStyleOptions = [
-  { id: 0, name: 'Right-Handed' },
-  { id: 1, name: 'Left-Handed' },
+  { id: 1, name: 'Right-Handed' },
+  { id: 2, name: 'Left-Handed' },
 ];
 export const bowlingStyleOptions = [
-  { id: 0, name: 'Right-Arm-Fast' },
-  { id: 1, name: 'Right-Arm-Medium' },
+  { id: 1, name: 'Right-arm fast' },
+  { id: 2, name: 'Right-arm fast-medium' },
+  { id: 3, name: 'Right-arm medium' },
+  { id: 4, name: 'Left-arm fast' },
+  { id: 5, name: 'Left-arm fast-medium' },
+  { id: 6, name: 'Right-arm off-break' },
+  { id: 7, name: 'Right-arm leg-break' },
+  { id: 8, name: 'left-arm orthodox' },
+  { id: 9, name: 'left-arm china-man' },
 ];
 export const playingRoleOptions = [
-  { id: 0, name: 'Batsman' },
-  { id: 1, name: 'Bowler' },
-  { id: 2, name: 'All-Rounder' },
-  { id: 3, name: 'Wicket-Keepr Batsman' },
+  { id: 1, name: 'Batsman' },
+  { id: 2, name: 'Bowler' },
+  { id: 3, name: 'All-Rounder' },
+  { id: 4, name: 'Wicket-Keepr Batsman' },
 ];
 export const teamTypeOptions = [
   { id: 1, name: 'Local' },

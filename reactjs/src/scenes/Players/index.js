@@ -17,35 +17,20 @@ const playerInitial = {
   id: 0,
   name: '',
   contact: '',
-  gender: {
-    id: 1,
-    name: 'Male',
-  },
+  gender: 2,
   address: '',
   cnic: '',
-  battingStyle: {
-    id: 0,
-    name: 'Right-Handed',
-  },
-  bowlingStyle: {
-    id: 0,
-    name: 'Right-Arm-Fast',
-  },
-  playingRole: {
-    id: 0,
-    name: 'Batsman',
-  },
-  team: {
-    id: 0,
-    name: 'Select Team',
-  },
+  battingStyleId: 0,
+  bowlingStyleId: 0,
+  playingRoleId: 0,
+  teamIds: [],
   dob: Date(),
   fileName: '',
 };
 
 const playerValidation = Yup.object().shape({
   name: Yup.string().required('Required'),
-  gender: Yup.object().required('Required'),
+  gender: Yup.string().required('Required'),
 });
 
 const success = Modal.success;
@@ -77,13 +62,13 @@ const Player = (props) => {
       cnic: playerFormik.values.cnic,
       contact: playerFormik.values.contact,
       dob: moment(playerFormik.values.dob).valueOf(),
-      gender: playerFormik.values.gender.id,
-      playerRoleId: playerFormik.values.playingRole.id,
-      battingStyleId: playerFormik.values.battingStyle.id,
-      bowlingStyleId: playerFormik.values.bowlingStyle.id,
+      gender: playerFormik.values.gender,
+      playerRoleId: playerFormik.values.playingRoleId,
+      battingStyleId: playerFormik.values.battingStyleId,
+      bowlingStyleId: playerFormik.values.bowlingStyleId,
       isDeactivated: false,
       isGuestOrRegisterd: 'Registered',
-      teamId: playerFormik.values.team.id,
+      teamIds: playerFormik.values.teamIds,
       fileName: playerFormik.values.fileName,
     };
 
@@ -131,35 +116,7 @@ const Player = (props) => {
   };
 
   const handleChange = (value, key) => {
-    if (key == 'gender') {
-      var genderObj = genderOptions.filter((i) => i.id == value)[0];
-      playerFormik.setValues({ ...playerFormik.values, [key]: { id: genderObj.id, name: genderObj.name } });
-      return;
-    }
-    if (key == 'battingStyle') {
-      var selectedBattingStyle = battingStyleOptions.filter((i) => i.id == value)[0];
-      playerFormik.setValues({ ...playerFormik.values, [key]: { id: selectedBattingStyle.id, name: selectedBattingStyle.name } });
-      return;
-    }
-
-    if (key == 'bowlingStyle') {
-      var selectedBowlingStyle = bowlingStyleOptions.filter((i) => i.id == value)[0];
-      playerFormik.setValues({ ...playerFormik.values, [key]: { id: selectedBowlingStyle.id, name: selectedBowlingStyle.name } });
-      return;
-    }
-
-    if (key == 'playingRole') {
-      var selectedPlayingRole = playingRoleOptions.filter((i) => i.id == value)[0];
-      playerFormik.setValues({ ...playerFormik.values, [key]: { id: selectedPlayingRole.id, name: selectedPlayingRole.name } });
-      return;
-    }
-
-    if (key == 'team') {
-      var selectedTeam = teamList.filter((i) => i.id == value)[0];
-      playerFormik.setValues({ ...playerFormik.values, [key]: { id: selectedTeam.id, name: selectedTeam.name } });
-      return;
-    }
-    //console.log("value", e.target.name, e.target.value);
+    debugger; //console.log("value", e.target.name, e.target.value);
     playerFormik.setValues({ ...playerFormik.values, [key]: value });
   };
 
@@ -180,7 +137,6 @@ const Player = (props) => {
     setModalMode('Edit Player');
     playerService.getPlayerById(item.id).then((res) => {
       if (res) {
-        debugger;
         setEditPlayer(res);
         console.log('player', res);
         playerFormik.setValues({
@@ -207,9 +163,16 @@ const Player = (props) => {
     {
       title: 'Team',
       width: 250,
-      dataIndex: 'team',
-      key: 'team',
+      dataIndex: 'teams',
+      key: 'teams',
       fixed: 'left',
+      render: (text, item) => {
+        // if (item && item.teams) {
+        //   item.teams.map((i) => {
+        //     <div>i.name</div>;
+        //   });
+        // }
+      },
     },
     {
       title: 'Contact',
@@ -223,7 +186,6 @@ const Player = (props) => {
       dataIndex: 'dob',
       key: 'dob',
     },
-
     {
       title: 'Playing Role',
       width: 250,
@@ -309,7 +271,7 @@ const Player = (props) => {
                 type="select"
                 options={genderOptions}
                 handleChange={handleChange}
-                value={playerFormik.values.gender.id}
+                value={playerFormik.values.gender}
                 stateKey="gender"
               />
             </Col>
@@ -321,8 +283,8 @@ const Player = (props) => {
                 type="select"
                 options={playingRoleOptions}
                 handleChange={handleChange}
-                value={playerFormik.values.playingRole.name}
-                stateKey="playingRole"
+                value={playerFormik.values.playingRoleId}
+                stateKey="playingRoleId"
                 placeholder=""
               />
             </Col>
@@ -332,8 +294,8 @@ const Player = (props) => {
                 type="select"
                 options={battingStyleOptions}
                 handleChange={handleChange}
-                value={playerFormik.values.battingStyle.name}
-                stateKey="battingStyle"
+                value={playerFormik.values.battingStyleId}
+                stateKey="battingStyleId"
                 placeholder=""
               />
             </Col>
@@ -343,8 +305,8 @@ const Player = (props) => {
                 type="select"
                 options={bowlingStyleOptions}
                 handleChange={handleChange}
-                value={playerFormik.values.bowlingStyle.name}
-                stateKey="bowlingStyle"
+                value={playerFormik.values.bowlingStyleId}
+                stateKey="bowlingStyleId"
                 placeholder=""
               />
             </Col>
@@ -389,16 +351,16 @@ const Player = (props) => {
 
           <CustomInput
             title="Team"
-            type="select"
+            type="multiple"
             options={teamList}
             handleChange={handleChange}
-            value={playerFormik.values.team.name}
-            stateKey="team"
+            value={playerFormik.values.teamIds}
+            stateKey="teamIds"
             placeholder=""
           />
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" disabled={!playerFormik.isValid} onClick={playerFormik.handleSubmit}>
+            <Button type="primary" htmlType="submit" onClick={playerFormik.handleSubmit}>
               {mode == 'Create Player' ? 'Add' : 'Update'}
             </Button>
             <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
