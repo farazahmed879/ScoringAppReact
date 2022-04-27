@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload, Row, Col } from 'antd';
+import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload, Row, Col,Collapse } from 'antd';
 import { Link } from 'react-router-dom';
 import { L } from '../../lib/abpUtility';
 import TeamService from '../../services/team/TeamService';
@@ -8,11 +8,12 @@ import { useFormik } from 'formik';
 import CustomInput from '../../components/Input';
 import { teamTypeOptions } from '../../components/Enum/enum';
 import * as Yup from 'yup';
+import FilterPanel from './filter-panel';
 
 const Team = () => {
   const success = Modal.success;
   const error = Modal.error;
-
+  const { Panel } = Collapse;
   let teamInitial = {
     id: 0,
     name: '',
@@ -22,6 +23,7 @@ const Team = () => {
     isRegistered: true,
     city: '',
     fileName: '',
+    type: 0,
   };
 
   const teamFormHandler = () => {
@@ -35,6 +37,7 @@ const Team = () => {
       isRegistered: teamFormik.values.isRegistered,
       city: teamFormik.values.city,
       fileName: teamFormik.values.fileName,
+      type: teamFormik.values.type,
     };
 
     TeamService.createOrUpdate(teamForm).then((res) => {
@@ -43,6 +46,10 @@ const Team = () => {
       getAll();
       setIsOpenModal(false);
     });
+  };
+
+  const filterHandleSubmit = (event) => {
+    getAll(event);
   };
 
   const teamValidation = Yup.object().shape({
@@ -55,7 +62,7 @@ const Team = () => {
   const [teamList, setTeamList] = useState([]);
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 5,
+    pageSize: 10,
     total: 0,
   });
   const [mode, setModalMode] = useState('');
@@ -68,6 +75,11 @@ const Team = () => {
     validationSchema: teamValidation,
     onSubmit: teamFormHandler,
   });
+
+  const callback = (key) => {
+    console.log(key);
+  };
+
   useEffect(() => {
     getAll();
   }, [pagination.current]);
@@ -99,6 +111,15 @@ const Team = () => {
     { title: 'Contact', width: 150, dataIndex: 'contact', key: 'contact' },
     { title: 'Place', width: 150, dataIndex: 'place', key: 'place' },
     { title: 'Zone', width: 150, dataIndex: 'zone', key: 'zone' },
+    {
+      title: 'Type',
+      width: 150,
+      dataIndex: 'type',
+      key: 'type',
+      render: (text, item) => {
+        if (text) return teamTypeOptions.filter((i) => i.id == text)[0].name || 'N/A';
+      },
+    },
     {
       title: L('Actions'),
       width: 150,
@@ -187,8 +208,12 @@ const Team = () => {
           Add
         </Button>
       </div>
-
-      <Table pagination={pagination} columns={columns} dataSource={teamList} scroll={{ x: 1500, y: 1000 }} onChange={handleTableChange} />
+      <Collapse onChange={callback} style={{ marginBottom: '10px' }}>
+        <Panel header="Advance Filters" key="1">
+          <FilterPanel teams={teamList} handleSubmit={filterHandleSubmit}></FilterPanel>
+        </Panel>
+      </Collapse>
+      <Table pagination={pagination} columns={columns} dataSource={teamList} scroll={{ x: 1500 }} onChange={handleTableChange} />
 
       <CustomModal
         title={Object.keys(editTeam).length ? 'Edit Team' : 'Add Team'}

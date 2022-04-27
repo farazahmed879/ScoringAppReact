@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse } from 'antd';
 import { L } from '../../lib/abpUtility';
 import playerService from '../../services/player/playerService';
 import CustomModal from '../../components/Modal';
@@ -11,6 +11,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import TeamService from '../../services/team/TeamService';
 import PlayerProfile from './player-profile';
+import FilterPanel from './filter-panel';
 
 //const { Option } = Select;
 const playerInitial = {
@@ -35,25 +36,29 @@ const playerValidation = Yup.object().shape({
 
 const success = Modal.success;
 const error = Modal.error;
+const { Panel } = Collapse;
 
-//const confirm = Modal.confirm;
-//const Search = Input.Search;
-const Player = (props) => {
+const Player = () => {
   //const [modalVisible, setModalVisible] = useState(false);
   const [maxResultCount] = useState(10);
   const [skipCount] = useState(0);
-  const [filter] = useState('');
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [player, setPlayer] = useState(playerInitial);
+  // const [player, setPlayer] = useState(playerInitial);
   const [playerList, setPlayerList] = useState([]);
   const [teamList, setTeamList] = useState([]);
   const [visible, setIsSetDrawerVisible] = useState(false);
-  //const [teamList, setTeamList] = useState([]);
-  const [mode, setModalMode] = useState('');
   const [editPlayer, setEditPlayer] = useState({});
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+
+  const callback = (key) => {
+    console.log(key);
+  };
 
   const handleSubmit = () => {
-    debugger;
     if (!playerFormik.isValid) return;
     let playerObject = {
       id: playerFormik.values.id || 0,
@@ -89,14 +94,18 @@ const Player = (props) => {
 
   useEffect(() => {
     getAll();
+    getAllTeams();
   }, []);
 
-  useEffect(() => {
-    if (isOpenModal) getAllTeams();
-  }, [isOpenModal]);
+  // useEffect(() => {
+  //   if (isOpenModal) getAllTeams();
+  // }, [isOpenModal]);
 
-  const getAll = () => {
-    playerService.getPaginatedAll({ maxResultCount: maxResultCount, skipCount: skipCount, name: filter }).then((res) => {
+  const filterHandleSubmit = (event) => {
+    getAll(event);
+  };
+  const getAll = (event) => {
+    playerService.getPaginatedAll({ maxResultCount: maxResultCount, skipCount: skipCount, name: event ? event.name : undefined }).then((res) => {
       console.log('Players', res.items);
       setPlayerList(
         res.items.map((r) => ({
@@ -116,12 +125,11 @@ const Player = (props) => {
   };
 
   const handleChange = (value, key) => {
-    debugger; //console.log("value", e.target.name, e.target.value);
     playerFormik.setValues({ ...playerFormik.values, [key]: value });
   };
 
   const handleChangeDatePicker = (date, dateString) => {
-    setPlayer({ ...player, dob: date });
+    //setPlayer({ ...player, dob: date });
   };
 
   const onClose = () => {
@@ -134,7 +142,6 @@ const Player = (props) => {
 
   const handleEditPlayer = (item) => {
     setIsOpenModal(true);
-    setModalMode('Edit Player');
     playerService.getPlayerById(item.id).then((res) => {
       if (res) {
         setEditPlayer(res);
@@ -149,7 +156,13 @@ const Player = (props) => {
 
   const addPlayer = () => {
     setIsOpenModal(true);
-    setModalMode('Create Player');
+  };
+
+  const handleTableChange = (e) => {
+    setPagination({
+      current: e.current,
+      pageSize: e.pageSize,
+    });
   };
 
   const columns = [
@@ -164,14 +177,13 @@ const Player = (props) => {
       title: 'Team',
       width: 250,
       dataIndex: 'teams',
-      key: 'teams',
       fixed: 'left',
       render: (text, item) => {
-        // if (item && item.teams) {
-        //   item.teams.map((i) => {
-        //     <div>i.name</div>;
-        //   });
-        // }
+        if (item && item.teams) {
+          Array.from(Array(item.teams), (e, index) => {
+            return <div>{e.title}</div>;
+          });
+        }
       },
     },
     {
@@ -185,24 +197,36 @@ const Player = (props) => {
       width: 250,
       dataIndex: 'dob',
       key: 'dob',
+      render: (item) => {
+        return moment(item).format('MM/DD/YYYY');
+      },
     },
     {
       title: 'Playing Role',
       width: 250,
       dataIndex: 'playerRoleId',
       key: 'playerRoleId',
+      render: (text, item) => {
+        return text > 0 ? playingRoleOptions.filter((i) => i.id == text)[0].name : 'N/A';
+      },
     },
     {
       title: 'Batting Style',
       width: 250,
       dataIndex: 'battingStyleId',
       key: 'battingStyleId',
+      render: (text, item) => {
+        return text > 0 ? battingStyleOptions.filter((i) => i.id == text)[0].name : 'N/A';
+      },
     },
     {
       title: 'Bowling Style',
       width: 250,
       dataIndex: 'bowlingStyleId',
       key: 'bowlingStyleId',
+      render: (text, item) => {
+        return text > 0 ? bowlingStyleOptions.filter((i) => i.id == text)[0].name : 'N/A';
+      },
     },
     {
       title: 'Action',
@@ -231,7 +255,6 @@ const Player = (props) => {
     },
   ];
 
-  // const { getFieldDecorator } = this.props.form;
   console.log('validations', playerFormik);
 
   return (
@@ -242,8 +265,12 @@ const Player = (props) => {
           Add
         </Button>
       </div>
-      <Table columns={columns} dataSource={playerList} scroll={{ x: 1500, y: 1000 }} />
-
+      <Collapse onChange={callback} style={{ marginBottom: '10px' }}>
+        <Panel header="Advance Filters" key="1">
+          <FilterPanel teams={teamList} handleSubmit={filterHandleSubmit}></FilterPanel>
+        </Panel>
+      </Collapse>
+      <Table pagination={pagination} columns={columns} dataSource={playerList} scroll={{ x: 1500 }} onChange={handleTableChange} />
       <CustomModal
         title={Object.keys(editPlayer).length ? 'Edit Player' : 'Add Player'}
         isModalVisible={isOpenModal}
@@ -361,7 +388,7 @@ const Player = (props) => {
 
           <Form.Item>
             <Button type="primary" htmlType="submit" onClick={playerFormik.handleSubmit}>
-              {mode == 'Create Player' ? 'Add' : 'Update'}
+              {Object.keys(editPlayer).length ? 'Update' : 'Add'}
             </Button>
             <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
               Cancel
@@ -369,7 +396,6 @@ const Player = (props) => {
           </Form.Item>
         </Form>
       </CustomModal>
-
       <PlayerProfile visible={visible} onClose={onClose} />
     </Card>
   );

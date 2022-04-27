@@ -1,0 +1,12 @@
+  #myTable td, #myTable th {
+    border: 1px solid lightgray;
+    border-collapse: collapse;
+}
+
+#myTable{
+    width: 100%;
+}
+
+.ant-collapse-content > .ant-collapse-content-box {
+     padding: 5px; 
+}

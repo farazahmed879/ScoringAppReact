@@ -61,7 +61,6 @@ const TeamPlayers = () => {
   };
 
   const handleSubmit = (e) => {
-    debugger;
     let req = {
       teamId: +param.teamId,
       playerIds: state.targetKeys,

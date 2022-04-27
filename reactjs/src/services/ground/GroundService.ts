@@ -15,7 +15,7 @@ class GroundService {
 
   public async getById(id: Number): Promise<GroundDto> {
     let result = await http.get(`api/services/app/Ground/getById?id=${id}`);
-    return result.data.result;
+    return result.data;
   }
 
   public async getAll() {

@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Tabs, Divider, Col } from 'antd';
+import { Button, Form, Modal, Table, Dropdown, Menu, Row, Tabs, Divider, Col,Card } from 'antd';
 import { L } from '../../lib/abpUtility';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import moment from 'moment';
 import CustomModal from '../../components/Modal';
 import CustomInput from '../../components/Input';
-import matchService from '../../services/match/matchService';
-import TeamService from '../../services/team/TeamService';
 import playerService from '../../services/player/playerService';
 import { howOutOptions, positions } from '../../components/Enum/enum';
-import GroundService from '../../services/ground/GroundService';
 import ScoreCardService from '../../services/scoreCard/ScoreCardService';
 import { useParams } from 'react-router-dom';
 import TeamScoreCardService from '../../services/teamScore/TeamScoreCardService';
@@ -75,7 +71,7 @@ const ScoreCard = (prop) => {
     legByes: '',
   };
 
-  const [filter] = useState('');
+  //const [filter] = useState('');
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [teamScoreModal, setIsTeamScoreModal] = useState(false);
   const [fallofwciketModal, setIsFallofWicketModal] = useState(false);
@@ -256,19 +252,19 @@ const ScoreCard = (prop) => {
     //
   };
 
-  const getAllTeam2 = (teamId, matchId) => {
-    ScoreCardService.getAll(teamId, matchId).then((res) => {
-      if (!res.items) return;
-      //console.log('PLayer Scores 2', res.items);
-      setScoreCardListTeam2(
-        res.items.map((r) => ({
-          ...r,
-          key: r.id,
-        }))
-      );
-    });
-    //
-  };
+  // const getAllTeam2 = (teamId, matchId) => {
+  //   ScoreCardService.getAll(teamId, matchId).then((res) => {
+  //     if (!res.items) return;
+  //     //console.log('PLayer Scores 2', res.items);
+  //     setScoreCardListTeam2(
+  //       res.items.map((r) => ({
+  //         ...r,
+  //         key: r.id,
+  //       }))
+  //     );
+  //   });
+  //   //
+  // };
 
   const getAllPlayers = () => {
     playerService.getAllByTeamId(activeTag == 1 ? +param.team1Id : activeTag == 2 ? +param.team2Id : null).then((res) => {

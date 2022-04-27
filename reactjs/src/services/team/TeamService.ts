@@ -23,6 +23,7 @@ class TeamService {
     let result = await http.get('/api/services/app/Team/GetAll');
     return result.data.result;
   }
+  
 
   public async getPaginatedAll(pagedFilterAndSortedRequest: PagedTeamResultRequestDto) {
     let result = await http.get('/api/services/app/Team/GetPaginatedAll', { params: pagedFilterAndSortedRequest });
@@ -31,6 +32,11 @@ class TeamService {
 
   public async createTeamPlayers(model: any) {
     let result = await http.post('/api/services/app/Player/CreateOrUpdateTeamPlayers', model);
+    return result.data.result;
+  }
+
+  public async getAllEventTeams(eventId: number) {
+    let result = await http.get(`/api/services/app/Team/GetAllTeamsByEventId?id=${eventId}`);
     return result.data.result;
   }
 }

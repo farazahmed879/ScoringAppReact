@@ -1,30 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { render } from 'react-dom';
 import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row } from 'antd';
-import { Link } from 'react-router-dom';
 import { L } from '../../lib/abpUtility';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import moment from 'moment';
 import CustomModal from '../../components/Modal';
 import CustomInput from '../../components/Input';
 import groundService from '../../services/ground/GroundService';
-import matchService from '../../services/match/matchService';
-import TeamService from '../../services/team/TeamService';
-import playerService from '../../services/player/playerService';
-import { matchType, eventStage } from '../../components/Enum/enum';
-import GroundService from '../../services/ground/GroundService';
-const matchValidation = Yup.object().shape({
-  team1: Yup.string().required('Required'),
-  team2: Yup.string().required('Required'),
-  matchTypeId: Yup.string().required('Required')
+const groundValidation = Yup.object().shape({
+  name: Yup.string().required('Required'),
+  location: Yup.string().required('Required'),
 });
 
-const matchInitial = {
-
-  Id: '',
-  Name: "",
-  Location: ""
+const groundInitial = {
+  id: 0,
+  name: '',
+  location: '',
 };
 
 const success = Modal.success;
@@ -35,50 +25,29 @@ const Ground = () => {
   const [skipCount] = useState(0);
   const [filter] = useState('');
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [matchList, setMatchList] = useState([]);
-  // const [match, setPlayer] = useState(matchInitial);
-  const [teamList, setTeamList] = useState([]);
   const [groundList, setGroundList] = useState([]);
-  const [playerList, setPlayerList] = useState([]);
-  const [eventList, setEventList] = useState([]);
+  const [editGround, setEditGround] = useState({});
 
   const handleSubmit = (e) => {
-    debugger;
-    // if (!matchFormik.isValid) return;
+    // if (!groundFormik.isValid) return;
     let req = {
       id: 0,
-      groundName: matchFormik.values.name,
-      groundLocation: matchFormik.values.Location,
+      name: groundFormik.values.name,
+      location: groundFormik.values.location,
     };
 
-    console.log('Match Object', req);
+    console.log('Ground Object', req);
     groundService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);
       getAll();
     });
   };
-  // const handleSubmit = () => {
-  //   debugger;
-  //   if (!matchFormik.isValid) return;
 
-  //   // let matchObject = {
-  //   //   team1: matchFormik.values.team1,
-  //   // };
-
-  //   //console.log('Player Object', matchObject);
-  //   // matchService.createOrUpdate(matchObject).then(res => {
-  //   //     res.success ?
-  //   //         success({ title: res.successMessage }) :
-  //   //         error({ title: res.successMessage });
-  //   //     setIsOpenModal(false);
-  //   // });
-  // };
-
-  const matchFormik = useFormik({
+  const groundFormik = useFormik({
     enableReinitialize: true,
-    initialValues: matchInitial,
-    validationSchema: matchValidation,
+    initialValues: groundInitial,
+    validationSchema: groundValidation,
     onSubmit: handleSubmit,
   });
 
@@ -86,19 +55,27 @@ const Ground = () => {
     getAll();
   }, []);
 
-  useEffect(() => {
-    if (isOpenModal) {
-      getAllTeams();
-      getAllGrounds();
-      getAllPlayers();
-      getAllEvents();
-    }
-  }, [isOpenModal]);
+  const handleEditGround = (item) => {
+    groundService.getById(item.id).then((res) => {
+      res.success || error({ title: res.successMessage });
+      setEditGround(res.result);
+      setIsOpenModal(true);
+      groundFormik.setValues({
+        ...groundFormik.values,
+        ...res.result,
+      });
+    });
+  };
+
+  // useEffect(() => {
+  //   if (isOpenModal) {
+  //   }
+  // }, [isOpenModal]);
 
   const getAll = () => {
-    matchService.getPaginatedAll({ maxResultCount: maxResultCount, skipCount: skipCount, name: filter }).then((res) => {
+    groundService.getPaginatedAll({ maxResultCount: maxResultCount, skipCount: skipCount, name: filter }).then((res) => {
       console.log('Matches', res.items);
-      setMatchList(
+      setGroundList(
         res.items.map((r) => ({
           ...r,
           key: r.id,
@@ -108,76 +85,29 @@ const Ground = () => {
     //
   };
 
-  const getAllTeams = () => {
-    TeamService.getAll().then((res) => {
-      console.log('Teams', res);
-      setTeamList(res);
-    });
-  };
-
-  const getAllGrounds = () => {
-    GroundService.getAll().then((res) => {
-      console.log('Grounds', res);
-      setGroundList(res);
-    });
-  };
-
-  const getAllPlayers = () => {
-    playerService.getAll().then((res) => {
-      console.log('Players', res);
-      setPlayerList(res);
-    });
-  };
-  const getAllEvents = () => {
-    playerService.getAll().then((res) => {
-      console.log('eventList', res);
-      setEventList(res);
-    });
-  };
-
-
-
   const handleChange = (value, key) => {
-    debugger;
-    // if (key == "team1") {
-    //     var selectedTeam = teamList.filter((i) => i.id == value)[0];
-    //     matchFormik.setValues({ ...matchFormik.values, [key]: { id: selectedTeam.id, name: selectedTeam.name } })
-    //     return;
-    // }
-    //console.log("value", e.target.name, e.target.value);
-    matchFormik.setValues({ ...matchFormik.values, [key]: value });
+    groundFormik.setValues({ ...groundFormik.values, [key]: value });
   };
 
   const columns = [
     {
       title: 'Ground',
       width: 250,
-      dataIndex: 'ground',
+      dataIndex: 'name',
       key: 'name',
       fixed: 'left',
       render: (text, item) => {
-        return item && item.ground ? item.ground : 'N/A';
-      }
+        return (item && item.name) || 'N/A';
+      },
     },
 
     {
-      title: 'Type',
+      title: 'Location',
       width: 250,
-      dataIndex: 'matchType',
+      dataIndex: 'location',
       render: (text, item) => {
-        debugger;
         // return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
-        return item && item.matchType ? matchType.filter(i => i.id == item.matchType)[0].name : 'N/A';
-      },
-    },
-    {
-      title: 'Date',
-      width: 250,
-      dataIndex: 'date',
-      render: (text, item) => {
-        debugger;
-        // return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
-        return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
+        return (item && item.location) || 'N/A';
       },
     },
 
@@ -192,9 +122,8 @@ const Ground = () => {
             trigger={['click']}
             overlay={
               <Menu>
-                <Menu.Item>{L('Edit')}</Menu.Item>
+                <Menu.Item onClick={(e) => handleEditGround(item)}>{L('Edit')}</Menu.Item>
                 <Menu.Item>{L('Delete')}</Menu.Item>
-                <Menu.Item> <Link to="/scoreCard">{L('Score Card')}</Link></Menu.Item>
               </Menu>
             }
             placement="bottomLeft"
@@ -207,7 +136,7 @@ const Ground = () => {
       ),
     },
   ];
-  console.log('matchFormik', matchFormik);
+  console.log('groundFormik', groundFormik);
 
   return (
     <Card>
@@ -217,70 +146,39 @@ const Ground = () => {
           Add
         </Button>
       </div>
-      <Table columns={columns} dataSource={matchList} scroll={{ x: 1500, y: 1000 }} />
+      <Table columns={columns} dataSource={groundList} scroll={{ x: 1500, y: 1000 }} />
 
       <CustomModal
-        title="Add new Ground"
+        title={Object.keys(editGround).length ? 'Edit Ground' : 'Add Ground'}
         isModalVisible={isOpenModal}
         handleCancel={() => {
           setIsOpenModal(false);
         }}
       >
-        <Form className="form" onSubmit={matchFormik.handleSubmit}>
+        <Form>
           <Row>
             <CustomInput
               title="Ground"
               type="text"
               handleChange={handleChange}
-              value={matchFormik.values.groundId}
+              value={groundFormik.values.name}
               stateKey="groundId"
               placeholder="Ground Name"
+              errorMessage={groundFormik.errors.name}
             />
             <CustomInput
               title="Location"
               type="text"
               handleChange={handleChange}
-              value={matchFormik.values.locationId}
+              value={groundFormik.values.location}
               stateKey="locationId"
               placeholder="Location"
+              errorMessage={groundFormik.errors.location}
             />
-            {matchFormik.values.matchType == 2 ? (
-              <CustomInput
-                title="Event"
-                type="select"
-                handleChange={handleChange}
-                options={eventList}
-                value={matchFormik.values.eventId}
-                stateKey="eventId"
-                placeholder="Select Event"
-              />
-            ) : null}
-            {matchFormik.values.matchType == 2 ? (
-              <CustomInput
-                title="Event Stage"
-                type="select"
-                handleChange={handleChange}
-                options={eventStage}
-                value={matchFormik.values.eventStage}
-                stateKey="eventStage"
-                placeholder="Select Stage"
-              />
-            ) : null}
-            {matchFormik.values.team1 && matchFormik.values.team2 ? (
-              <CustomInput
-                title="Toss Winning Team"
-                type="select"
-                handleChange={handleChange}
-                options={teamList.filter((i) => i.id == matchFormik.values.team1 || i.id == matchFormik.values.team2)}
-                value={matchFormik.values.tossWinningTeam}
-                stateKey="tossWinningTeam"
-                placeholder="Select Team"
-              />
-            ) : null}
           </Row>
-          <Form.Item>
+          <Form.Item gutter={16}>
             <Button type="primary" htmlType="submit" onClick={handleSubmit}>
-              Add
+              {Object.keys(editGround).length ? 'Update' : 'Add'}
             </Button>
             <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
               Cancel

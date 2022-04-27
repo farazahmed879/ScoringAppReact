@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Card, Form, Row, Drawer, Col } from 'antd';
+import { Button,Form, Row, Drawer, Col } from 'antd';
 import CustomInput from '../../components/Input';
 
 const TeamScoreDrawer = ({ visible = false, onClose, formikData, data }) => {

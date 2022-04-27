@@ -40,7 +40,24 @@ export const appRouters: any = [
     showInMenu: true,
     component: LoadableComponent(() => import('../../scenes/Dashboard')),
   },
-
+  {
+    path: '/events',
+    permission: '',
+    title: 'Event',
+    name: 'event',
+    icon: 'info-circle',
+    showInMenu: true,
+    component: LoadableComponent(() => import('../../scenes/Event/index')),
+  },
+  {
+    path: '/bracket/:eventId',
+    permission: '',
+    title: 'bracket',
+    name: 'about',
+    icon: 'info-circle',
+    showInMenu: false,
+    component: LoadableComponent(() => import('../../scenes/Event/bracket')),
+  },
   {
     path: '/teams',
     permission: 'Pages.Roles',
@@ -130,6 +147,7 @@ export const appRouters: any = [
     showInMenu: false,
     component: LoadableComponent(() => import('../../scenes/Teams/teamPlayers')),
   },
+  
   {
     path: '/logout',
     permission: '',

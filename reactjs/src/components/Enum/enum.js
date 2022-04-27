@@ -65,3 +65,12 @@ export const positions = [
   { id: 10, name: 10 },
   { id: 11, name: 11 },
 ];
+export const eventTypes = [
+  { id: 1, name: 'Tournament' },
+  { id: 2, name: 'Series' },
+];
+
+export const tournamentTypes = [
+  { id: 1, name: 'Knock-out' },
+  { id: 2, name: 'League Based' },
+];

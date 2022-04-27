@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { render } from 'react-dom';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col,Collapse } from 'antd';
 import { Link } from 'react-router-dom';
 import { L } from '../../lib/abpUtility';
 import { useFormik } from 'formik';
@@ -13,6 +13,7 @@ import TeamService from '../../services/team/TeamService';
 import playerService from '../../services/player/playerService';
 import { matchType, eventStage } from '../../components/Enum/enum';
 import GroundService from '../../services/ground/GroundService';
+import FilterPanel from './filter-panel';
 const matchValidation = Yup.object().shape({
   team1Id: Yup.string().required('Required'),
   team2Id: Yup.string().required('Required'),
@@ -38,6 +39,7 @@ const matchInitial = {
 
 const success = Modal.success;
 const error = Modal.error;
+const { Panel } = Collapse;
 
 const Matches = () => {
   const [maxResultCount] = useState(10);
@@ -80,12 +82,21 @@ const Matches = () => {
     });
   };
 
+  const filterHandleSubmit = (event) => {
+    getAll(event);
+  };
+
   const matchFormik = useFormik({
     enableReinitialize: true,
     initialValues: matchInitial,
     validationSchema: matchValidation,
     onSubmit: handleSubmit,
   });
+
+
+  const callback = (key) => {
+    console.log(key);
+  };
 
   useEffect(() => {
     getAll();
@@ -192,18 +203,18 @@ const Matches = () => {
       title: 'Type',
       width: 250,
       dataIndex: 'matchType',
-      render: (text, item) => {
+      render: (item) => {
         // return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
-        return item && item.matchType ? matchType.filter((i) => i.id == item.matchType)[0].name : 'N/A';
+        return item ? matchType.filter((i) => i.id == item)[0].name : 'N/A';
       },
     },
     {
       title: 'Date',
       width: 250,
       dataIndex: 'date',
-      render: (text, item) => {
-        // return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
-        return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
+      render: (item) => {
+        if (item) return moment(item).format('DD MMM YYYY') || 'N/A';
+        else return 'N/A';
       },
     },
     {
@@ -245,6 +256,13 @@ const Matches = () => {
           Add
         </Button>
       </div>
+
+      <Collapse onChange={callback} style={{ marginBottom: '10px' }}>
+        <Panel header="Advance Filters" key="1">
+          <FilterPanel teams={teamList} handleSubmit={filterHandleSubmit}></FilterPanel>
+        </Panel>
+      </Collapse>
+
       <Table columns={columns} dataSource={matchList} scroll={{ x: 1500, y: 1000 }} />
 
       <CustomModal

@@ -49,11 +49,17 @@ const CustomInput = ({
           name={stateKey}
         />
       ) : type == 'multiple' ? (
-        <Select mode="multiple" style={{ width: '100%' }} placeholder="Please select" onChange={(e)=> handleChange(e, stateKey)}>
+        <Select mode="multiple" style={{ width: '100%' }} placeholder="Please select" onChange={(e) => handleChange(e, stateKey)}>
           {OptionGenerator(options)}
         </Select>
       ) : (
-        <Input type={type} onChange={(e) => handleChange(e.target.value, stateKey)} value={value || undefined} name={stateKey}></Input>
+        <Input
+          placeholder={placeholder}
+          type={type}
+          onChange={(e) => handleChange(e.target.value, stateKey)}
+          value={value || undefined}
+          name={stateKey}
+        ></Input>
       )}
     </div>
   );
