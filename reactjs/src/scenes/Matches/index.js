@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { render } from 'react-dom';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col,Collapse } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse } from 'antd';
 import { Link } from 'react-router-dom';
 import { L } from '../../lib/abpUtility';
 import { useFormik } from 'formik';
@@ -93,19 +93,18 @@ const Matches = () => {
     onSubmit: handleSubmit,
   });
 
-
   const callback = (key) => {
     console.log(key);
   };
 
   useEffect(() => {
     getAll();
+    getAllTeams();
+    getAllGrounds();
   }, []);
 
   useEffect(() => {
     if (isOpenModal) {
-      getAllTeams();
-      getAllGrounds();
       getAllPlayers();
       getAllEvents();
     }
@@ -259,7 +258,7 @@ const Matches = () => {
 
       <Collapse onChange={callback} style={{ marginBottom: '10px' }}>
         <Panel header="Advance Filters" key="1">
-          <FilterPanel teams={teamList} handleSubmit={filterHandleSubmit}></FilterPanel>
+          <FilterPanel teams={teamList} grounds={groundList} handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
 

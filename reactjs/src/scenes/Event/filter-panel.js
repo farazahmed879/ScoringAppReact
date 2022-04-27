@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Row, Col, Button, Form } from 'antd';
 import CustomInput from '../../components/Input';
-import { battingStyleOptions, bowlingStyleOptions, playingRoleOptions } from '../../components/Enum/enum';
-const FilterPanel = ({ handleSubmit = (e) => {}}) => {
+import { eventTypes } from '../../components/Enum/enum';
+const FilterPanel = ({ handleSubmit = (e) => {} }) => {
   const [filters, setFilters] = useState({
     name: '',
-    playingRole: 0,
-    battingStyle: 0,
-    bowlingStyle: 0,
+    type: 0,
+    starDate: '',
+    endDate: '',
   });
 
   const callback = (key) => {
@@ -17,9 +17,9 @@ const FilterPanel = ({ handleSubmit = (e) => {}}) => {
   const handleReset = () => {
     setFilters({
       name: '',
-      playingRole: 0,
-      battingStyle: 0,
-      bowlingStyle: 0,
+      type: 0,
+      starDate: '',
+      endDate: '',
     });
   };
 
@@ -27,7 +27,7 @@ const FilterPanel = ({ handleSubmit = (e) => {}}) => {
     setFilters({ ...filters, [key]: value });
     //playerFormik.setValues({ ...playerFormik.values, [key]: value });
   };
-  console.log("filters",filters);
+  console.log('filters', filters);
 
   return (
     <>
@@ -45,36 +45,34 @@ const FilterPanel = ({ handleSubmit = (e) => {}}) => {
         </Col>
         <Col span={12}>
           <CustomInput
-            title="Playing Role"
+            title="Type"
             type="select"
-            options={playingRoleOptions}
+            options={eventTypes}
             handleChange={filterHandleChange}
-            value={filters.playingRole}
-            stateKey="playingRole"
+            value={filters.type}
+            stateKey="type"
             placeholder=""
             errorMessage={''}
           />
         </Col>
         <Col span={12}>
           <CustomInput
-            title="Batting Style"
-            type="select"
-            options={battingStyleOptions}
+            title="Start Date"
+            type="datePicker"
             handleChange={filterHandleChange}
-            value={filters.battingStyle}
-            stateKey="battingStyle"
+            value={filters.starDate}
+            stateKey="startDate"
             placeholder=""
             errorMessage={''}
           />
         </Col>
         <Col span={12}>
           <CustomInput
-            title="Bowling Style"
-            type="select"
-            options={bowlingStyleOptions}
+            title="End Date"
+            type="datePicker"
             handleChange={filterHandleChange}
-            value={filters.bowlingStyle}
-            stateKey="bowlingStyle"
+            value={filters.endDate}
+            stateKey="endDate"
             placeholder=""
             errorMessage={''}
           />
@@ -82,7 +80,7 @@ const FilterPanel = ({ handleSubmit = (e) => {}}) => {
       </Row>
       <Row gutter={16} style={{ marginTop: '10px' }}>
         <Col span={24}>
-          <Button type="primary" htmlType="submit" onClick={()=> handleSubmit(filters)}>
+          <Button type="primary" htmlType="submit" onClick={() => handleSubmit(filters)}>
             Submit
           </Button>
           <Button htmlType="button" onClick={handleReset}>

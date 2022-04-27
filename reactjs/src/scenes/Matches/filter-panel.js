@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Row, Col, Button, Form } from 'antd';
 import CustomInput from '../../components/Input';
-import { battingStyleOptions, bowlingStyleOptions, playingRoleOptions } from '../../components/Enum/enum';
-const FilterPanel = ({ teams,  handleSubmit = (e) => {}}) => {
+import { battingStyleOptions, bowlingStyleOptions, matchType, playingRoleOptions } from '../../components/Enum/enum';
+const FilterPanel = ({ teams = [], grounds, handleSubmit = (e) => {} }) => {
   const [filters, setFilters] = useState({
-    name: '',
-    teamId: 0,
-    playingRole: 0,
-    battingStyle: 0,
-    bowlingStyle: 0,
+    team1: 0,
+    team2: 0,
+    groundId: 0,
+    type: 0,
+    date: '',
   });
 
   const callback = (key) => {
@@ -17,11 +17,11 @@ const FilterPanel = ({ teams,  handleSubmit = (e) => {}}) => {
 
   const handleReset = () => {
     setFilters({
-      name: '',
-      teamId: 0,
-      playingRole: 0,
-      battingStyle: 0,
-      bowlingStyle: 0,
+      team1: 0,
+      team2: 0,
+      groundId: 0,
+      type: 0,
+      date: '',
     });
   };
 
@@ -29,66 +29,66 @@ const FilterPanel = ({ teams,  handleSubmit = (e) => {}}) => {
     setFilters({ ...filters, [key]: value });
     //playerFormik.setValues({ ...playerFormik.values, [key]: value });
   };
-  console.log("filters",filters);
+  console.log('filters', filters);
 
   return (
     <>
       <Row gutter={16}>
         <Col span={12}>
           <CustomInput
-            title="Name"
-            type="text"
+            title="Team 2"
+            type="select"
+            options={teams.filter((i) => i.id != filters.team2)}
             handleChange={filterHandleChange}
-            value={filters.name}
-            stateKey="name"
+            value={filters.team1}
+            stateKey="team1"
             placeholder=""
             errorMessage={''}
           />
         </Col>
         <Col span={12}>
           <CustomInput
-            title="Team"
+            title="Team 2"
             type="select"
-            options={teams}
+            options={teams.filter((i) => i.id != filters.team1)}
             handleChange={filterHandleChange}
-            value={filters.teamId}
-            stateKey="teamId"
+            value={filters.team2}
+            stateKey="team2"
             placeholder=""
             errorMessage={''}
           />
         </Col>
         <Col span={12}>
           <CustomInput
-            title="Playing Role"
+            title="Ground"
             type="select"
-            options={playingRoleOptions}
+            options={grounds}
             handleChange={filterHandleChange}
-            value={filters.playingRole}
-            stateKey="playingRole"
+            value={filters.groundId}
+            stateKey="groundId"
             placeholder=""
             errorMessage={''}
           />
         </Col>
         <Col span={12}>
           <CustomInput
-            title="Batting Style"
+            title="Match Type"
             type="select"
-            options={battingStyleOptions}
+            options={matchType}
             handleChange={filterHandleChange}
-            value={filters.battingStyle}
-            stateKey="battingStyle"
+            value={filters.type}
+            stateKey="type"
             placeholder=""
             errorMessage={''}
           />
         </Col>
         <Col span={12}>
           <CustomInput
-            title="Bowling Style"
-            type="select"
-            options={bowlingStyleOptions}
+            title="Date"
+            type="datePicker"
             handleChange={filterHandleChange}
-            value={filters.bowlingStyle}
-            stateKey="bowlingStyle"
+            value={filters.date}
+            stateKey="date"
             placeholder=""
             errorMessage={''}
           />
@@ -96,7 +96,7 @@ const FilterPanel = ({ teams,  handleSubmit = (e) => {}}) => {
       </Row>
       <Row gutter={16} style={{ marginTop: '10px' }}>
         <Col span={24}>
-          <Button type="primary" htmlType="submit" onClick={()=> handleSubmit(filters)}>
+          <Button type="primary" htmlType="submit" onClick={() => handleSubmit(filters)}>
             Submit
           </Button>
           <Button htmlType="button" onClick={handleReset}>

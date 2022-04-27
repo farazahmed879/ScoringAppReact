@@ -1,23 +1,17 @@
 import React, { useState } from 'react';
 import { Row, Col, Button, Form } from 'antd';
 import CustomInput from '../../components/Input';
-import { battingStyleOptions, bowlingStyleOptions, playingRoleOptions } from '../../components/Enum/enum';
+import { teamTypeOptions } from '../../components/Enum/enum';
 const FilterPanel = ({ teams,  handleSubmit = (e) => {}}) => {
   const [filters, setFilters] = useState({
     name: '',
-    teamId: 0,
-    playingRole: 0,
-    battingStyle: 0,
-    bowlingStyle: 0,
+    type: 0
   });
 
   const handleReset = () => {
     setFilters({
       name: '',
-      teamId: 0,
-      playingRole: 0,
-      battingStyle: 0,
-      bowlingStyle: 0,
+      type: 0,
     });
   };
 
@@ -43,48 +37,12 @@ const FilterPanel = ({ teams,  handleSubmit = (e) => {}}) => {
         </Col>
         <Col span={12}>
           <CustomInput
-            title="Team"
+            title="Type"
             type="select"
-            options={teams}
+            options={teamTypeOptions}
             handleChange={filterHandleChange}
-            value={filters.teamId}
-            stateKey="teamId"
-            placeholder=""
-            errorMessage={''}
-          />
-        </Col>
-        <Col span={12}>
-          <CustomInput
-            title="Playing Role"
-            type="select"
-            options={playingRoleOptions}
-            handleChange={filterHandleChange}
-            value={filters.playingRole}
-            stateKey="playingRole"
-            placeholder=""
-            errorMessage={''}
-          />
-        </Col>
-        <Col span={12}>
-          <CustomInput
-            title="Batting Style"
-            type="select"
-            options={battingStyleOptions}
-            handleChange={filterHandleChange}
-            value={filters.battingStyle}
-            stateKey="battingStyle"
-            placeholder=""
-            errorMessage={''}
-          />
-        </Col>
-        <Col span={12}>
-          <CustomInput
-            title="Bowling Style"
-            type="select"
-            options={bowlingStyleOptions}
-            handleChange={filterHandleChange}
-            value={filters.bowlingStyle}
-            stateKey="bowlingStyle"
+            value={filters.type}
+            stateKey="type"
             placeholder=""
             errorMessage={''}
           />

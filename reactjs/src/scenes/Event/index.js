@@ -47,6 +47,7 @@ const Player = () => {
   };
 
   const filterHandleSubmit = (event) => {
+    debugger
     getAll(event);
   };
 
