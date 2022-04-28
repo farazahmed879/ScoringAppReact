@@ -1,6 +1,5 @@
 import http from '../httpService';
 import { GroundDto } from './dto/EventDto';
-import { PagedEventResultRequestDto } from './dto/PagedEventResultRequestDto';
 
 class EventService {
   public async createOrUpdate(createRoleInput: any) {
@@ -8,12 +7,12 @@ class EventService {
     return result.data.result;
   }
 
-  public async delete( id: Number) {
+  public async delete(id: number) {
     let result = await http.delete(`api/services/app/Event/Delete?id=${id}`);
     return result.data;
   }
 
-  public async getById(id: Number): Promise<GroundDto> {
+  public async getById(id: number): Promise<GroundDto> {
     let result = await http.get(`api/services/app/Event/getById?id=${id}`);
     return result.data;
   }
@@ -23,7 +22,7 @@ class EventService {
     return result.data.result;
   }
 
-  public async getPaginatedAll(pagedFilterAndSortedRequest: PagedEventResultRequestDto) {
+  public async getPaginatedAll(pagedFilterAndSortedRequest: any) {
     let result = await http.get('/api/services/app/Event/GetPaginatedAll', { params: pagedFilterAndSortedRequest });
     return result.data.result;
   }

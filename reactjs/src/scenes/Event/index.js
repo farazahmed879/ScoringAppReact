@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col,Collapse } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse } from 'antd';
 import { useFormik } from 'formik';
 import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -47,7 +47,7 @@ const Player = () => {
   };
 
   const filterHandleSubmit = (event) => {
-    debugger
+    debugger;
     getAll(event);
   };
 
@@ -82,16 +82,25 @@ const Player = () => {
     getAll();
   }, []);
 
-  const getAll = () => {
-    eventService.getPaginatedAll({ maxResultCount: maxResultCount, skipCount: skipCount, name: filter }).then((res) => {
-      console.log('Players', res.items);
-      setEventList(
-        res.items.map((r) => ({
-          ...r,
-          key: r.id,
-        }))
-      );
-    });
+  const getAll = (filter) => {
+    eventService
+      .getPaginatedAll({
+        maxResultCount: maxResultCount,
+        skipCount: filter ? 0 : skipCount,
+        name: filter ? filter.name : undefined,
+        type: filter ? filter.type : undefined,
+        startDate: filter && filter.startDate ? moment(filter.startDate).valueOf() : undefined,
+        endDate: filter && filter.endDate ? moment(filter.endDate).valueOf() : undefined,
+      })
+      .then((res) => {
+        console.log('Events', res.items);
+        setEventList(
+          res.items.map((r) => ({
+            ...r,
+            key: r.id,
+          }))
+        );
+      });
     //
   };
 

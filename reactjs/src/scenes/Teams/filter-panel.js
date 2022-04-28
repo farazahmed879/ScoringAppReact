@@ -5,14 +5,15 @@ import { teamTypeOptions } from '../../components/Enum/enum';
 const FilterPanel = ({ teams,  handleSubmit = (e) => {}}) => {
   const [filters, setFilters] = useState({
     name: '',
-    type: 0
+    type: null
   });
 
   const handleReset = () => {
     setFilters({
       name: '',
-      type: 0,
+      type: null
     });
+    handleSubmit(undefined);
   };
 
   const filterHandleChange = (value, key) => {

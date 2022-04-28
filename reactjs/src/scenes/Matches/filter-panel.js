@@ -4,10 +4,10 @@ import CustomInput from '../../components/Input';
 import { battingStyleOptions, bowlingStyleOptions, matchType, playingRoleOptions } from '../../components/Enum/enum';
 const FilterPanel = ({ teams = [], grounds, handleSubmit = (e) => {} }) => {
   const [filters, setFilters] = useState({
-    team1: 0,
-    team2: 0,
-    groundId: 0,
-    type: 0,
+    team1: null,
+    team2: null,
+    groundId: null,
+    type: null,
     date: '',
   });
 
@@ -17,12 +17,13 @@ const FilterPanel = ({ teams = [], grounds, handleSubmit = (e) => {} }) => {
 
   const handleReset = () => {
     setFilters({
-      team1: 0,
-      team2: 0,
-      groundId: 0,
-      type: 0,
+      team1: null,
+      team2: null,
+      groundId: null,
+      type: null,
       date: '',
     });
+    handleSubmit();
   };
 
   const filterHandleChange = (value, key) => {

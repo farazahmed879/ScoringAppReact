@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload, Row, Col,Collapse } from 'antd';
+import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload, Row, Col, Collapse } from 'antd';
 import { Link } from 'react-router-dom';
 import { L } from '../../lib/abpUtility';
 import TeamService from '../../services/team/TeamService';
@@ -14,6 +14,18 @@ const Team = () => {
   const success = Modal.success;
   const error = Modal.error;
   const { Panel } = Collapse;
+
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [teamList, setTeamList] = useState([]);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+  const [mode, setModalMode] = useState('');
+  const [editTeam, setEditTeam] = useState({});
+  //const [validation, setPlayerValidation] = useState(playerValidation);
+
   let teamInitial = {
     id: 0,
     name: '',
@@ -48,26 +60,14 @@ const Team = () => {
     });
   };
 
-  const filterHandleSubmit = (event) => {
-    getAll(event);
-  };
-
   const teamValidation = Yup.object().shape({
     name: Yup.string().required('Required'),
   });
-  // const [maxResultCount] = useState(10);
-  // const [skipCount] = useState(0);
-  const [filter] = useState('');
-  const [isOpenModal, setIsOpenModal] = useState(false);
-  const [teamList, setTeamList] = useState([]);
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 10,
-    total: 0,
-  });
-  const [mode, setModalMode] = useState('');
-  const [editTeam, setEditTeam] = useState({});
-  //const [validation, setPlayerValidation] = useState(playerValidation);
+
+  const filterHandleSubmit = (event) => {
+    debugger;
+    getAll(event);
+  };
 
   const teamFormik = useFormik({
     enableReinitialize: true,
@@ -84,11 +84,13 @@ const Team = () => {
     getAll();
   }, [pagination.current]);
 
-  const getAll = () => {
+  const getAll = (filter) => {
+    debugger;
     TeamService.getPaginatedAll({
       maxResultCount: pagination.pageSize,
-      skipCount: (pagination.current - 1) * pagination.pageSize,
-      name: filter,
+      skipCount: filter ? 0 : (pagination.current - 1) * pagination.pageSize,
+      name: filter ? filter.name : undefined,
+      type: filter ? filter.type : undefined,
     }).then((res) => {
       if (res) {
         console.log('Teams', res);
@@ -105,51 +107,6 @@ const Team = () => {
       }
     });
   };
-
-  const columns = [
-    { title: 'Name', dataIndex: 'name', key: 'name', width: 250, fixed: 'left' },
-    { title: 'Contact', width: 150, dataIndex: 'contact', key: 'contact' },
-    { title: 'Place', width: 150, dataIndex: 'place', key: 'place' },
-    { title: 'Zone', width: 150, dataIndex: 'zone', key: 'zone' },
-    {
-      title: 'Type',
-      width: 150,
-      dataIndex: 'type',
-      key: 'type',
-      render: (text, item) => {
-        if (text) return teamTypeOptions.filter((i) => i.id == text)[0].name || 'N/A';
-      },
-    },
-    {
-      title: L('Actions'),
-      width: 150,
-      fixed: 'right',
-      key: 'action',
-      render: (text, item) => {
-        return (
-          <div>
-            <Dropdown
-              trigger={['click']}
-              overlay={
-                <Menu>
-                  <Menu.Item onClick={() => handleEditTeam(item)}>{L('Edit')}</Menu.Item>
-                  <Menu.Item>{L('Delete')}</Menu.Item>
-                  <Menu.Item>
-                    <Link to={'/team-player/' + item.id + '/' + item.name}>{L('Players')}</Link>
-                  </Menu.Item>
-                </Menu>
-              }
-              placement="bottomLeft"
-            >
-              <Button type="primary" icon="setting">
-                {L('Actions')}
-              </Button>
-            </Dropdown>
-          </div>
-        );
-      },
-    },
-  ];
 
   const handleChange = (value, key) => {
     teamFormik.setValues({ ...teamFormik.values, [key]: value });
@@ -199,6 +156,51 @@ const Team = () => {
   };
 
   console.log('validations', teamFormik);
+
+  const columns = [
+    { title: 'Name', dataIndex: 'name', key: 'name', width: 250, fixed: 'left' },
+    { title: 'Contact', width: 150, dataIndex: 'contact', key: 'contact' },
+    { title: 'Place', width: 150, dataIndex: 'place', key: 'place' },
+    { title: 'Zone', width: 150, dataIndex: 'zone', key: 'zone' },
+    {
+      title: 'Type',
+      width: 150,
+      dataIndex: 'type',
+      key: 'type',
+      render: (text, item) => {
+        if (text) return teamTypeOptions.filter((i) => i.id == text)[0].name || 'N/A';
+      },
+    },
+    {
+      title: L('Actions'),
+      width: 150,
+      fixed: 'right',
+      key: 'action',
+      render: (text, item) => {
+        return (
+          <div>
+            <Dropdown
+              trigger={['click']}
+              overlay={
+                <Menu>
+                  <Menu.Item onClick={() => handleEditTeam(item)}>{L('Edit')}</Menu.Item>
+                  <Menu.Item>{L('Delete')}</Menu.Item>
+                  <Menu.Item>
+                    <Link to={'/team-player/' + item.id + '/' + item.name}>{L('Players')}</Link>
+                  </Menu.Item>
+                </Menu>
+              }
+              placement="bottomLeft"
+            >
+              <Button type="primary" icon="setting">
+                {L('Actions')}
+              </Button>
+            </Dropdown>
+          </div>
+        );
+      },
+    },
+  ];
 
   return (
     <Card>

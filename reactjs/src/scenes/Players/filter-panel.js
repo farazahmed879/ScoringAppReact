@@ -5,20 +5,21 @@ import { battingStyleOptions, bowlingStyleOptions, playingRoleOptions } from '..
 const FilterPanel = ({ teams,  handleSubmit = (e) => {}}) => {
   const [filters, setFilters] = useState({
     name: '',
-    teamId: 0,
-    playingRole: 0,
-    battingStyle: 0,
-    bowlingStyle: 0,
+    teamId: null,
+    playingRole: null,
+    battingStyle: null,
+    bowlingStyle: null,
   });
 
   const handleReset = () => {
     setFilters({
       name: '',
-      teamId: 0,
-      playingRole: 0,
-      battingStyle: 0,
-      bowlingStyle: 0,
+      teamId: null,
+      playingRole: null,
+      battingStyle: null,
+      bowlingStyle: null,
     });
+    handleSubmit();
   };
 
   const filterHandleChange = (value, key) => {

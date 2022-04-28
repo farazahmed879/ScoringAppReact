@@ -1,6 +1,4 @@
 import http from '../httpService';
-//import { CreateOrUpdatePlayerDto } from './dto/CreateOrUpdatePlayerDto';
-import { PagedPlayerResultRequestDto } from './dto/PagedPlayerResultRequestDto';
 import { PlayerDto } from './dto/PlayerDto';
 
 class PlayerService {
@@ -29,7 +27,7 @@ class PlayerService {
     return result.data.result;
   }
 
-  public async getPaginatedAll(pagedFilterAndSortedRequest: PagedPlayerResultRequestDto) {
+  public async getPaginatedAll(pagedFilterAndSortedRequest: any) {
     let result = await http.get('/api/services/app/Player/GetPaginatedAll', { params: pagedFilterAndSortedRequest });
     return result.data.result;
   }

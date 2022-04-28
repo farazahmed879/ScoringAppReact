@@ -110,16 +110,26 @@ const Matches = () => {
     }
   }, [isOpenModal]);
 
-  const getAll = () => {
-    matchService.getPaginatedAll({ maxResultCount: maxResultCount, skipCount: skipCount, name: filter }).then((res) => {
-      console.log('Matches', res.items);
-      setMatchList(
-        res.items.map((r) => ({
-          ...r,
-          key: r.id,
-        }))
-      );
-    });
+  const getAll = (filter) => {
+    matchService
+      .getPaginatedAll({
+        maxResultCount: maxResultCount,
+        skipCount: filter ? 0 : skipCount,
+        team1Id: filter ? filter.team1Id : undefined,
+        team2Id: filter ? filter.team2Id : undefined,
+        type: filter ? filter.type : undefined,
+        groundId: filter ? filter.groundId : undefined,
+        date: filter && filter.date ? moment(filter.date).valueOf() : undefined,
+      })
+      .then((res) => {
+        console.log('Matches', res.items);
+        setMatchList(
+          res.items.map((r) => ({
+            ...r,
+            key: r.id,
+          }))
+        );
+      });
     //
   };
 

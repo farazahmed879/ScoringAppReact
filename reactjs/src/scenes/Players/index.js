@@ -104,16 +104,26 @@ const Player = () => {
   const filterHandleSubmit = (event) => {
     getAll(event);
   };
-  const getAll = (event) => {
-    playerService.getPaginatedAll({ maxResultCount: maxResultCount, skipCount: skipCount, name: event ? event.name : undefined }).then((res) => {
-      console.log('Players', res.items);
-      setPlayerList(
-        res.items.map((r) => ({
-          ...r,
-          key: r.id,
-        }))
-      );
-    });
+  const getAll = (filter) => {
+    playerService
+      .getPaginatedAll({
+        maxResultCount: maxResultCount,
+        skipCount: filter ? 0 : skipCount,
+        name: filter ? filter.name : undefined,
+        teamId: filter ? filter.teamId : undefined,
+        playingRole: filter ? filter.playingRole : undefined,
+        battingStyle: filter ? filter.battingStyle : undefined,
+        bowlingStyle: filter ? filter.bowlingStyle : undefined,
+      })
+      .then((res) => {
+        console.log('Players', res.items);
+        setPlayerList(
+          res.items.map((r) => ({
+            ...r,
+            key: r.id,
+          }))
+        );
+      });
     //
   };
 

@@ -5,7 +5,7 @@ import { eventTypes } from '../../components/Enum/enum';
 const FilterPanel = ({ handleSubmit = (e) => {} }) => {
   const [filters, setFilters] = useState({
     name: '',
-    type: 0,
+    type: null,
     starDate: '',
     endDate: '',
   });
@@ -17,7 +17,7 @@ const FilterPanel = ({ handleSubmit = (e) => {} }) => {
   const handleReset = () => {
     setFilters({
       name: '',
-      type: 0,
+      type: null,
       starDate: '',
       endDate: '',
     });
