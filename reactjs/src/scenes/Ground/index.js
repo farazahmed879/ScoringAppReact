@@ -21,13 +21,15 @@ const success = Modal.success;
 const error = Modal.error;
 
 const Ground = () => {
-  const [maxResultCount] = useState(10);
-  const [skipCount] = useState(0);
-  const [filter] = useState('');
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [groundList, setGroundList] = useState([]);
   const [editGround, setEditGround] = useState({});
-
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+  
   const handleSubmit = (e) => {
     // if (!groundFormik.isValid) return;
     let req = {
@@ -67,13 +69,20 @@ const Ground = () => {
     });
   };
 
+  const handleTableChange = (e) => {
+    setPagination({
+      current: e.current,
+      pageSize: e.pageSize,
+    });
+  };
+
   // useEffect(() => {
   //   if (isOpenModal) {
   //   }
   // }, [isOpenModal]);
 
   const getAll = () => {
-    groundService.getPaginatedAll({ maxResultCount: maxResultCount, skipCount: skipCount, name: filter }).then((res) => {
+    groundService.getPaginatedAll({ maxResultCount: pagination.maxResultCount, skipCount: pagination.skipCount, name: "" }).then((res) => {
       console.log('Matches', res.items);
       setGroundList(
         res.items.map((r) => ({
@@ -81,6 +90,10 @@ const Ground = () => {
           key: r.id,
         }))
       );
+      setPagination({
+        ...pagination,
+        total: res.totalCount,
+      });
     });
     //
   };
@@ -146,7 +159,7 @@ const Ground = () => {
           Add
         </Button>
       </div>
-      <Table columns={columns} dataSource={groundList} scroll={{ x: 1500, y: 1000 }} />
+      <Table pagination={pagination} columns={columns} dataSource={groundList} scroll={{ x: 1500 }} onChange={handleTableChange} />
 
       <CustomModal
         title={Object.keys(editGround).length ? 'Edit Ground' : 'Add Ground'}

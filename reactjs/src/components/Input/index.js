@@ -38,7 +38,7 @@ const CustomInput = ({
       ) : type == 'datePicker' ? (
         <DatePicker style={{ width: width }} onChange={(e) => handleChange(e, stateKey)} name={stateKey}></DatePicker>
       ) : type == 'checkbox' ? (
-        <Checkbox></Checkbox>
+        <Checkbox onChange={(e) => handleChange(e.target.checked, stateKey)} name={stateKey}></Checkbox>
       ) : type == 'switch' ? (
         <Switch
           style={{ margin: '20px' }}
@@ -64,25 +64,5 @@ const CustomInput = ({
     </div>
   );
 };
-
-// CustomInput.protoType = {
-//     children: JSX.Element,
-//     title: PropTypes.string,
-//     handleChange: PropTypes.func,
-//     value: PropTypes.string,
-//     placeHolder: PropTypes.string,
-//     type: PropTypes.string,
-//     stateKey: PropTypes.string,
-// }
-
-// CustomInput.defaultProps = {
-//     children: [],
-//     title: "title",
-//     handleChange: () => { },
-//     value: "",
-//     placeHolder: "Place Holder",
-//     type: "text",
-//     stateKey: "stateKey",
-// }
 
 export default CustomInput;

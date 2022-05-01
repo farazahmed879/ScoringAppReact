@@ -39,11 +39,8 @@ const error = Modal.error;
 const { Panel } = Collapse;
 
 const Player = () => {
-  //const [modalVisible, setModalVisible] = useState(false);
-  const [maxResultCount] = useState(10);
-  const [skipCount] = useState(0);
+
   const [isOpenModal, setIsOpenModal] = useState(false);
-  // const [player, setPlayer] = useState(playerInitial);
   const [playerList, setPlayerList] = useState([]);
   const [teamList, setTeamList] = useState([]);
   const [visible, setIsSetDrawerVisible] = useState(false);
@@ -107,8 +104,8 @@ const Player = () => {
   const getAll = (filter) => {
     playerService
       .getPaginatedAll({
-        maxResultCount: maxResultCount,
-        skipCount: filter ? 0 : skipCount,
+        maxResultCount: pagination.maxResultCount,
+        skipCount: filter ? 0 : pagination.skipCount,
         name: filter ? filter.name : undefined,
         teamId: filter ? filter.teamId : undefined,
         playingRole: filter ? filter.playingRole : undefined,
@@ -123,6 +120,10 @@ const Player = () => {
             key: r.id,
           }))
         );
+        setPagination({
+          ...pagination,
+          total: res.totalCount,
+        });
       });
     //
   };
@@ -173,6 +174,8 @@ const Player = () => {
       current: e.current,
       pageSize: e.pageSize,
     });
+
+    getAll();
   };
 
   const columns = [

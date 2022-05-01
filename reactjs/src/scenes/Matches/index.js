@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { render } from 'react-dom';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse, Divider } from 'antd';
 import { Link } from 'react-router-dom';
 import { L } from '../../lib/abpUtility';
 import { useFormik } from 'formik';
@@ -14,6 +14,7 @@ import playerService from '../../services/player/playerService';
 import { matchType, eventStage } from '../../components/Enum/enum';
 import GroundService from '../../services/ground/GroundService';
 import FilterPanel from './filter-panel';
+import EventService from '../../services/event/EventService';
 const matchValidation = Yup.object().shape({
   team1Id: Yup.string().required('Required'),
   team2Id: Yup.string().required('Required'),
@@ -42,9 +43,6 @@ const error = Modal.error;
 const { Panel } = Collapse;
 
 const Matches = () => {
-  const [maxResultCount] = useState(10);
-  const [skipCount] = useState(0);
-  const [filter] = useState('');
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [matchList, setMatchList] = useState([]);
   // const [match, setPlayer] = useState(matchInitial);
@@ -54,6 +52,11 @@ const Matches = () => {
   const [eventList, setEventList] = useState([]);
   const [editMatch, setEditMatch] = useState({});
   const [mode, setModalMode] = useState('');
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
   const handleSubmit = (e) => {
     if (!matchFormik.isValid) return;
@@ -97,11 +100,29 @@ const Matches = () => {
     console.log(key);
   };
 
+  const handleTableChange = (e) => {
+    setPagination({
+      current: e.current,
+      pageSize: e.pageSize,
+    });
+    getAll();
+  };
+
   useEffect(() => {
     getAll();
     getAllTeams();
     getAllGrounds();
   }, []);
+
+  // useEffect(() => {
+  //   getAll();
+  // }, [pagination]);
+
+  useEffect(() => {
+    if (matchFormik.values.eventId) {
+      getAllTeamsByEventId(matchFormik.values.eventId);
+    }
+  }, [matchFormik.values.eventId]);
 
   useEffect(() => {
     if (isOpenModal) {
@@ -113,8 +134,8 @@ const Matches = () => {
   const getAll = (filter) => {
     matchService
       .getPaginatedAll({
-        maxResultCount: maxResultCount,
-        skipCount: filter ? 0 : skipCount,
+        maxResultCount: pagination.maxResultCount,
+        skipCount: filter ? 0 : pagination.skipCount,
         team1Id: filter ? filter.team1Id : undefined,
         team2Id: filter ? filter.team2Id : undefined,
         type: filter ? filter.type : undefined,
@@ -129,8 +150,19 @@ const Matches = () => {
             key: r.id,
           }))
         );
+        setPagination({
+          ...pagination,
+          total: res.totalCount,
+        });
       });
     //
+  };
+
+  const getAllTeamsByEventId = (id) => {
+    TeamService.getAllEventTeams(id).then((res) => {
+      console.log('Event Teams', res);
+      setTeamList(res);
+    });
   };
 
   const getAllTeams = () => {
@@ -154,7 +186,7 @@ const Matches = () => {
     });
   };
   const getAllEvents = () => {
-    playerService.getAll().then((res) => {
+    EventService.getAll().then((res) => {
       console.log('eventList', res);
       setEventList(res);
     });
@@ -182,7 +214,7 @@ const Matches = () => {
     setIsOpenModal(true);
     setModalMode('Add Match');
   };
-
+console.log("matchFormik",matchFormik.values)
   const columns = [
     {
       title: 'Ground',
@@ -218,12 +250,16 @@ const Matches = () => {
       },
     },
     {
+      title: 'Event',
+      width: 250,
+      dataIndex: 'eventName',
+    },
+    {
       title: 'Date',
       width: 250,
       dataIndex: 'date',
       render: (item) => {
-        if (item) return moment(item).format('DD MMM YYYY') || 'N/A';
-        else return 'N/A';
+        return moment(item).format('MM/DD/YYYY');
       },
     },
     {
@@ -272,7 +308,7 @@ const Matches = () => {
         </Panel>
       </Collapse>
 
-      <Table columns={columns} dataSource={matchList} scroll={{ x: 1500, y: 1000 }} />
+      <Table pagination={pagination} columns={columns} dataSource={matchList} scroll={{ x: 1500 }} onChange={handleTableChange} />
 
       <CustomModal
         title={Object.keys(editMatch).length ? 'Edit Match' : 'Add Match'}
@@ -282,6 +318,47 @@ const Matches = () => {
         }}
       >
         <Form className="form" onSubmit={matchFormik.handleSubmit}>
+          <Row gutter={16}>
+            <Col span={8}>
+              <CustomInput
+                title="Match Type"
+                type="select"
+                options={matchType}
+                handleChange={handleChange}
+                value={matchFormik.values.matchTypeId}
+                stateKey="matchTypeId"
+                placeholder="Select Type"
+                errorMessage={matchFormik.errors.matchTypeId}
+              />
+            </Col>
+            <Col span={8}>
+              {matchFormik.values.matchTypeId == 2 ? (
+                <CustomInput
+                  title="Event"
+                  type="select"
+                  handleChange={handleChange}
+                  options={matchFormik.values.id ? eventList : eventList.filter((i) => i.eventType != 1)}
+                  value={matchFormik.values.eventId}
+                  stateKey="eventId"
+                  placeholder="Select Event"
+                />
+              ) : null}
+            </Col>
+            <Col span={8}>
+              {matchFormik.values.matchTypeId == 2 && matchFormik.values.eventId ? (
+                <CustomInput
+                  title="Event Stage"
+                  type="select"
+                  handleChange={handleChange}
+                  options={eventStage}
+                  value={matchFormik.values.eventStage}
+                  stateKey="eventStage"
+                  placeholder="Select Stage"
+                />
+              ) : null}
+            </Col>
+          </Row>
+          <Divider></Divider>
           <Row gutter={16}>
             <Col span={12}>
               <CustomInput
@@ -325,8 +402,8 @@ const Matches = () => {
                 title="Date of Match"
                 type="datePicker"
                 handleChange={handleChange}
-                value={matchFormik.values.date}
-                stateKey="datePicker"
+                value={matchFormik.values.dateOfMatch}
+                stateKey="dateOfMatch"
                 placeholder="Select Date"
               />
             </Col>
@@ -352,46 +429,6 @@ const Matches = () => {
                 stateKey="matchOvers"
                 placeholder="Optional"
               />
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={8}>
-              <CustomInput
-                title="Match Type"
-                type="select"
-                options={matchType}
-                handleChange={handleChange}
-                value={matchFormik.values.matchTypeId}
-                stateKey="matchTypeId"
-                placeholder="Select Type"
-                errorMessage={matchFormik.errors.matchTypeId}
-              />
-            </Col>
-            <Col span={8}>
-              {matchFormik.values.matchTypeId == 2 ? (
-                <CustomInput
-                  title="Event"
-                  type="select"
-                  handleChange={handleChange}
-                  options={eventList}
-                  value={matchFormik.values.eventId}
-                  stateKey="eventId"
-                  placeholder="Select Event"
-                />
-              ) : null}
-            </Col>
-            <Col span={8}>
-              {matchFormik.values.matchTypeId == 2 && matchFormik.values.eventId ? (
-                <CustomInput
-                  title="Event Stage"
-                  type="select"
-                  handleChange={handleChange}
-                  options={eventStage}
-                  value={matchFormik.values.eventStage}
-                  stateKey="eventStage"
-                  placeholder="Select Stage"
-                />
-              ) : null}
             </Col>
           </Row>
           <Row span={16}>

@@ -27,13 +27,22 @@ const Player = () => {
     numberOfGroup: 0,
   };
 
-  const [maxResultCount] = useState(10);
-  const [skipCount] = useState(0);
-  const [filter] = useState('');
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [eventList, setEventList] = useState([]);
   // const [visible, setIsSetDrawerVisible] = useState(false);
   const [editEvent, setEditEvent] = useState({});
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+
+  const handleTableChange = (e) => {
+    setPagination({
+      current: e.current,
+      pageSize: e.pageSize,
+    });
+  };
 
   const eventValidation = Yup.object().shape({
     name: Yup.string().required('Required'),
@@ -47,7 +56,6 @@ const Player = () => {
   };
 
   const filterHandleSubmit = (event) => {
-    debugger;
     getAll(event);
   };
 
@@ -85,8 +93,8 @@ const Player = () => {
   const getAll = (filter) => {
     eventService
       .getPaginatedAll({
-        maxResultCount: maxResultCount,
-        skipCount: filter ? 0 : skipCount,
+        maxResultCount: pagination.maxResultCount,
+        skipCount: filter ? 0 : pagination.skipCount,
         name: filter ? filter.name : undefined,
         type: filter ? filter.type : undefined,
         startDate: filter && filter.startDate ? moment(filter.startDate).valueOf() : undefined,
@@ -100,6 +108,10 @@ const Player = () => {
             key: r.id,
           }))
         );
+        setPagination({
+          ...pagination,
+          total: res.totalCount,
+        });
       });
     //
   };
@@ -109,6 +121,7 @@ const Player = () => {
   };
 
   const handleChange = (value, key) => {
+
     eventFormik.setValues({ ...eventFormik.values, [key]: value });
   };
 
@@ -159,10 +172,13 @@ const Player = () => {
       dataIndex: 'eventType',
       key: 'eventType',
       fixed: 'left',
-      render: (item) => {
+      render: (text, item) => {
         console.log('Event Type', item);
-        if (item) return eventTypes.filter((i) => i.id == item)[0].name || 'N/A';
-        else return 'N/A';
+        let event = 'N/A',
+          tournament = 'N/A';
+        if (text > 0) event = eventTypes.filter((i) => i.id == text)[0].name || 'N/A';
+        if (item.tournamentType > 0) tournament = tournamentTypes.filter((k) => k.id == item.tournamentType)[0].name || 'N/A';
+        return `${event} -- ${tournament}`;
       },
     },
     {
@@ -208,8 +224,7 @@ const Player = () => {
           <FilterPanel handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
-      <Table columns={columns} dataSource={eventList} scroll={{ x: 1500, y: 1000 }} />
-
+      <Table pagination={pagination} columns={columns} dataSource={eventList} scroll={{ x: 1500}} onChange={handleTableChange} />
       <CustomModal
         title={Object.keys(editEvent).length ? 'Edit Event' : 'Add Event'}
         isModalVisible={isOpenModal}

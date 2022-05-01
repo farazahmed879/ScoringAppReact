@@ -65,7 +65,6 @@ const Team = () => {
   });
 
   const filterHandleSubmit = (event) => {
-    debugger;
     getAll(event);
   };
 
@@ -85,7 +84,6 @@ const Team = () => {
   }, [pagination.current]);
 
   const getAll = (filter) => {
-    debugger;
     TeamService.getPaginatedAll({
       maxResultCount: pagination.pageSize,
       skipCount: filter ? 0 : (pagination.current - 1) * pagination.pageSize,
