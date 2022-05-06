@@ -50,7 +50,7 @@ export const appRouters: any = [
     component: LoadableComponent(() => import('../../scenes/Event/index')),
   },
   {
-    path: '/bracket/:eventId',
+    path: '/bracket/:event/:eventId',
     permission: '',
     title: 'bracket',
     name: 'about',

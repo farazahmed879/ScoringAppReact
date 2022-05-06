@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Row, Col, Tooltip, Empty, Icon, Badge } from 'antd';
+import { useParams } from 'react-router-dom';
+import { Button, Card, Row, Col, Tooltip, Empty, Icon, Badge, Modal } from 'antd';
 import { truncateText } from '../../helper/helper';
+import { useFormik } from 'formik';
 import './style.css';
 import moment from 'moment';
 import CreateOrUpdateKnockOutMatch from './createOrUpdateKnockOutMatch';
+import matchService from '../../services/match/matchService';
+import playerService from '../../services/player/playerService';
+import EventService from '../../services/event/EventService';
+import TeamService from '../../services/team/TeamService';
+import GroundService from '../../services/ground/GroundService';
 import * as Yup from 'yup';
+import AppConsts from '../../lib/appconst';
 
 const hr1 = {
   width: '100%',
@@ -26,10 +34,21 @@ const column = {
   alignItems: 'center',
 };
 
-const ViewBracket1 = ({ formikData }) => {
+const success = Modal.success;
+const error = Modal.error;
+
+const ViewBracket1 = ({ formikData,event }) => {
   console.log('viewBracketsFormik', formikData);
   const [column1Teams, setColumn1Teams] = useState([]);
   const [column2Teams, setColumn2Teams] = useState([]);
+
+  //editMatch
+  const [playerList, setPlayerList] = useState([]);
+  const [teamList, setTeamList] = useState([]);
+  const [groundList, setGroundList] = useState([]);
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [editMatch, setEditMatch] = useState({});
+  const param = useParams();
   const arr = [4, 8, 16, 32, 64, 128];
 
   let column1 = [];
@@ -62,15 +81,38 @@ const ViewBracket1 = ({ formikData }) => {
     return matches && matches[index] && matches[index][index2];
   };
 
-  const checkConditionDate = (matches, index, index2) => {
-    if (matches && matches[index] && matches[index][index2] && matches[index][index2].id) {
-      return matches[index][index2].dateOfMatch ? (
-        <Badge count={moment(matches[index][index2].dateOfMatch).format('MM/DD/YYYY')} style={{ backgroundColor: '#52c41a' }}></Badge>
-      ) : (
-        <Badge count={'Schedule'} style={{ backgroundColor: 'orange' }}></Badge>
+  const createBadge = (data) => {
+    if (data) {
+      if (data.id) {
+        return data.dateOfMatch ? (
+          <Badge
+            count={moment(data.dateOfMatch).format('MM/DD/YYYY')}
+            style={{ backgroundColor: '#52c41a', cursor: 'pointer' }}
+            onClick={() => viewMatchModal(data)}
+          ></Badge>
+        ) : (
+          <Tooltip title={'Date Missing'}>
+            <Badge count={'Schedule'} style={{ backgroundColor: 'orange', cursor: 'pointer' }} onClick={() => viewMatchModal(data)}></Badge>
+          </Tooltip>
+        );
+      }
+      return (
+        <Tooltip title={'Create Match'}>
+          <Badge count={'?'} onClick={() => viewMatchModal(data || null)} style={{ cursor: 'pointer' }} />
+        </Tooltip>
+      );
+    } else {
+      return (
+        <Tooltip title={'N/A'}>
+          <Badge count={'N/A'} style={{ cursor: 'pointer' }} />
+        </Tooltip>
       );
     }
-    return <Badge count={109} />;
+  };
+
+  const checkConditionDate = (matches, index, index2) => {
+    let data = matches && matches[index] && matches[index][index2] ? matches[index][index2] : null;
+    return createBadge(data);
   };
 
   const generateUperBar = (index) => {
@@ -153,6 +195,7 @@ const ViewBracket1 = ({ formikData }) => {
     team1Id: Yup.string().required('Required'),
     team2Id: Yup.string().required('Required'),
     matchTypeId: Yup.string().required('Required'),
+    dateOfMatch: Yup.string().required('Required'),
   });
 
   const matchInitial = {
@@ -195,10 +238,13 @@ const ViewBracket1 = ({ formikData }) => {
     matchService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);
-      getAll();
+    //  createBadge()
     });
   };
 
+  const handleCancel = (e) => {
+    setIsOpenModal(e);
+  };
 
   const matchFormik = useFormik({
     enableReinitialize: true,
@@ -206,6 +252,65 @@ const ViewBracket1 = ({ formikData }) => {
     validationSchema: matchValidation,
     onSubmit: handleSubmit,
   });
+
+  const handleEditMatch = (id) => {
+    setIsOpenModal(true);
+    matchService.EditEventMatch(id).then((res) => {
+      if (res) {
+        setEditMatch(res);
+        matchFormik.setValues({
+          ...matchFormik.values,
+          ...res,
+        });
+      }
+    });
+  };
+
+  const getAllPlayersByMatchId = (id) => {
+    playerService.getAllByMatchId(id).then((res) => {
+      console.log('Players', res);
+      setPlayerList(res);
+    });
+  };
+
+  const getMatchTeams = (id) => {
+    TeamService.getMatchTeams(id).then((res) => {
+      console.log('Event Teams', res);
+      setTeamList(res);
+    });
+  };
+
+  const getAllGrounds = () => {
+    GroundService.getAll().then((res) => {
+      console.log('Grounds', res);
+      setGroundList(res);
+    });
+  };
+
+  const viewMatchModal = (match) => {
+    if (!match) return;
+    if (match.id) {
+      handleEditMatch(match.id);
+      //getMatchTeams(match.id);
+      getAllPlayersByMatchId(match.id);
+      getAllGrounds();
+    } else {
+      match.matchTypeId = AppConsts.tournament;
+      match.eventId = param.eventId;
+      match.eventStage = 2;
+      match.event = event;
+      matchFormik.setValues({
+        ...matchFormik.values,
+        ...match,
+      });
+    }
+    var teams = [];
+    debugger;
+    teams.push({ id: match.team1Id, name: match.team1 }, { id: match.team2Id, name: match.team2 });
+    setTeamList(teams);
+    getAllGrounds();
+    setIsOpenModal(true);
+  };
 
   return (
     <Card>
@@ -220,9 +325,17 @@ const ViewBracket1 = ({ formikData }) => {
       ) : (
         <Empty />
       )}
-      <CreateOrUpdateKnockOutMatch matchFormik={matchFormik}></CreateOrUpdateKnockOutMatch>
+      {!isOpenModal || (
+        <CreateOrUpdateKnockOutMatch
+          matchFormik={matchFormik}
+          handleCancel={handleCancel}
+          editMatch={editMatch}
+          teamList={teamList}
+          playerList={playerList}
+          groundList={groundList}
+        ></CreateOrUpdateKnockOutMatch>
+      )}
     </Card>
-    
   );
 };
 

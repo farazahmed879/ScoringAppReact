@@ -39,6 +39,11 @@ class TeamService {
     let result = await http.get(`/api/services/app/Team/GetAllTeamsByEventId?id=${eventId}`);
     return result.data.result;
   }
+
+  public async getMatchTeams(matchId: number) {
+    let result = await http.get(`/api/services/app/Team/GetAllTeamsByMatchId?id=${matchId}`);
+    return result.data.result;
+  }
 }
 
 export default new TeamService();

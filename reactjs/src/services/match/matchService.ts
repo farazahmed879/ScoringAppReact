@@ -16,6 +16,11 @@ class MatchService {
     return result.data.result;
   }
 
+  public async EditEventMatch(matchId: Number): Promise<any> {
+    let result = await http.post(`/api/services/app/Match/EditEventMatch?id=${matchId}`);
+    return result.data.result;
+  }
+
   public async getAll() {
     let result = await http.get('/api/services/app/Match/GetAll');
     return result.data.result;

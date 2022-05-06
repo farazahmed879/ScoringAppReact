@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Modal, Row, Col, Radio, Transfer, Descriptions, Tabs } from 'antd';
-import { Link, useParams } from 'react-router-dom';
+import { Button, Card, Modal, Row, Col, Radio, Transfer, Descriptions, Tabs, PageHeader } from 'antd';
+import { Link, useParams, useHistory } from 'react-router-dom';
 import CustomInput from '../../components/Input';
 import TeamService from '../../services/team/TeamService';
 import EventService from '../../services/event/EventService';
@@ -17,14 +17,13 @@ const Bracket = () => {
   const [viewBracket, setViewBracket] = useState(false);
   //const [selectedTeamList, setSelectedTeamList] = useState([]);
   const param = useParams();
+  const history = useHistory();
   const arr = [4, 8, 16, 32, 64, 128];
   const bracketInitial = {
-    radio: 1,
     noOfTeams: 0,
     selectedTeams: [],
     mockData: [],
-    //stage2Teams: [],
-    isCreateMatch: false,
+    isCreateMatch: true,
     matches: [],
   };
 
@@ -51,17 +50,13 @@ const Bracket = () => {
 
   const getAllMatchesByEventId = (teams, eventTeams) => {
     MatchService.getAllMatchesByEventId(param.eventId).then((res) => {
-      //getTeamsOfStage(teams,eventTeams,res);
       getMock(teams, eventTeams, res);
-    //  console.log(JSON.stringify(res));
     });
   };
 
   const getTeamsOfStage = (teams, eventTeams, matches) => {
     MatchService.getTeamsOfStage(param.eventId).then((res) => {
-     // console.log('Stage Teams', res);
       getMock(teams, eventTeams, res, matches);
-      //getMock(teams, res);
     });
   };
 
@@ -135,46 +130,16 @@ const Bracket = () => {
   };
   return (
     <Card>
+      <PageHeader
+        style={{
+          border: '1px solid rgb(235, 237, 240)',
+        }}
+        onBack={history.goBack}
+        title={param.event}
+      />
       <Tabs tabPosition={'top'}>
         <TabPane tab="Bracket Details" key="1">
           <div>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Radio.Group onChange={(e) => handleChange(e.target.value, 'radio')} value={bracketFormik.values.radio}>
-                  <Radio style={radioStyle} value={1}>
-                    Yes, I will enter them below
-                  </Radio>
-                  <Radio style={radioStyle} value={2}>
-                    No, I want a blank bracket
-                  </Radio>
-                </Radio.Group>
-              </Col>
-            </Row>
-            <Row gutter={16}>
-              <Col span={12}>
-                <CustomInput
-                  type="text"
-                  handleChange={handleChange}
-                  value={bracketFormik.values.noOfTeams}
-                  stateKey="name"
-                  placeholder="No of Teams"
-                  errorMessage={bracketFormik.errors.noOfTeams}
-                />
-              </Col>
-            </Row>
-            {bracketFormik.values.radio == 1 ? (
-              <Row gutter={16}>
-                <Col span={12}>
-                  <CustomInput
-                    title="I want to create all matches Automatically"
-                    type="checkbox"
-                    handleChange={handleChange}
-                    value={bracketFormik.values.isCreateMatch}
-                    stateKey="isCreateMatch"
-                  />
-                </Col>
-              </Row>
-            ) : null}
             {bracketFormik.values.radio == 1 ? (
               <div style={{ marginTop: '24px', padding: '10px' }}>
                 <Descriptions title="How-To">
@@ -223,7 +188,7 @@ const Bracket = () => {
           </div>
         </TabPane>
         <TabPane tab="View Bracket" key="2">
-          <ViewBracket1 formikData={bracketFormik.values} />
+          <ViewBracket1 formikData={bracketFormik.values} event={param.event} />
         </TabPane>
       </Tabs>
     </Card>

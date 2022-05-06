@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Input from 'antd/lib/input';
 //import PropTypes from 'prop-types';
-import { Checkbox, DatePicker, Select, Switch, Icon } from 'antd';
+import { Checkbox, DatePicker, Select, Switch, Icon,disabled } from 'antd';
 const { Option } = Select;
 const OptionGenerator = (data) =>
   data.map((e, index) => (
@@ -20,6 +20,7 @@ const CustomInput = ({
   type = 'text',
   errorMessage = '',
   width = '100%',
+  disabled = false
 }) => {
   return (
     <div style={{ width: width }}>
@@ -27,6 +28,7 @@ const CustomInput = ({
       {type == 'select' ? (
         <Select
           showSearch
+          disabled={disabled}
           placeholder={placeholder}
           value={value || undefined}
           style={{ width: width }}
@@ -49,7 +51,7 @@ const CustomInput = ({
           name={stateKey}
         />
       ) : type == 'multiple' ? (
-        <Select mode="multiple" style={{ width: '100%' }} placeholder="Please select" onChange={(e) => handleChange(e, stateKey)}>
+        <Select disabled={disabled} mode="multiple" style={{ width: '100%' }} placeholder="Please select" onChange={(e) => handleChange(e, stateKey)}>
           {OptionGenerator(options)}
         </Select>
       ) : (
@@ -59,6 +61,7 @@ const CustomInput = ({
           onChange={(e) => handleChange(e.target.value, stateKey)}
           value={value || undefined}
           name={stateKey}
+          readOnly={disabled}
         ></Input>
       )}
     </div>

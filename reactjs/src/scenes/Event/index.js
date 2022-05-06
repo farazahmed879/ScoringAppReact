@@ -121,7 +121,6 @@ const Player = () => {
   };
 
   const handleChange = (value, key) => {
-
     eventFormik.setValues({ ...eventFormik.values, [key]: value });
   };
 
@@ -173,7 +172,6 @@ const Player = () => {
       key: 'eventType',
       fixed: 'left',
       render: (text, item) => {
-        console.log('Event Type', item);
         let event = 'N/A',
           tournament = 'N/A';
         if (text > 0) event = eventTypes.filter((i) => i.id == text)[0].name || 'N/A';
@@ -196,7 +194,7 @@ const Player = () => {
                 <Menu.Item>{L('Delete')}</Menu.Item>
                 {item.eventType == 1 && item.tournamentType == 1 ? (
                   <Menu.Item>
-                    <Link to={'/bracket/' + item.id}>{L('Fixture Generator')}</Link>
+                    <Link to={'/bracket/' + item.name + '/' + item.id}>{L('Fixture Generator')}</Link>
                   </Menu.Item>
                 ) : null}
               </Menu>
@@ -224,7 +222,7 @@ const Player = () => {
           <FilterPanel handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
-      <Table pagination={pagination} columns={columns} dataSource={eventList} scroll={{ x: 1500}} onChange={handleTableChange} />
+      <Table pagination={pagination} columns={columns} dataSource={eventList} scroll={{ x: 1500 }} onChange={handleTableChange} />
       <CustomModal
         title={Object.keys(editEvent).length ? 'Edit Event' : 'Add Event'}
         isModalVisible={isOpenModal}

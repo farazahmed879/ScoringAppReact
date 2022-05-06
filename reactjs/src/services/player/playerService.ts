@@ -27,6 +27,11 @@ class PlayerService {
     return result.data.result;
   }
 
+  public async getAllByMatchId(matchId: number) {
+    let result = await http.get(`/api/services/app/Player/GetAllByMatchId?teamId=${matchId}`);
+    return result.data.result;
+  }
+
   public async getPaginatedAll(pagedFilterAndSortedRequest: any) {
     let result = await http.get('/api/services/app/Player/GetPaginatedAll', { params: pagedFilterAndSortedRequest });
     return result.data.result;

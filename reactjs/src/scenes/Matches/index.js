@@ -199,7 +199,7 @@ const Matches = () => {
   const handleEditMatch = (item) => {
     setIsOpenModal(true);
     setModalMode('Edit Match');
-    matchService.getMatchById(item.id).then((res) => {
+    matchService.EditEventMatch(item.id).then((res) => {
       if (res) {
         setEditMatch(res);
         matchFormik.setValues({

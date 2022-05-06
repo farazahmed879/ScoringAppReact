@@ -2,19 +2,28 @@ import React, { useEffect, useState } from 'react';
 import { Button, Form, Row, Col, Divider } from 'antd';
 import CustomModal from '../../components/Modal';
 import { matchType, eventStage } from '../../components/Enum/enum';
+import CustomInput from '../../components/Input';
 
-const CreateOrUpdateKnockOutMatch = ({ matchFormik,isOpenModal,editMatch }) => {
+const CreateOrUpdateKnockOutMatch = ({
+  matchFormik,
+  isOpenModal,
+  editMatch,
+  handleCancel = (e) => {},
+  teamList = [],
+  playerList = [],
+  groundList = [],
+  handleSubmit = (e) => {},
+}) => {
+  console.log('teamList', teamList);
+  console.log('playerList', playerList);
   const handleChange = (value, key) => {
     matchFormik.setValues({ ...matchFormik.values, [key]: value });
   };
-
   return (
     <CustomModal
       title={Object.keys(editMatch).length ? 'Edit Match' : 'Add Match'}
       isModalVisible={isOpenModal}
-      handleCancel={() => {
-        setIsOpenModal(false);
-      }}
+      handleCancel={() => handleCancel(false)}
     >
       <Form className="form" onSubmit={matchFormik.handleSubmit}>
         <Row gutter={16}>
@@ -22,6 +31,7 @@ const CreateOrUpdateKnockOutMatch = ({ matchFormik,isOpenModal,editMatch }) => {
             <CustomInput
               title="Match Type"
               type="select"
+              disabled={true}
               options={matchType}
               handleChange={handleChange}
               value={matchFormik.values.matchTypeId}
@@ -34,10 +44,10 @@ const CreateOrUpdateKnockOutMatch = ({ matchFormik,isOpenModal,editMatch }) => {
             {matchFormik.values.matchTypeId == 2 ? (
               <CustomInput
                 title="Event"
-                type="select"
+                type="text"
+                disabled={true}
                 handleChange={handleChange}
-                options={matchFormik.values.id ? eventList : eventList.filter((i) => i.eventType != 1)}
-                value={matchFormik.values.eventId}
+                value={matchFormik.values.event}
                 stateKey="eventId"
                 placeholder="Select Event"
               />
@@ -48,6 +58,7 @@ const CreateOrUpdateKnockOutMatch = ({ matchFormik,isOpenModal,editMatch }) => {
               <CustomInput
                 title="Event Stage"
                 type="select"
+                disabled={true}
                 handleChange={handleChange}
                 options={eventStage}
                 value={matchFormik.values.eventStage}
@@ -62,10 +73,10 @@ const CreateOrUpdateKnockOutMatch = ({ matchFormik,isOpenModal,editMatch }) => {
           <Col span={12}>
             <CustomInput
               title="Team 1"
-              type="select"
-              options={teamList.filter((i) => i.id != matchFormik.values.team2Id)}
+              type="text"
+              disabled={true}
               handleChange={handleChange}
-              value={matchFormik.values.team1Id}
+              value={matchFormik.values.team1}
               stateKey="team1Id"
               placeholder="Select Team"
               errorMessage={matchFormik.errors.team1Id}
@@ -74,10 +85,10 @@ const CreateOrUpdateKnockOutMatch = ({ matchFormik,isOpenModal,editMatch }) => {
           <Col span={12}>
             <CustomInput
               title="Team 2"
-              type="select"
-              options={teamList.filter((i) => i.id != matchFormik.values.team1Id)}
+              type="text"
+              readonly=""
               handleChange={handleChange}
-              value={matchFormik.values.team2Id}
+              value={matchFormik.values.team2}
               stateKey="team2Id"
               placeholder="Select Team"
               errorMessage={matchFormik.errors.team2Id}
@@ -137,24 +148,26 @@ const CreateOrUpdateKnockOutMatch = ({ matchFormik,isOpenModal,editMatch }) => {
                 title="Toss Winning Team"
                 type="select"
                 handleChange={handleChange}
-                options={teamList.filter((i) => i.id == matchFormik.values.team1Id || i.id == matchFormik.values.team2Id)}
+                options={teamList}
                 value={matchFormik.values.tossWinningTeam}
                 stateKey="tossWinningTeam"
                 placeholder="Select Team"
               />
             ) : null}
           </Col>
-          <Col gutter={8}>
-            <CustomInput
-              title="Player Of the Match"
-              type="select"
-              handleChange={handleChange}
-              options={playerList}
-              value={matchFormik.values.playerOTM}
-              stateKey="playerOTM"
-              placeholder="Man of the match"
-            />
-          </Col>
+          {Object.keys(editMatch).length ? (
+            <Col gutter={8}>
+              <CustomInput
+                title="Player Of the Match"
+                type="select"
+                options={playerList}
+                handleChange={handleChange}
+                value={matchFormik.values.playerOTM}
+                stateKey="playerOTM"
+                placeholder="Man of the match"
+              />
+            </Col>
+          ) : null}
         </Row>
         <Row span={16}>
           <CustomInput
@@ -168,10 +181,10 @@ const CreateOrUpdateKnockOutMatch = ({ matchFormik,isOpenModal,editMatch }) => {
         </Row>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" disabled={!matchFormik.isValid} onClick={matchFormik.handleSubmit}>
-            {mode == 'Add Match' ? 'Add' : 'Update'}
+          <Button type="primary" htmlType="submit" disabled={!matchFormik.isValid} onClick={() => handleSubmit(matchFormik.handleSubmit)}>
+            {Object.keys(editMatch).length ? 'Save' : 'Create'}
           </Button>
-          <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
+          <Button htmlType="button" onClick={() => handleCancel(false)}>
             Cancel
           </Button>
         </Form.Item>
