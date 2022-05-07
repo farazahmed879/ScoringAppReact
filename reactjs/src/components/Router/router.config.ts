@@ -139,6 +139,25 @@ export const appRouters: any = [
     component: LoadableComponent(() => import('../../scenes/About')),
   },
   {
+    path: '/statistics',
+    permission: '',
+    title: 'Statistics',
+    name: 'statistics',
+    icon: 'info-circle',
+    showInMenu: true,
+    component: LoadableComponent(() => import('../../scenes/statistics/stats-dashboard')),
+  },
+
+  {
+    path: '/statistics/mostRuns',
+    permission: '',
+    title: 'MostRuns',
+    name: 'mostRuns',
+    icon: 'info-circle',
+    showInMenu: true,
+    component: LoadableComponent(() => import('../../scenes/statistics/most-runs')),
+  },
+  {
     path: '/team-player/:teamId/:teamName',
     permission: '',
     title: 'Team Players',

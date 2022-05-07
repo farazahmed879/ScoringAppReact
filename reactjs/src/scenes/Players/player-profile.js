@@ -3,8 +3,7 @@ import { Col, Row, Drawer, Divider, Card, Tabs, Icon, Collapse } from 'antd';
 import './style.css';
 const { TabPane } = Tabs;
 const { Panel } = Collapse;
-const PlayerProfile = ({ visible = false, onClose }) => {
-  const [stats, setStats] = useState({});
+const PlayerProfile = ({ visible = false, onClose, stats }) => {
   const { Meta } = Card;
   const pStyle = {
     fontSize: 16,
@@ -13,6 +12,8 @@ const PlayerProfile = ({ visible = false, onClose }) => {
     display: 'block',
     marginBottom: 16,
   };
+
+  console.log('stats', stats);
 
   const callback = (key) => {
     console.log(key);
@@ -30,10 +31,11 @@ const PlayerProfile = ({ visible = false, onClose }) => {
           </Col>
           <Col span={16}>
             <ul>
-              <li>Faraz Ahmed Shaikh</li>
+              <li>{stats.playerName}</li>
               <li>Gulzar Cricket Club</li>
-              <li>Right Handed Batsman</li>
-              <li>Right Arm Leg Spin</li>
+              <li>{stats.battingStyle}</li>
+              <li>{stats.bowlingStyle}</li>
+              <li>{stats.playerRole}</li>
             </ul>
           </Col>
         </Row>
@@ -68,17 +70,17 @@ const PlayerProfile = ({ visible = false, onClose }) => {
                       <th>6s</th>
                     </tr>
                     <tr>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
+                      <td>{stats.totalMatch}</td>
+                      <td>{stats.totalInnings}</td>
+                      <td>{stats.totalBatRuns}</td>
+                      <td>{stats.totalBatBalls}</td>
+                      <td>{stats.numberOf50s}</td>
+                      <td>{stats.numberOf100s}</td>
+                      <td>{stats.battingAverage || 'N/A'}</td>
+                      <td>{stats.strikeRate}</td>
+                      <td>{stats.hightScore}</td>
+                      <td>{stats.totalFours}</td>
+                      <td>{stats.totalSixes}</td>
                     </tr>
                   </table>
                 </Col>
@@ -99,14 +101,14 @@ const PlayerProfile = ({ visible = false, onClose }) => {
                       <th>BBI</th>
                     </tr>
                     <tr>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
+                      <td>{stats.totalOvers}</td>
+                      <td>{stats.totalWickets}</td>
+                      <td>{stats.totalBallRuns}</td>
+                      <td>{stats.fiveWickets}</td>
+                      <td>{stats.totalMaidens}</td>
+                      <td>{stats.bowlingAvg}</td>
+                      <td>{stats.economy}</td>
+                      <td>{stats.bestBowlingFigureRuns}</td>
                     </tr>
                   </table>
                 </Col>
@@ -122,9 +124,9 @@ const PlayerProfile = ({ visible = false, onClose }) => {
                       <th>Run Out</th>
                     </tr>
                     <tr>
-                      <td>10</td>
-                      <td>10</td>
-                      <td>10</td>
+                      <td>{stats.onFieldCatch}</td>
+                      <td>{stats.onFieldStump}</td>
+                      <td>{stats.onFieldRunOut}</td>
                     </tr>
                   </table>
                 </Col>

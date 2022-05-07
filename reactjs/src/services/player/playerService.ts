@@ -36,6 +36,11 @@ class PlayerService {
     let result = await http.get('/api/services/app/Player/GetPaginatedAll', { params: pagedFilterAndSortedRequest });
     return result.data.result;
   }
+
+  public async playerStatistics(data: any) {
+    let result = await http.post(`/api/services/app/Player/PlayerStatistics?playerId=${data.playerId}`);
+    return result.data.result;
+  }
 }
 
 export default new PlayerService();

@@ -39,12 +39,12 @@ const error = Modal.error;
 const { Panel } = Collapse;
 
 const Player = () => {
-
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [playerList, setPlayerList] = useState([]);
   const [teamList, setTeamList] = useState([]);
   const [visible, setIsSetDrawerVisible] = useState(false);
   const [editPlayer, setEditPlayer] = useState({});
+  const [playerStats, setPlayerStats] = useState({});
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -135,6 +135,16 @@ const Player = () => {
     });
   };
 
+  const playerStatistics = (id) => {
+    let req = {
+      playerId: id,
+    };
+    playerService.playerStatistics(req).then((res) => {
+      console.log('setPlayerStats', res);
+      setPlayerStats(res);
+    });
+  };
+
   const handleChange = (value, key) => {
     playerFormik.setValues({ ...playerFormik.values, [key]: value });
   };
@@ -147,7 +157,9 @@ const Player = () => {
     setIsSetDrawerVisible(false);
   };
 
-  const viewPlayerProfile = () => {
+  const viewPlayerProfile = (item) => {
+    debugger
+    playerStatistics(item.id);
     setIsSetDrawerVisible(true);
   };
 
@@ -254,7 +266,7 @@ const Player = () => {
               <Menu>
                 <Menu.Item onClick={(e) => handleEditPlayer(item)}>{L('Edit')}</Menu.Item>
                 <Menu.Item>{L('Delete')}</Menu.Item>
-                <Menu.Item onClick={viewPlayerProfile}>{L('Profile')}</Menu.Item>
+                <Menu.Item onClick={(e) => viewPlayerProfile(item)}>{L('Profile')}</Menu.Item>
               </Menu>
             }
             placement="bottomLeft"
@@ -409,7 +421,7 @@ const Player = () => {
           </Form.Item>
         </Form>
       </CustomModal>
-      <PlayerProfile visible={visible} onClose={onClose} />
+      <PlayerProfile visible={visible} onClose={onClose} stats={playerStats} />
     </Card>
   );
 };
