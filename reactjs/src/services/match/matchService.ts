@@ -40,6 +40,22 @@ class MatchService {
     let result = await http.get(`/api/services/app/Match/GetAllStagedMatchesByEventId?eventId=${id}`);
     return result.data.result;
   }
+
+  public async getAllMatchesByPlayerId(id: number) {
+    let result = await http.get(`/api/services/app/Match/GetMatchesByPlayerId?id=${id}`);
+    return result.data.result;
+  }
+
+  public async getMOMByPlayerId(id: number) {
+    let result = await http.get(`/api/services/app/Match/GetMOMByPlayerId?id=${id}`);
+    return result.data.result;
+  }
+
+
+  public async getAllMatchesByTeamId(id: number) {
+    let result = await http.get(`/api/services/app/Match/GetMatchesByTeamId?id=${id}`);
+    return result.data.result;
+  }
 }
 
 export default new MatchService();

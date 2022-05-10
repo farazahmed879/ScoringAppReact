@@ -1,4 +1,3 @@
-
 import LoadableComponent from './../Loadable/index';
 
 export const userRouter: any = [
@@ -69,7 +68,7 @@ export const appRouters: any = [
   },
   {
     path: '/players',
-    permission: 'Pages.Roles',
+    permission: '',
     title: 'Players',
     name: 'player',
     icon: 'tags',
@@ -158,6 +157,24 @@ export const appRouters: any = [
     component: LoadableComponent(() => import('../../scenes/statistics/most-runs')),
   },
   {
+    path: '/playerProfile/:playerId',
+    permission: '',
+    title: 'Player Profile',
+    name: 'playerProfile',
+    icon: 'info-circle',
+    showInMenu: false,
+    component: LoadableComponent(() => import('../../scenes/PlayerProfile/playerProfile')),
+  },
+  {
+    path: '/teamProfile/:teamId',
+    permission: '',
+    title: 'Team Profile',
+    name: 'teamProfile',
+    icon: 'info-circle',
+    showInMenu: false,
+    component: LoadableComponent(() => import('../../scenes/TeamProfile/teamProfile')),
+  },
+  {
     path: '/team-player/:teamId/:teamName',
     permission: '',
     title: 'Team Players',
@@ -166,7 +183,7 @@ export const appRouters: any = [
     showInMenu: false,
     component: LoadableComponent(() => import('../../scenes/Teams/teamPlayers')),
   },
-  
+
   {
     path: '/logout',
     permission: '',
@@ -175,7 +192,6 @@ export const appRouters: any = [
     icon: 'info-circle',
     showInMenu: false,
     component: LoadableComponent(() => import('../../components/Logout')),
-   
   },
   {
     path: '/scoreCard/team1/:team1Id/team2/:team2Id/match/:matchId',

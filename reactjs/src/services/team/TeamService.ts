@@ -9,7 +9,7 @@ class TeamService {
     return result.data.result;
   }
 
-  public async delete( id: Number) {
+  public async delete(id: Number) {
     let result = await http.delete(`api/services/app/Team/Delete?id=${id}`);
     return result.data;
   }
@@ -23,7 +23,6 @@ class TeamService {
     let result = await http.get('/api/services/app/Team/GetAll');
     return result.data.result;
   }
-  
 
   public async getPaginatedAll(pagedFilterAndSortedRequest: PagedTeamResultRequestDto) {
     let result = await http.get('/api/services/app/Team/GetPaginatedAll', { params: pagedFilterAndSortedRequest });
@@ -42,6 +41,16 @@ class TeamService {
 
   public async getMatchTeams(matchId: number) {
     let result = await http.get(`/api/services/app/Team/GetAllTeamsByMatchId?id=${matchId}`);
+    return result.data.result;
+  }
+
+  public async getAllTeamsByPlayerId(playerId: number) {
+    let result = await http.get(`/api/services/app/Team/GetAllTeamsByPlayerId?id=${playerId}`);
+    return result.data.result;
+  }
+
+  public async getTeamStats(teamId: number) {
+    let result = await http.get(`/api/services/app/Team/GetTeamStats?id=${teamId}`);
     return result.data.result;
   }
 }

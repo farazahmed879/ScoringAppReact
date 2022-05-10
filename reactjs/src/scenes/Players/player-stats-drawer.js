@@ -3,7 +3,7 @@ import { Col, Row, Drawer, Divider, Card, Tabs, Icon, Collapse } from 'antd';
 import './style.css';
 const { TabPane } = Tabs;
 const { Panel } = Collapse;
-const PlayerProfile = ({ visible = false, onClose, stats }) => {
+const PlayerStatsDrawer = ({ visible = false, onClose, stats }) => {
   const { Meta } = Card;
   const pStyle = {
     fontSize: 16,
@@ -194,4 +194,4 @@ const PlayerProfile = ({ visible = false, onClose, stats }) => {
   );
 };
 
-export default PlayerProfile;
+export default PlayerStatsDrawer;

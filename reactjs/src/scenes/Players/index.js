@@ -3,6 +3,7 @@ import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse } 
 import { L } from '../../lib/abpUtility';
 import playerService from '../../services/player/playerService';
 import CustomModal from '../../components/Modal';
+import { Link } from 'react-router-dom';
 import { battingStyleOptions, bowlingStyleOptions, genderOptions, playingRoleOptions } from '../../components/Enum/enum';
 import CustomInput from '../../components/Input';
 //import { CreateOrUpdatePlayerDto } from '../../services/player/dto/CreateOrUpdatePlayerDto';
@@ -10,8 +11,8 @@ import moment from 'moment';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import TeamService from '../../services/team/TeamService';
-import PlayerProfile from './player-profile';
 import FilterPanel from './filter-panel';
+import PlayerStatsDrawer from './player-stats-drawer'
 
 //const { Option } = Select;
 const playerInitial = {
@@ -158,7 +159,7 @@ const Player = () => {
   };
 
   const viewPlayerProfile = (item) => {
-    debugger
+    debugger;
     playerStatistics(item.id);
     setIsSetDrawerVisible(true);
   };
@@ -197,6 +198,13 @@ const Player = () => {
       dataIndex: 'name',
       key: 'name',
       fixed: 'left',
+      render: (text, item) => {
+        return (
+          <div>
+            <Link to={'/playerProfile/' + item.id}>{item.name}</Link>
+          </div>
+        );
+      },
     },
     {
       title: 'Team',
@@ -421,7 +429,7 @@ const Player = () => {
           </Form.Item>
         </Form>
       </CustomModal>
-      <PlayerProfile visible={visible} onClose={onClose} stats={playerStats} />
+      <PlayerStatsDrawer visible={visible} onClose={onClose} stats={playerStats} />
     </Card>
   );
 };

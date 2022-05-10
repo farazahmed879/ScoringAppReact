@@ -31,6 +31,11 @@ class EventService {
     let result = await http.post('/api/services/app/Event/CreateOrUpdateEventTeams', model);
     return result.data.result;
   }
+
+  public async getAllEventsByTeamId(id: number) {
+    let result = await http.get(`/api/services/app/Event/GetAllEventsByTeamId?id=${id}`);
+    return result.data.result;
+  }
 }
 
 export default new EventService();

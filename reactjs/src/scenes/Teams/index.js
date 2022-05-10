@@ -156,7 +156,20 @@ const Team = () => {
   console.log('validations', teamFormik);
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', key: 'name', width: 250, fixed: 'left' },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      width: 250,
+      fixed: 'left',
+      render: (text, item) => {
+        return (
+          <div>
+            <Link to={'/teamProfile/' + item.id}>{item.name}</Link>
+          </div>
+        );
+      },
+    },
     { title: 'Contact', width: 150, dataIndex: 'contact', key: 'contact' },
     { title: 'Place', width: 150, dataIndex: 'place', key: 'place' },
     { title: 'Zone', width: 150, dataIndex: 'zone', key: 'zone' },

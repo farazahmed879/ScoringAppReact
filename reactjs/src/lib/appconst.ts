@@ -13,5 +13,6 @@ const AppConsts = {
   friendly: 1,
   tournament: 2,
   series: 3,
+  dummyImage: 'https://i.ibb.co/0cPpmPJ/279014189-1025015974778393-4500265215255958750-n.jpg',
 };
 export default AppConsts;
