@@ -13,6 +13,7 @@ import * as Yup from 'yup';
 import TeamService from '../../services/team/TeamService';
 import FilterPanel from './filter-panel';
 import PlayerStatsDrawer from './player-stats-drawer'
+import CustomTable from '../../components/Table';
 
 //const { Option } = Select;
 const playerInitial = {
@@ -303,7 +304,7 @@ const Player = () => {
           <FilterPanel teams={teamList} handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
-      <Table pagination={pagination} columns={columns} dataSource={playerList} scroll={{ x: 1500 }} onChange={handleTableChange} />
+      <CustomTable pagination={pagination} columns={columns} data={playerList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
       <CustomModal
         title={Object.keys(editPlayer).length ? 'Edit Player' : 'Add Player'}
         isModalVisible={isOpenModal}

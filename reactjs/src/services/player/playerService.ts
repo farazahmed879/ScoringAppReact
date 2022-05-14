@@ -27,6 +27,11 @@ class PlayerService {
     return result.data.result;
   }
 
+  public async getPlayersByEventId(eventId: number) {
+    let result = await http.get(`/api/services/app/Player/getPlayersByEventId?id=${eventId}`);
+    return result.data.result;
+  }
+
   public async getAllByMatchId(matchId: number) {
     let result = await http.get(`/api/services/app/Player/GetAllByMatchId?teamId=${matchId}`);
     return result.data.result;
@@ -38,7 +43,7 @@ class PlayerService {
   }
 
   public async playerStatistics(data: any) {
-    let result = await http.post(`/api/services/app/Player/PlayerStatistics?playerId=${data.playerId}`);
+    let result = await http.post('/api/services/app/Player/PlayerStatistics', data);
     return result.data.result;
   }
 }

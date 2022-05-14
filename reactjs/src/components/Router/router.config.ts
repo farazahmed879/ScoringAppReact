@@ -147,15 +147,15 @@ export const appRouters: any = [
     component: LoadableComponent(() => import('../../scenes/statistics/stats-dashboard')),
   },
 
-  {
-    path: '/statistics/mostRuns',
-    permission: '',
-    title: 'MostRuns',
-    name: 'mostRuns',
-    icon: 'info-circle',
-    showInMenu: true,
-    component: LoadableComponent(() => import('../../scenes/statistics/most-runs')),
-  },
+  // {
+  //   path: '/statistics/mostRuns',
+  //   permission: '',
+  //   title: 'MostRuns',
+  //   name: 'mostRuns',
+  //   icon: 'info-circle',
+  //   showInMenu: true,
+  //   component: LoadableComponent(() => import('../../scenes/statistics/most-runs')),
+  // },
   {
     path: '/playerProfile/:playerId',
     permission: '',
@@ -173,6 +173,15 @@ export const appRouters: any = [
     icon: 'info-circle',
     showInMenu: false,
     component: LoadableComponent(() => import('../../scenes/TeamProfile/teamProfile')),
+  },
+  {
+    path: '/eventProfile/:eventId',
+    permission: '',
+    title: 'Event Profile',
+    name: 'eventProfile',
+    icon: 'info-circle',
+    showInMenu: false,
+    component: LoadableComponent(() => import('../../scenes/Event/eventProfile')),
   },
   {
     path: '/team-player/:teamId/:teamName',

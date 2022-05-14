@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Row, Col, Button, Form } from 'antd';
 import CustomInput from '../../components/Input';
-import { battingStyleOptions, bowlingStyleOptions, matchType, playingRoleOptions } from '../../components/Enum/enum';
+import { battingStyleOptions, bowlingStyleOptions, matchTypes, playingRoleOptions } from '../../components/Enum/enum';
 const FilterPanel = ({ teams = [], grounds, handleSubmit = (e) => {} }) => {
   const [filters, setFilters] = useState({
     team1: null,
@@ -75,7 +75,7 @@ const FilterPanel = ({ teams = [], grounds, handleSubmit = (e) => {} }) => {
           <CustomInput
             title="Match Type"
             type="select"
-            options={matchType}
+            options={matchTypes}
             handleChange={filterHandleChange}
             value={filters.type}
             stateKey="type"

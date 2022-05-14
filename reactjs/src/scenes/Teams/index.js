@@ -9,6 +9,7 @@ import CustomInput from '../../components/Input';
 import { teamTypeOptions } from '../../components/Enum/enum';
 import * as Yup from 'yup';
 import FilterPanel from './filter-panel';
+import CustomTable from '../../components/Table';
 
 const Team = () => {
   const success = Modal.success;
@@ -226,7 +227,7 @@ const Team = () => {
           <FilterPanel teams={teamList} handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
-      <Table pagination={pagination} columns={columns} dataSource={teamList} scroll={{ x: 1500 }} onChange={handleTableChange} />
+      <CustomTable pagination={pagination} columns={columns} data={teamList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
 
       <CustomModal
         title={Object.keys(editTeam).length ? 'Edit Team' : 'Add Team'}

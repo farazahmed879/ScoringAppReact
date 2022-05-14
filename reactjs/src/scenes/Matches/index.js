@@ -11,10 +11,11 @@ import CustomInput from '../../components/Input';
 import matchService from '../../services/match/matchService';
 import TeamService from '../../services/team/TeamService';
 import playerService from '../../services/player/playerService';
-import { matchType, eventStage } from '../../components/Enum/enum';
+import { matchTypes, eventStage } from '../../components/Enum/enum';
 import GroundService from '../../services/ground/GroundService';
 import FilterPanel from './filter-panel';
 import EventService from '../../services/event/EventService';
+import CustomTable from '../../components/Table';
 const matchValidation = Yup.object().shape({
   team1Id: Yup.string().required('Required'),
   team2Id: Yup.string().required('Required'),
@@ -246,7 +247,7 @@ console.log("matchFormik",matchFormik.values)
       dataIndex: 'matchType',
       render: (item) => {
         // return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
-        return item ? matchType.filter((i) => i.id == item)[0].name : 'N/A';
+        return item ? matchTypes.filter((i) => i.id == item)[0].name : 'N/A';
       },
     },
     {
@@ -307,9 +308,7 @@ console.log("matchFormik",matchFormik.values)
           <FilterPanel teams={teamList} grounds={groundList} handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
-
-      <Table pagination={pagination} columns={columns} dataSource={matchList} scroll={{ x: 1500 }} onChange={handleTableChange} />
-
+      <CustomTable pagination={pagination} columns={columns} data={matchList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
       <CustomModal
         title={Object.keys(editMatch).length ? 'Edit Match' : 'Add Match'}
         isModalVisible={isOpenModal}
@@ -323,7 +322,7 @@ console.log("matchFormik",matchFormik.values)
               <CustomInput
                 title="Match Type"
                 type="select"
-                options={matchType}
+                options={matchTypes}
                 handleChange={handleChange}
                 value={matchFormik.values.matchTypeId}
                 stateKey="matchTypeId"

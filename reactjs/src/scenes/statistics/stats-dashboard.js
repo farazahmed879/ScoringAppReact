@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Col, Row, Icon, PageHeader, Divider, Tag } from 'antd';
-import MostRuns from './most-runs';
 import './index.less';
 import statisticsService from '../../services/statistics/statistics.service';
 import statsConst from '../../lib/statsConst';
+import LeaderBoard from './leaderBoard';
 const StatsDashboard = () => {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState('');
@@ -22,7 +22,6 @@ const StatsDashboard = () => {
   }, [filter]);
 
   const handleSubmit = (e) => {
-    debugger;
     setFilter(e);
   };
 
@@ -654,7 +653,7 @@ const StatsDashboard = () => {
         </Col>
       </Row>
       <Row style={{ marginTop: '20px' }} gutter={16}>
-        <MostRuns columns={columns} data={data}></MostRuns>
+        <LeaderBoard columns={columns} data={data} paggination={false}></LeaderBoard>
       </Row>
     </Card>
   );

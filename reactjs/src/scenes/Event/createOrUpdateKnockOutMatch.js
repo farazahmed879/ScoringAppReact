@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form, Row, Col, Divider } from 'antd';
 import CustomModal from '../../components/Modal';
-import { matchType, eventStage } from '../../components/Enum/enum';
+import { matchTypes, eventStage } from '../../components/Enum/enum';
 import CustomInput from '../../components/Input';
 
 const CreateOrUpdateKnockOutMatch = ({
@@ -32,7 +32,7 @@ const CreateOrUpdateKnockOutMatch = ({
               title="Match Type"
               type="select"
               disabled={true}
-              options={matchType}
+              options={matchTypes}
               handleChange={handleChange}
               value={matchFormik.values.matchTypeId}
               stateKey="matchTypeId"

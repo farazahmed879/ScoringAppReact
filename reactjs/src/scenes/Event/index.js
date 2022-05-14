@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse, Skeleton } from 'antd';
 import { useFormik } from 'formik';
 import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -10,6 +10,7 @@ import { L } from '../../lib/abpUtility';
 import { tournamentTypes, eventTypes } from '../../components/Enum/enum';
 import moment from 'moment';
 import FilterPanel from './filter-panel';
+import CustomTable from '../../components/Table';
 
 const success = Modal.success;
 const error = Modal.error;
@@ -144,6 +145,13 @@ const Player = () => {
       dataIndex: 'name',
       key: 'name',
       fixed: 'left',
+      render: (text, item) => {
+        return (
+          <div>
+            <Link to={'/eventProfile/' + item.id}>{item.name}</Link>
+          </div>
+        );
+      },
     },
     {
       title: 'Start Date',
@@ -222,7 +230,7 @@ const Player = () => {
           <FilterPanel handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
-      <Table pagination={pagination} columns={columns} dataSource={eventList} scroll={{ x: 1500 }} onChange={handleTableChange} />
+      <CustomTable pagination={pagination} columns={columns} data={eventList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
       <CustomModal
         title={Object.keys(editEvent).length ? 'Edit Event' : 'Add Event'}
         isModalVisible={isOpenModal}

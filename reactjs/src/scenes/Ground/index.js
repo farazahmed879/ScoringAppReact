@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import CustomModal from '../../components/Modal';
 import CustomInput from '../../components/Input';
 import groundService from '../../services/ground/GroundService';
+import CustomTable from '../../components/Table';
 const groundValidation = Yup.object().shape({
   name: Yup.string().required('Required'),
   location: Yup.string().required('Required'),
@@ -159,8 +160,7 @@ const Ground = () => {
           Add
         </Button>
       </div>
-      <Table pagination={pagination} columns={columns} dataSource={groundList} scroll={{ x: 1500 }} onChange={handleTableChange} />
-
+      <CustomTable pagination={pagination} columns={columns} data={groundList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
       <CustomModal
         title={Object.keys(editGround).length ? 'Edit Ground' : 'Add Ground'}
         isModalVisible={isOpenModal}

@@ -36,6 +36,11 @@ class EventService {
     let result = await http.get(`/api/services/app/Event/GetAllEventsByTeamId?id=${id}`);
     return result.data.result;
   }
+
+  public async getEventStats(eventId: number) {
+    let result = await http.get(`/api/services/app/Event/GetEventStat?id=${eventId}`);
+    return result.data.result;
+  }
 }
 
 export default new EventService();

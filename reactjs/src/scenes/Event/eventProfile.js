@@ -10,6 +10,7 @@ import AppConsts from '../../lib/appconst';
 import LeaderBoard from '../statistics/leaderBoard';
 import ViewMatchBox from '../../components/ViewMatchBox';
 import PlayerViewBox from '../../components/PlayerViewBox';
+import TeamViewBox from '../../components/TeamViewBox';
 
 const gridStyle = {
   width: '20%',
@@ -17,42 +18,43 @@ const gridStyle = {
   margin: '10px',
   cursor: 'pointer',
 };
-const TeamProfile = () => {
+const EventProfile = () => {
   const [players, setPlayerList] = useState([]);
-  const [eventList, setEventList] = useState([]);
+  const [teamList, setTeamList] = useState([]);
   const [matchList, setMatchList] = useState([]);
-  const [stats, setTeamStats] = useState({});
+  const [stats, setEventStats] = useState({});
   const [statsLoading, setStatsLoading] = useState(true);
 
   const param = useParams();
   useEffect(() => {
-    getTeamStats(param.teamId);
-    getAllEventsByTeamId(param.teamId);
-    getAllMatchesByTeamId(param.teamId);
-    getAllPlayersByTeamId(param.teamId);
+    //getEventStats(param.eventId);
+    getAllTeamsByEventId(param.eventId);
+    getAllMatchesByEventId(param.eventId);
+    getAllPlayersByEventId(param.eventId);
   }, []);
-  const getAllPlayersByTeamId = (id) => {
+  const getAllPlayersByEventId = (id) => {
     playerService.getAllByTeamId(id).then((res) => {
       console.log('Team Players', res);
       setPlayerList(res);
     });
   };
-  const getAllMatchesByTeamId = (id) => {
-    matchService.getAllMatchesByTeamId(id).then((res) => {
-      console.log('Team Matches', res);
+  const getAllMatchesByEventId = (id) => {
+    matchService.getMatchesViewByEventId(id).then((res) => {
+      console.log('Event Matches', res);
       setMatchList(res);
     });
   };
-  const getAllEventsByTeamId = (id) => {
-    EventService.getAllEventsByTeamId(id).then((res) => {
-      console.log('Team Events', res);
-      setEventList(res);
+  const getAllTeamsByEventId = (id) => {
+    TeamService.getAllEventTeams(id).then((res) => {
+      console.log('Event Teams', res);
+      setTeamList(res);
     });
   };
-  const getTeamStats = (id) => {
-    TeamService.getTeamStats(id).then((res) => {
+
+  const getEventStats = (id) => {
+    EventService.getEventStats(id).then((res) => {
       console.log('Team Stats', res);
-      setTeamStats(res);
+      setEventStats(res);
       setStatsLoading(false);
     });
   };
@@ -100,32 +102,40 @@ const TeamProfile = () => {
                       <h4>{stats.matches || 'N/A'}</h4>
                     </Card.Grid>
                     <Card.Grid style={gridStyle}>
-                      <h2>Won</h2>
-                      <h4>{stats.won || 'N/A'}</h4>
+                      <h2>Best Batsman</h2>
+                      <h4>{stats.batsman || 'N/A'}</h4>
                     </Card.Grid>
                     <Card.Grid style={gridStyle}>
-                      <h2>Lost</h2>
-                      <h4>{stats.lost || 'N/A'}</h4>
+                      <h2>Best Bowler</h2>
+                      <h4>{stats.bowler || 'N/A'}</h4>
                     </Card.Grid>
                     <Card.Grid style={gridStyle}>
-                      <h2>Tie</h2>
-                      <h4>{stats.tie || 'N/A'}</h4>
+                      <h2>Best Player</h2>
+                      <h4>{stats.pot || 'N/A'}</h4>
                     </Card.Grid>
                     <Card.Grid style={gridStyle}>
-                      <h2>No Result</h2>
-                      <h4>{stats.noResult || 'N/A'}</h4>
+                      <h2>Sixes</h2>
+                      <h4>{stats.six || 'N/A'}</h4>
                     </Card.Grid>
                     <Card.Grid style={gridStyle}>
-                      <h2>Toss Won</h2>
-                      <h4>{stats.tossWon || 'N/A'}</h4>
+                      <h2>Fours</h2>
+                      <h4>{stats.fours || 'N/A'}</h4>
                     </Card.Grid>
                     <Card.Grid style={gridStyle}>
-                      <h2>Bat First</h2>
-                      <h4>{stats.batFirst || 'N/A'}</h4>
+                      <h2>Wickets</h2>
+                      <h4>{stats.wickets || 'N/A'}</h4>
                     </Card.Grid>
                     <Card.Grid style={gridStyle}>
-                      <h2>Field First</h2>
-                      <h4>{stats.fieldFirst || 'N/A'}</h4>
+                      <h2>Catches</h2>
+                      <h4>{stats.catches || 'N/A'}</h4>
+                    </Card.Grid>
+                    <Card.Grid style={gridStyle}>
+                      <h2>Stumps</h2>
+                      <h4>{stats.stumps || 'N/A'}</h4>
+                    </Card.Grid>
+                    <Card.Grid style={gridStyle}>
+                      <h2>Run-out</h2>
+                      <h4>{stats.runouts || 'N/A'}</h4>
                     </Card.Grid>
                   </Card>
                 </div>
@@ -138,21 +148,10 @@ const TeamProfile = () => {
             tab={
               <span>
                 <Icon type="apple" />
-                Players
-              </span>
-            }
-            key="2"
-          >
-            <PlayerViewBox data={players}></PlayerViewBox>
-          </TabPane>
-          <TabPane
-            tab={
-              <span>
-                <Icon type="apple" />
                 Matches
               </span>
             }
-            key="3"
+            key="2"
           >
             <ViewMatchBox data={matchList}></ViewMatchBox>
           </TabPane>
@@ -160,28 +159,24 @@ const TeamProfile = () => {
             tab={
               <span>
                 <Icon type="apple" />
-                Events
+                Teams
+              </span>
+            }
+            key="3"
+          >
+            <TeamViewBox data={teamList}></TeamViewBox>
+          </TabPane>
+
+          <TabPane
+            tab={
+              <span>
+                <Icon type="apple" />
+                Players
               </span>
             }
             key="4"
           >
-            <Card>
-              <div style={{ display: 'flex', margin: '10px' }}>
-                {Object.keys(eventList).length ? (
-                  eventList.map((e, index) => (
-                    <Tooltip title={e.name} key={index}>
-                      <Link to={'/eventProfile/' + e.id}>
-                        <Card hoverable style={{ width: 200, margin: '10px' }} cover={<img alt="example" src={AppConsts.dummyImage} />}>
-                          <Meta title={e.name} description={e.startDate + ' To ' + e.endDate} />
-                        </Card>
-                      </Link>
-                    </Tooltip>
-                  ))
-                ) : (
-                  <Empty />
-                )}
-              </div>
-            </Card>
+            <PlayerViewBox data={players}></PlayerViewBox>
           </TabPane>
           <TabPane
             tab={
@@ -200,4 +195,4 @@ const TeamProfile = () => {
   );
 };
 
-export default TeamProfile;
+export default EventProfile;

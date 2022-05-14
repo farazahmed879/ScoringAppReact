@@ -56,6 +56,11 @@ class MatchService {
     let result = await http.get(`/api/services/app/Match/GetMatchesByTeamId?id=${id}`);
     return result.data.result;
   }
+
+  public async getMatchesViewByEventId(id: number) {
+    let result = await http.get(`/api/services/app/Match/GetMatchesByEventId?id=${id}`);
+    return result.data.result;
+  }
 }
 
 export default new MatchService();

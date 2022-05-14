@@ -33,7 +33,7 @@ export const teamTypeOptions = [
   { id: 7, name: 'University' },
   { id: 8, name: 'Office' },
 ];
-export const matchType = [
+export const matchTypes = [
   { id: 1, name: 'Friendly' },
   { id: 2, name: 'Tournament' },
   { id: 3, name: 'Series' },

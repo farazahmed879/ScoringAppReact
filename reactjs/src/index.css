@@ -21,3 +21,10 @@ body {
   -webkit-transition: all 0.2s;
   transition: all 0.2s;
 }
+
+.ant-tabs-nav-scroll {
+  overflow: hidden;
+  white-space: nowrap;
+  background: coral !important;
+  color: white;
+}
