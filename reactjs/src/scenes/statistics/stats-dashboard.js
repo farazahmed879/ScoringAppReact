@@ -490,7 +490,7 @@ const StatsDashboard = () => {
         }}
         title={'Statistics'}
       />
-      <Row gutter={16}>
+      {/* <Row gutter={16}>
         <Col
           className={'dashboardCard'}
           xs={{ offset: 1, span: 22 }}
@@ -651,7 +651,7 @@ const StatsDashboard = () => {
             </Col>
           </Card>
         </Col>
-      </Row>
+      </Row> */}
       <Row style={{ marginTop: '20px' }} gutter={16}>
         <LeaderBoard columns={columns} data={data} paggination={false}></LeaderBoard>
       </Row>

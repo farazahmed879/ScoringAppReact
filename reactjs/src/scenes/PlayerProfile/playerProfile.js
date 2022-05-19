@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useHistory } from 'react-router-dom';
 import playerService from '../../services/player/playerService';
 import TeamService from '../../services/team/TeamService';
 import matchService from '../../services/match/matchService';
 import { truncateText } from '../../helper/helper';
-import { Col, Row, Drawer, Divider, Card, Tabs, Icon, Collapse, Empty, Tooltip, Tag, Form, Skeleton, Button } from 'antd';
+import { Col, Row, Drawer, Divider, Card, Tabs, Icon, Collapse, Empty, Tooltip, Tag, Form, Skeleton, Button, Radio,PageHeader } from 'antd';
 import './style.css';
 import AppConsts from '../../lib/appconst';
 import ViewMatchBox from '../../components/ViewMatchBox';
 import TeamViewBox from '../../components/TeamViewBox';
 import CustomModal from '../../components/Modal';
-import { matchTypes } from '../../components/Enum/enum';
+import { battingStyleOptions, bowlingStyleOptions, matchTypes, playingRoleOptions } from '../../components/Enum/enum';
 import CustomInput from '../../components/Input';
 const { TabPane } = Tabs;
 const { Panel } = Collapse;
@@ -52,7 +52,9 @@ const PlayerProfile = () => {
   const [mom, setMOMList] = useState([]);
   const [statsLoading, setStatsLoading] = useState(true);
   const [isFilterModal, setIsFilterModal] = useState(false);
+  const [matchResultFilter, setMatchResultFilter] = useState(1);
   const param = useParams();
+  const history = useHistory();
   const [filters, setFilters] = useState({
     playerId: param.playerId,
     teamId: null,
@@ -63,7 +65,7 @@ const PlayerProfile = () => {
   useEffect(() => {
     playerStatistics();
     getAllTeamsByPlayerId(param.playerId);
-    getMatchesByPlayerId(param.playerId);
+    //getMatchesByPlayerId(param.playerId);
     getMOMByPlayerId(param.playerId);
   }, []);
 
@@ -83,7 +85,7 @@ const PlayerProfile = () => {
   };
 
   const getMatchesByPlayerId = (id) => {
-    matchService.getAllMatchesByPlayerId(id).then((res) => {
+    matchService.getAllMatchesByPlayerId(id, matchResultFilter).then((res) => {
       console.log('Player Matches', res);
       setMatchList(res);
     });
@@ -107,11 +109,28 @@ const PlayerProfile = () => {
     setFilters({ ...filters, [key]: value });
   };
   const handleSubmit = () => {
+    setStatsLoading(true);
     playerStatistics(filters);
+    filterModal();
+  };
+
+  useEffect(() => {
+    getMatchesByPlayerId(param.playerId);
+  }, [matchResultFilter]);
+
+  const handleRadio = (e) => {
+    setMatchResultFilter(e.target.value);
   };
 
   return (
     <Card>
+      <PageHeader
+        style={{
+          border: '1px solid rgb(235, 237, 240)',
+        }}
+        onBack={history.goBack}
+        title={stats.playerName}
+      />
       <div>
         <Card
           hoverable
@@ -125,11 +144,11 @@ const PlayerProfile = () => {
             cover={<img alt="example" src={AppConsts.dummyImage} height={150} width={150} />}
           ></Card>
           <div style={{ marginLeft: '10px', marginTop: '5px' }}>
-            <h2 style={{ color: 'white', marginBottom: '0' }}>{stats.playerName}</h2>
+            <h2 style={{ color: 'white', marginBottom: '0' }}>{stats.playerName || 'N/A'}</h2>
             <h4 style={{ color: 'white', marginBottom: '0' }}>{stats.dob || 'N/A'}</h4>
-            <h4 style={{ color: 'white', marginBottom: '0' }}>{stats.playerRole || 'N/A'}</h4>
-            <h4 style={{ color: 'white', marginBottom: '0' }}>{stats.battingStyle || 'N/A'}</h4>
-            <h4 style={{ color: 'white', marginBottom: '0' }}>{stats.bowlingStyle || 'N/A'}</h4>
+            <h4 style={{ color: 'white', marginBottom: '0' }}>{playingRoleOptions.filter((i) => i.id == stats.playerRole).name || 'N/A'}</h4>
+            <h4 style={{ color: 'white', marginBottom: '0' }}>{battingStyleOptions.filter((i) => i.id == stats.battingStyle).name || 'N/A'}</h4>
+            <h4 style={{ color: 'white', marginBottom: '0' }}>{bowlingStyleOptions.filter((i) => i.id == stats.bowlingStyle).name || 'N/A'}</h4>
           </div>
         </Row>
 
@@ -254,7 +273,7 @@ const PlayerProfile = () => {
               )}
             </Skeleton>
             <Tooltip title={'Filter'}>
-              <Button type="primary" shape="circle" style={filterButon} onClick={() => filterModal()}>
+              <Button type="primary" size="large" shape="circle" style={filterButon} onClick={() => filterModal()}>
                 <Icon style={{ marginLeft: '8px', marginTop: '8px' }} type="filter" />
               </Button>
             </Tooltip>
@@ -268,6 +287,19 @@ const PlayerProfile = () => {
             }
             key="2"
           >
+            <div style={{ textAlign: 'center' }}>
+              <Radio.Group
+                onChange={(e) => handleRadio(e)}
+                defaultValue="1"
+                buttonStyle="solid"
+                style={{ display: 'flex', justifyContent: 'center', margin: '20px' }}
+              >
+                <Radio.Button value="1">All</Radio.Button>
+                <Radio.Button value="2">Won</Radio.Button>
+                <Radio.Button value="3">Lost</Radio.Button>
+                <Radio.Button value="4">Tie</Radio.Button>
+              </Radio.Group>
+            </div>
             <ViewMatchBox data={matches}></ViewMatchBox>
           </TabPane>
           <TabPane
@@ -308,7 +340,7 @@ const PlayerProfile = () => {
         title="Apply Filter"
         isModalVisible={isFilterModal}
         handleCancel={() => {
-          filterModal(false);
+          filterModal();
         }}
       >
         <Form>
@@ -327,7 +359,7 @@ const PlayerProfile = () => {
             <Button type="primary" htmlType="submit" onClick={handleSubmit}>
               {'Apply Filter'}
             </Button>
-            <Button htmlType="button" onClick={() => filterModal(false)}>
+            <Button htmlType="button" onClick={() => filterModal()}>
               Cancel
             </Button>
           </Form.Item>

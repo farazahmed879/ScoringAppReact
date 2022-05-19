@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tooltip, Card, Empty, Tag, Skeleton } from 'antd';
 import { truncateText } from '../../helper/helper';
+import moment from 'moment';
 const ViewMatchBox = ({ data = [] }) => {
   return (
     <>
@@ -11,8 +12,8 @@ const ViewMatchBox = ({ data = [] }) => {
               <Card.Grid key={index2}>
                 <Card title={e.tournament} key={index2} hoverable={false}>
                   <div style={{ margin: '10px' }}>
-                    <Tag color="orange">
-                      {e.ground},{e.date}
+                    <Tag color="red">
+                      {e.ground || 'N/A'} : {moment(e.date).format('MM/DD/YYYY') || 'N/A'}
                     </Tag>
                     <Tooltip title={e.team1}>
                       <h2>

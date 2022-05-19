@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { Card, Tabs, Icon, Empty, Tooltip, Tag, Row, Skeleton } from 'antd';
+import { Link, useParams,useHistory } from 'react-router-dom';
+import { Card, Tabs, Icon, Empty, Tooltip, Tag, Row, Skeleton, Form, Button, Radio,PageHeader } from 'antd';
 import { truncateText } from '../../helper/helper';
 import playerService from '../../services/player/playerService';
 import matchService from '../../services/match/matchService';
@@ -10,11 +10,26 @@ import AppConsts from '../../lib/appconst';
 import LeaderBoard from '../statistics/leaderBoard';
 import ViewMatchBox from '../../components/ViewMatchBox';
 import PlayerViewBox from '../../components/PlayerViewBox';
+import statisticsService from '../../services/statistics/statistics.service';
+import CustomModal from '../../components/Modal';
+import { matchTypes } from '../../components/Enum/enum';
+import CustomInput from '../../components/Input';
+import { preloadAll } from 'react-loadable';
 
 const gridStyle = {
   width: '20%',
   textAlign: 'center',
   margin: '10px',
+  cursor: 'pointer',
+};
+
+const filterButon = {
+  position: 'fixed',
+  right: '32px',
+  bottom: '102px',
+  Zindex: '2147483640',
+  display: 'flex',
+  flexDirection: 'column',
   cursor: 'pointer',
 };
 const TeamProfile = () => {
@@ -23,14 +38,31 @@ const TeamProfile = () => {
   const [matchList, setMatchList] = useState([]);
   const [stats, setTeamStats] = useState({});
   const [statsLoading, setStatsLoading] = useState(true);
-
+  const [isStatsFilterModal, setIsStatsFilterModal] = useState(false);
+  const [matchResultFilter, setMatchResultFilter] = useState(1);
+  const [eventFilter, setEventFilter] = useState('');
   const param = useParams();
+  const history = useHistory();
+  const [statsFilters, setStatsFilters] = useState({
+    teamId: param.teamId,
+    season: null,
+    matchType: null,
+    eventId: null,
+  });
   useEffect(() => {
-    getTeamStats(param.teamId);
-    getAllEventsByTeamId(param.teamId);
-    getAllMatchesByTeamId(param.teamId);
+    getTeamStats();
+    // getAllEventsByTeamId(param.teamId);
     getAllPlayersByTeamId(param.teamId);
   }, []);
+
+  useEffect(() => {
+    getAllMatchesByTeamId(param.teamId);
+  }, [matchResultFilter]);
+
+  useEffect(() => {
+    getAllEventsByTeamId(param.teamId);
+  }, [eventFilter]);
+
   const getAllPlayersByTeamId = (id) => {
     playerService.getAllByTeamId(id).then((res) => {
       console.log('Team Players', res);
@@ -38,30 +70,58 @@ const TeamProfile = () => {
     });
   };
   const getAllMatchesByTeamId = (id) => {
-    matchService.getAllMatchesByTeamId(id).then((res) => {
+    matchService.getAllMatchesByTeamId(id, matchResultFilter).then((res) => {
       console.log('Team Matches', res);
       setMatchList(res);
     });
   };
   const getAllEventsByTeamId = (id) => {
-    EventService.getAllEventsByTeamId(id).then((res) => {
+    EventService.getAllEventsByTeamId(id, eventFilter).then((res) => {
       console.log('Team Events', res);
       setEventList(res);
     });
   };
-  const getTeamStats = (id) => {
-    TeamService.getTeamStats(id).then((res) => {
+  const getTeamStats = () => {
+    TeamService.getTeamStats(statsFilters).then((res) => {
       console.log('Team Stats', res);
       setTeamStats(res);
       setStatsLoading(false);
     });
   };
 
+  const handleCancelStatsFilter = () => {
+    setIsStatsFilterModal(!isStatsFilterModal);
+  };
+
+  const handleSubmitStatsFilter = () => {
+    setIsStatsFilterModal(!isStatsFilterModal);
+    getTeamStats();
+  };
+
+  const handleRadio = (e) => {
+    setMatchResultFilter(e.target.value);
+  };
+  const handleEventFilter = (e) => {
+    //console.log("event",filtered);
+    setEventFilter(e.target.value);
+    //setEventList(filtered);
+  };
+
+  const handleChange = (value, key) => {
+    setStatsFilters({ ...statsFilters, [key]: value });
+  };
+
   const { TabPane } = Tabs;
   const { Meta } = Card;
   return (
     <Card>
-      {' '}
+      <PageHeader
+        style={{
+          border: '1px solid rgb(235, 237, 240)',
+        }}
+        onBack={history.goBack}
+        title={stats.name}
+      />
       <div>
         <Card
           hoverable
@@ -133,6 +193,11 @@ const TeamProfile = () => {
                 <Empty />
               )}
             </Skeleton>
+            <Tooltip title={'Filter'}>
+              <Button type="primary" size="large" shape="circle" style={filterButon} onClick={() => handleCancelStatsFilter()}>
+                <Icon style={{ marginLeft: '8px', marginTop: '8px' }} type="filter" />
+              </Button>
+            </Tooltip>
           </TabPane>
           <TabPane
             tab={
@@ -154,6 +219,19 @@ const TeamProfile = () => {
             }
             key="3"
           >
+            <div style={{ textAlign: 'center' }}>
+              <Radio.Group
+                onChange={(e) => handleRadio(e)}
+                defaultValue="1"
+                buttonStyle="solid"
+                style={{ display: 'flex', justifyContent: 'center', margin: '20px' }}
+              >
+                <Radio.Button value="1">All</Radio.Button>
+                <Radio.Button value="2">Won</Radio.Button>
+                <Radio.Button value="3">Lost</Radio.Button>
+                <Radio.Button value="4">Tie</Radio.Button>
+              </Radio.Group>
+            </div>
             <ViewMatchBox data={matchList}></ViewMatchBox>
           </TabPane>
           <TabPane
@@ -165,6 +243,18 @@ const TeamProfile = () => {
             }
             key="4"
           >
+            <div style={{ textAlign: 'center' }}>
+              <Radio.Group
+                onChange={(e) => handleEventFilter(e)}
+                defaultValue=""
+                buttonStyle="solid"
+                style={{ display: 'flex', justifyContent: 'center', margin: '20px' }}
+              >
+                <Radio.Button value="">All</Radio.Button>
+                <Radio.Button value="1">Tournament</Radio.Button>
+                <Radio.Button value="2">Series</Radio.Button>
+              </Radio.Group>
+            </div>
             <Card>
               <div style={{ display: 'flex', margin: '10px' }}>
                 {Object.keys(eventList).length ? (
@@ -192,10 +282,55 @@ const TeamProfile = () => {
             }
             key="5"
           >
-            <LeaderBoard data={[]} columns={[]}></LeaderBoard>
+            <LeaderBoard teamId={param.teamId}></LeaderBoard>
           </TabPane>
         </Tabs>
       </div>
+      <CustomModal
+        title="Stats Filter"
+        isModalVisible={isStatsFilterModal}
+        handleCancel={() => {
+          handleCancelStatsFilter();
+        }}
+      >
+        <Form>
+          <CustomInput
+            title="Match Type"
+            type="select"
+            options={matchTypes}
+            handleChange={handleChange}
+            value={statsFilters.matchType}
+            stateKey="matchType"
+          />
+          {statsFilters.matchType && statsFilters.matchType != 1 ? (
+            <CustomInput
+              title="Event"
+              type="select"
+              options={eventList}
+              handleChange={handleChange}
+              value={statsFilters.eventId}
+              stateKey="eventId"
+            />
+          ) : null}
+
+          <CustomInput
+            title="Season"
+            type="number"
+            handleChange={handleChange}
+            value={statsFilters.season}
+            stateKey="season"
+            placeholder="Optional"
+          />
+          <Form.Item>
+            <Button type="primary" htmlType="submit" onClick={handleSubmitStatsFilter}>
+              {'Apply Filter'}
+            </Button>
+            <Button htmlType="button" onClick={() => handleCancelStatsFilter()}>
+              Cancel
+            </Button>
+          </Form.Item>
+        </Form>
+      </CustomModal>
     </Card>
   );
 };

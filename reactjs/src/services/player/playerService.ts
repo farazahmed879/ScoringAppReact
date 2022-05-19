@@ -28,7 +28,7 @@ class PlayerService {
   }
 
   public async getPlayersByEventId(eventId: number) {
-    let result = await http.get(`/api/services/app/Player/getPlayersByEventId?id=${eventId}`);
+    let result = await http.get(`/api/services/app/Player/GetAllByEventId?id=${eventId}`);
     return result.data.result;
   }
 

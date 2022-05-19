@@ -9,7 +9,7 @@ const PlayerViewBox = ({ data = [] }) => {
     <>
       {Object.keys(data).length ? (
         <Skeleton loading={!Object.keys(data).length}>
-          <Card>
+          <Card key={data.id}>
             {data.map((e, index2) => (
               <Link to={'/playerProfile/' + e.id}>
                 <Card.Grid key={index2}>

@@ -12,7 +12,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import TeamService from '../../services/team/TeamService';
 import FilterPanel from './filter-panel';
-import PlayerStatsDrawer from './player-stats-drawer'
+import PlayerStatsDrawer from './player-stats-drawer';
 import CustomTable from '../../components/Table';
 
 //const { Option } = Select;
@@ -47,6 +47,7 @@ const Player = () => {
   const [visible, setIsSetDrawerVisible] = useState(false);
   const [editPlayer, setEditPlayer] = useState({});
   const [playerStats, setPlayerStats] = useState({});
+  const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -92,9 +93,13 @@ const Player = () => {
   });
 
   useEffect(() => {
-    getAll();
+    //getAll();
     getAllTeams();
   }, []);
+
+  useEffect(() => {
+    getAll();
+  }, [pagination.current]);
 
   // useEffect(() => {
   //   if (isOpenModal) getAllTeams();
@@ -104,10 +109,11 @@ const Player = () => {
     getAll(event);
   };
   const getAll = (filter) => {
+    setLoading(true);
     playerService
       .getPaginatedAll({
-        maxResultCount: pagination.maxResultCount,
-        skipCount: filter ? 0 : pagination.skipCount,
+        maxResultCount: pagination.pageSize,
+        skipCount: filter ? 0 : (pagination.current - 1) * pagination.pageSize,
         name: filter ? filter.name : undefined,
         teamId: filter ? filter.teamId : undefined,
         playingRole: filter ? filter.playingRole : undefined,
@@ -116,6 +122,7 @@ const Player = () => {
       })
       .then((res) => {
         console.log('Players', res.items);
+        setLoading(false);
         setPlayerList(
           res.items.map((r) => ({
             ...r,
@@ -304,7 +311,7 @@ const Player = () => {
           <FilterPanel teams={teamList} handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
-      <CustomTable pagination={pagination} columns={columns} data={playerList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
+      <CustomTable loading={loading} pagination={pagination} columns={columns} data={playerList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
       <CustomModal
         title={Object.keys(editPlayer).length ? 'Edit Player' : 'Add Player'}
         isModalVisible={isOpenModal}

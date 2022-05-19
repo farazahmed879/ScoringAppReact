@@ -25,6 +25,7 @@ const Team = () => {
   });
   const [mode, setModalMode] = useState('');
   const [editTeam, setEditTeam] = useState({});
+  const [loading, setLoading] = useState(true);
   //const [validation, setPlayerValidation] = useState(playerValidation);
 
   let teamInitial = {
@@ -85,6 +86,7 @@ const Team = () => {
   }, [pagination.current]);
 
   const getAll = (filter) => {
+    setLoading(true);
     TeamService.getPaginatedAll({
       maxResultCount: pagination.pageSize,
       skipCount: filter ? 0 : (pagination.current - 1) * pagination.pageSize,
@@ -104,6 +106,7 @@ const Team = () => {
           total: res.totalCount,
         });
       }
+      setLoading(false);
     });
   };
 
@@ -227,7 +230,7 @@ const Team = () => {
           <FilterPanel teams={teamList} handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
-      <CustomTable pagination={pagination} columns={columns} data={teamList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
+      <CustomTable loading={loading} pagination={pagination} columns={columns} data={teamList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
 
       <CustomModal
         title={Object.keys(editTeam).length ? 'Edit Team' : 'Add Team'}

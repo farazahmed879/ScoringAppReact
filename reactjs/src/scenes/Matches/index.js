@@ -53,6 +53,7 @@ const Matches = () => {
   const [eventList, setEventList] = useState([]);
   const [editMatch, setEditMatch] = useState({});
   const [mode, setModalMode] = useState('');
+  const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -106,18 +107,16 @@ const Matches = () => {
       current: e.current,
       pageSize: e.pageSize,
     });
-    getAll();
   };
 
   useEffect(() => {
-    getAll();
     getAllTeams();
     getAllGrounds();
   }, []);
 
-  // useEffect(() => {
-  //   getAll();
-  // }, [pagination]);
+  useEffect(() => {
+    getAll();
+  }, [pagination.current]);
 
   useEffect(() => {
     if (matchFormik.values.eventId) {
@@ -133,10 +132,11 @@ const Matches = () => {
   }, [isOpenModal]);
 
   const getAll = (filter) => {
+    setLoading(true);
     matchService
       .getPaginatedAll({
-        maxResultCount: pagination.maxResultCount,
-        skipCount: filter ? 0 : pagination.skipCount,
+        maxResultCount: pagination.pageSize,
+        skipCount: filter ? 0 : (pagination.current - 1) * pagination.pageSize,
         team1Id: filter ? filter.team1Id : undefined,
         team2Id: filter ? filter.team2Id : undefined,
         type: filter ? filter.type : undefined,
@@ -145,6 +145,7 @@ const Matches = () => {
       })
       .then((res) => {
         console.log('Matches', res.items);
+        setLoading(false);
         setMatchList(
           res.items.map((r) => ({
             ...r,
@@ -215,7 +216,7 @@ const Matches = () => {
     setIsOpenModal(true);
     setModalMode('Add Match');
   };
-console.log("matchFormik",matchFormik.values)
+  console.log('matchFormik', matchFormik.values);
   const columns = [
     {
       title: 'Ground',
@@ -308,7 +309,14 @@ console.log("matchFormik",matchFormik.values)
           <FilterPanel teams={teamList} grounds={groundList} handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
-      <CustomTable pagination={pagination} columns={columns} data={matchList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
+      <CustomTable
+        loading={loading}
+        pagination={pagination}
+        columns={columns}
+        data={matchList}
+        scroll={{ x: 1500 }}
+        handleTableChange={handleTableChange}
+      />
       <CustomModal
         title={Object.keys(editMatch).length ? 'Edit Match' : 'Add Match'}
         isModalVisible={isOpenModal}

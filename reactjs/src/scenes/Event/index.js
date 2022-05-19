@@ -32,6 +32,7 @@ const Player = () => {
   const [eventList, setEventList] = useState([]);
   // const [visible, setIsSetDrawerVisible] = useState(false);
   const [editEvent, setEditEvent] = useState({});
+  const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -89,19 +90,21 @@ const Player = () => {
 
   useEffect(() => {
     getAll();
-  }, []);
+  }, [pagination.current]);
 
   const getAll = (filter) => {
+    setLoading(true);
     eventService
       .getPaginatedAll({
-        maxResultCount: pagination.maxResultCount,
-        skipCount: filter ? 0 : pagination.skipCount,
+        maxResultCount: pagination.pageSize,
+        skipCount: filter ? 0 : (pagination.current - 1) * pagination.pageSize,
         name: filter ? filter.name : undefined,
         type: filter ? filter.type : undefined,
         startDate: filter && filter.startDate ? moment(filter.startDate).valueOf() : undefined,
         endDate: filter && filter.endDate ? moment(filter.endDate).valueOf() : undefined,
       })
       .then((res) => {
+        setLoading(false);
         console.log('Events', res.items);
         setEventList(
           res.items.map((r) => ({
@@ -230,7 +233,7 @@ const Player = () => {
           <FilterPanel handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
-      <CustomTable pagination={pagination} columns={columns} data={eventList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
+      <CustomTable loading={loading}  pagination={pagination} columns={columns} data={eventList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
       <CustomModal
         title={Object.keys(editEvent).length ? 'Edit Event' : 'Add Event'}
         isModalVisible={isOpenModal}

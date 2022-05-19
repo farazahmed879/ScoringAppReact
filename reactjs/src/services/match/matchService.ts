@@ -41,8 +41,8 @@ class MatchService {
     return result.data.result;
   }
 
-  public async getAllMatchesByPlayerId(id: number) {
-    let result = await http.get(`/api/services/app/Match/GetMatchesByPlayerId?id=${id}`);
+  public async getAllMatchesByPlayerId(id: number, matchResultFilter: number) {
+    let result = await http.get(`/api/services/app/Match/GetMatchesByPlayerId?id=${id}&matchResultFilter=${matchResultFilter}`);
     return result.data.result;
   }
 
@@ -51,9 +51,8 @@ class MatchService {
     return result.data.result;
   }
 
-
-  public async getAllMatchesByTeamId(id: number) {
-    let result = await http.get(`/api/services/app/Match/GetMatchesByTeamId?id=${id}`);
+  public async getAllMatchesByTeamId(id: number, matchResultFilter: number) {
+    let result = await http.get(`/api/services/app/Match/GetMatchesByTeamId?id=${id}&matchResultFilter=${matchResultFilter}`);
     return result.data.result;
   }
 

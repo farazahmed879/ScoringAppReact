@@ -49,8 +49,8 @@ class TeamService {
     return result.data.result;
   }
 
-  public async getTeamStats(teamId: number) {
-    let result = await http.get(`/api/services/app/Team/GetTeamStats?id=${teamId}`);
+  public async getTeamStats(data: any) {
+    let result = await http.post('/api/services/app/Team/TeamStats', data);
     return result.data.result;
   }
 }

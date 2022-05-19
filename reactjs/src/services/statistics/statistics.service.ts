@@ -27,6 +27,11 @@ class StatisticsService {
     return result.data.result;
   }
 
+  public async mostSixes(data: any) {
+    let result = await http.post('/api/services/app/Statistics/MostSixes', data);
+    return result.data.result;
+  }
+
   public async mostCatches(data: any) {
     let result = await http.post('/api/services/app/Statistics/MostCatches', data);
     return result.data.result;
@@ -34,6 +39,26 @@ class StatisticsService {
 
   public async mostStumps(data: any) {
     let result = await http.post('/api/services/app/Statistics/MostStumps', data);
+    return result.data.result;
+  }
+
+  public async mostMaidens(data: any) {
+    let result = await http.post('/api/services/app/Statistics/MostMaidens', data);
+    return result.data.result;
+  }
+
+  public async mostRunOuts(data: any) {
+    let result = await http.post('/api/services/app/Statistics/MostRunouts', data);
+    return result.data.result;
+  }
+
+  public async highestWicketsInAnInning(data: any) {
+    let result = await http.post('/api/services/app/Statistics/highestWicketsInAnInning', data);
+    return result.data.result;
+  }
+
+  public async highestRunsInAnInning(data: any) {
+    let result = await http.post('/api/services/app/Statistics/highestRunsInAnInning', data);
     return result.data.result;
   }
 }

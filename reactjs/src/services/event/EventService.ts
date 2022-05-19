@@ -32,8 +32,8 @@ class EventService {
     return result.data.result;
   }
 
-  public async getAllEventsByTeamId(id: number) {
-    let result = await http.get(`/api/services/app/Event/GetAllEventsByTeamId?id=${id}`);
+  public async getAllEventsByTeamId(id: number, typeId: number) {
+    let result = await http.get(`/api/services/app/Event/GetAllEventsByTeamId?id=${id}&typeId=${typeId}`);
     return result.data.result;
   }
 
