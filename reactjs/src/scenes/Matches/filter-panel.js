@@ -37,7 +37,7 @@ const FilterPanel = ({ teams = [], grounds, handleSubmit = (e) => {} }) => {
       <Row gutter={16}>
         <Col span={12}>
           <CustomInput
-            title="Team 2"
+            title="Team 1"
             type="select"
             options={teams.filter((i) => i.id != filters.team2)}
             handleChange={filterHandleChange}

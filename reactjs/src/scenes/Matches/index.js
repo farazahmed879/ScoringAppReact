@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { render } from 'react-dom';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse, Divider } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse, Divider, Icon } from 'antd';
 import { Link } from 'react-router-dom';
 import { L } from '../../lib/abpUtility';
 import { useFormik } from 'formik';
@@ -137,8 +137,8 @@ const Matches = () => {
       .getPaginatedAll({
         maxResultCount: pagination.pageSize,
         skipCount: filter ? 0 : (pagination.current - 1) * pagination.pageSize,
-        team1Id: filter ? filter.team1Id : undefined,
-        team2Id: filter ? filter.team2Id : undefined,
+        team1Id: filter ? filter.team1 : undefined,
+        team2Id: filter ? filter.team2 : undefined,
         type: filter ? filter.type : undefined,
         groundId: filter ? filter.groundId : undefined,
         date: filter && filter.date ? moment(filter.date).valueOf() : undefined,
@@ -265,6 +265,21 @@ const Matches = () => {
       },
     },
     {
+      title: 'Scorecard',
+      key: 'operation',
+      width: 100,
+      fixed: 'left',
+      render: (text, item) => {
+        return (
+          <Link to={'/summary/' + item.id}>
+            <div style={{ cursor: 'pointer' }}>
+              <Icon type="calculator" />
+            </div>
+          </Link>
+        );
+      },
+    },
+    {
       title: 'Action',
       key: 'operation',
       fixed: 'right',
@@ -279,7 +294,7 @@ const Matches = () => {
                 <Menu.Item>{L('Delete')}</Menu.Item>
                 <Menu.Item>
                   {' '}
-                  <Link to={'/scoreCard/team1/' + item.team1Id + '/team2/' + item.team2Id + '/match/' + item.id}>{L('Score Card')}</Link>
+                  <Link to={'/scoreCard/team1/' + item.team1Id + '/team2/' + item.team2Id + '/match/' + item.id}>{L('Add Score')}</Link>
                 </Menu.Item>
               </Menu>
             }

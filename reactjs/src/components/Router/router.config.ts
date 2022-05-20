@@ -1,5 +1,17 @@
 import LoadableComponent from './../Loadable/index';
 
+export const landingAppRouter: any = [
+  {
+    path: '/',
+    name: 'home',
+    title: 'Home',
+    component: LoadableComponent(() => import('../../components/Layout/LandingAppLayout')),
+    isLayout: true,
+    showInMenu: false,
+  }
+];
+
+
 export const userRouter: any = [
   {
     path: '/user',
@@ -220,6 +232,15 @@ export const appRouters: any = [
     icon: 'info-circle',
     showInMenu: false,
     component: LoadableComponent(() => import('../../scenes/Exception')),
+  },
+  {
+    path: '/summary/:matchId',
+    permission: '',
+    title: 'Summary',
+    name: 'summary',
+    icon: 'info-circle',
+    showInMenu: true,
+    component: LoadableComponent(() => import('../../scenes/MatchSummary')),
   },
 ];
 

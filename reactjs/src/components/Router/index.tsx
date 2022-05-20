@@ -8,9 +8,11 @@ import utils from '../../utils/utils';
 const Router = () => {
   const UserLayout = utils.getRoute('/user').component;
   const AppLayout = utils.getRoute('/').component;
+  //const LandingAppLayout = utils.getRoute('/main').component;
 
   return (
     <Switch>
+      {/* <Route path="/main" render={(props: any) => <LandingAppLayout {...props} />} /> */}
       <Route path="/user" render={(props: any) => <UserLayout {...props} />} />
       <ProtectedRoute path="/" render={(props: any) => <AppLayout {...props} exact />} />
     </Switch>
