@@ -33,7 +33,7 @@ const CustomInput = ({
           value={value || undefined}
           style={{ width: width }}
           onChange={(e) => handleChange(e, stateKey)}
-          filterOption={(input, option) => option.name.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+          filterOption={(input, option) => option.name?.toLowerCase().indexOf(input.toLowerCase()) >= 0}
         >
           {OptionGenerator(options)}
         </Select>

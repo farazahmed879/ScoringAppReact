@@ -271,7 +271,7 @@ const Matches = () => {
       fixed: 'left',
       render: (text, item) => {
         return (
-          <Link to={'/summary/' + item.id}>
+          <Link to={'/summary/' + item.id + '/team1/' + item.team1Id + '/team2/' + item.team2Id}>
             <div style={{ cursor: 'pointer' }}>
               <Icon type="calculator" />
             </div>

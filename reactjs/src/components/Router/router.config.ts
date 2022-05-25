@@ -8,9 +8,8 @@ export const landingAppRouter: any = [
     component: LoadableComponent(() => import('../../components/Layout/LandingAppLayout')),
     isLayout: true,
     showInMenu: false,
-  }
+  },
 ];
-
 
 export const userRouter: any = [
   {
@@ -21,6 +20,14 @@ export const userRouter: any = [
     isLayout: true,
     showInMenu: false,
   },
+  // {
+  //   path: '/user/home',
+  //   name: 'home',
+  //   title: 'Home',
+  //   component: LoadableComponent(() => import('../../scenes/Home')),
+  //   isLayout: false,
+  //   showInMenu: false,
+  // },
   {
     path: '/user/login',
     name: 'login',
@@ -221,7 +228,7 @@ export const appRouters: any = [
     name: 'scoreCard',
     icon: 'info-circle',
     showInMenu: false,
-    component: LoadableComponent(() => import('../../scenes/ScoreCard')),
+    component: LoadableComponent(() => import('../../scenes/create-Score')),
     //component: (prop: any)=> <ScoreCard {...prop} /> ,
   },
   {
@@ -234,7 +241,7 @@ export const appRouters: any = [
     component: LoadableComponent(() => import('../../scenes/Exception')),
   },
   {
-    path: '/summary/:matchId',
+    path: '/summary/:matchId/team1/:team1Id/team2/:team2Id',
     permission: '',
     title: 'Summary',
     name: 'summary',

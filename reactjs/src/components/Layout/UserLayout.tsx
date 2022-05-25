@@ -29,8 +29,8 @@ class UserLayout extends React.Component<any> {
               .map((item: any, index: number) => (
                 <Route key={index} path={item.path} component={item.component} exact={item.exact} />
               ))}
-
-            <Redirect from="/user" to="/user/login" />
+               <Redirect from="/user" to="/home" />    
+            {/* <Redirect from="/user" to="/user/login" /> */}
           </Switch>
           <Footer />
         </Col>

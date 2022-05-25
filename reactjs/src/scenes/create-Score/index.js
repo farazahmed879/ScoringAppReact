@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Modal, Table, Dropdown, Menu, Row, Tabs, Divider, Col,Card } from 'antd';
+import { Button, Form, Modal, Table, Dropdown, Menu, Row, Tabs, Divider, Col,Card, PageHeader } from 'antd';
 import { L } from '../../lib/abpUtility';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -8,7 +8,7 @@ import CustomInput from '../../components/Input';
 import playerService from '../../services/player/playerService';
 import { howOutOptions, positions } from '../../components/Enum/enum';
 import ScoreCardService from '../../services/scoreCard/ScoreCardService';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import TeamScoreCardService from '../../services/teamScore/TeamScoreCardService';
 import FallofWicketService from '../../services/fallofWicket/TeamScoreCardService';
 import TeamScoreDrawer from './teamScore';
@@ -20,7 +20,8 @@ const { TabPane } = Tabs;
 
 const success = Modal.success;
 const error = Modal.error;
-const ScoreCard = (prop) => {
+const AddScore = (prop) => {
+
   const fallofWicketInitial = {
     id: 0,
     first: null,
@@ -94,7 +95,7 @@ const ScoreCard = (prop) => {
   const [editScoreCard, setEditScoreCard] = useState({});
   //const history = useHistory();
   const param = useParams();
-
+  const history = useHistory();
   //yup Validations
   const scoreCardValidation = Yup.object().shape({
     playerId: Yup.string().required('Required'),
@@ -106,6 +107,10 @@ const ScoreCard = (prop) => {
     overs: Yup.string().required('Required'),
     wickets: Yup.string().required('Required'),
   });
+
+  const callback = (key) => {
+    console.log(key);
+  };
 
   //handle Submit
   const handleSubmit = (e) => {
@@ -470,8 +475,14 @@ const ScoreCard = (prop) => {
   const { tabPosition } = { tabPosition: 'left' };
   return (
     <Card>
+      <PageHeader
+        style={{
+          border: '1px solid rgb(235, 237, 240)',
+        }}
+        onBack={history.goBack}
+        title={'Create Scorecard'}
+      />
       <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px' }}>
-        <h1>Scorecard</h1>{' '}
         {/* <Button type="primary" shape="round" icon="plus" onClick={openModal}>
           Add
         </Button> */}
@@ -758,4 +769,4 @@ const ScoreCard = (prop) => {
     </Card>
   );
 };
-export default ScoreCard;
+export default AddScore;
