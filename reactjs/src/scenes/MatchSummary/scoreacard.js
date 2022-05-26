@@ -57,7 +57,7 @@ const Scorecard = ({ batsman = [], bowler = [], teamScore, matchDetails }) => {
         <div key={index}>
           <Row>
             <Col span={14}>
-              <h1>{a.playerName}</h1>
+              <h1 style={{ marginBottom: '0' }}>{a.playerName}</h1>
               {/* <h6>{a.bowler}</h6> */}
               <h5>{handleHowOut(a)}</h5>
             </Col>
@@ -74,7 +74,7 @@ const Scorecard = ({ batsman = [], bowler = [], teamScore, matchDetails }) => {
               <h1>{a.six || '-'}</h1>
             </Col>
             <Col span={2}>
-              <h1>S/R</h1>
+              <h1>{((a.runs * 100) / a.balls).toFixed(2)}</h1>
             </Col>
           </Row>
           <hr />
@@ -142,7 +142,7 @@ const Scorecard = ({ batsman = [], bowler = [], teamScore, matchDetails }) => {
               <h3>{a.wickets || '-'}</h3>
             </Col>
             <Col span={2}>
-              <h3>{a.econ || '-'}</h3>
+              <h3>{(a.runs / a.overs).toFixed(2) || '-'}</h3>
             </Col>
           </Row>
           <hr />

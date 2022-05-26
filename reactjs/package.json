@@ -27,7 +27,13 @@
     "react-scripts": "^3.2.0",
     "recharts": "^1.8.5",
     "tesseract.js": "^2.1.5",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "react-intl": "^2.4.0",
+    "rc-scroll-anim": "^2.2.1",
+    "rc-tween-one": "^1.7.0",
+    "rc-queue-anim": "^1.4.0",
+    "bisheng": "^0.28.2",
+    "enquire-js": "^0.1.0"
   },
   "scripts": {
     "start": "craco start",

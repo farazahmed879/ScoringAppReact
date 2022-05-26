@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Row, Col, Button, Form } from 'antd';
 import CustomInput from '../../components/Input';
 import { battingStyleOptions, bowlingStyleOptions, playingRoleOptions } from '../../components/Enum/enum';
-const FilterPanel = ({ teams,  handleSubmit = (e) => {}}) => {
+const FilterPanel = ({ teams, handleSubmit = (e) => {} }) => {
   const [filters, setFilters] = useState({
     name: '',
     teamId: null,
     playingRole: null,
     battingStyle: null,
     bowlingStyle: null,
+    contact: null
   });
 
   const handleReset = () => {
@@ -18,6 +19,7 @@ const FilterPanel = ({ teams,  handleSubmit = (e) => {}}) => {
       playingRole: null,
       battingStyle: null,
       bowlingStyle: null,
+      contact: null
     });
     handleSubmit();
   };
@@ -26,7 +28,7 @@ const FilterPanel = ({ teams,  handleSubmit = (e) => {}}) => {
     setFilters({ ...filters, [key]: value });
     //playerFormik.setValues({ ...playerFormik.values, [key]: value });
   };
-  console.log("filters",filters);
+  console.log('filters', filters);
 
   return (
     <>
@@ -38,6 +40,17 @@ const FilterPanel = ({ teams,  handleSubmit = (e) => {}}) => {
             handleChange={filterHandleChange}
             value={filters.name}
             stateKey="name"
+            placeholder=""
+            errorMessage={''}
+          />
+        </Col>
+        <Col span={12}>
+          <CustomInput
+            title="Contact"
+            type="number"
+            handleChange={filterHandleChange}
+            value={filters.contact}
+            stateKey="contact"
             placeholder=""
             errorMessage={''}
           />
@@ -93,7 +106,7 @@ const FilterPanel = ({ teams,  handleSubmit = (e) => {}}) => {
       </Row>
       <Row gutter={16} style={{ marginTop: '10px' }}>
         <Col span={24}>
-          <Button type="primary" htmlType="submit" onClick={()=> handleSubmit(filters)}>
+          <Button type="primary" htmlType="submit" onClick={() => handleSubmit(filters)}>
             Submit
           </Button>
           <Button htmlType="button" onClick={handleReset}>

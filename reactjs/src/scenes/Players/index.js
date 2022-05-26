@@ -34,6 +34,7 @@ const playerInitial = {
 const playerValidation = Yup.object().shape({
   name: Yup.string().required('Required'),
   gender: Yup.string().required('Required'),
+  contact: Yup.string().required('Required').min(11, "Contact must contain 12 numbers").max(11, "Contact must contain 12 numbers"),
 });
 
 const success = Modal.success;
@@ -119,6 +120,7 @@ const Player = () => {
         playingRole: filter ? filter.playingRole : undefined,
         battingStyle: filter ? filter.battingStyle : undefined,
         bowlingStyle: filter ? filter.bowlingStyle : undefined,
+        contact: filter ? filter.contact : undefined,
       })
       .then((res) => {
         console.log('Players', res.items);
@@ -383,11 +385,12 @@ const Player = () => {
             <Col span={8}>
               <CustomInput
                 title="Contact"
-                type="text"
+                type="number"
                 handleChange={handleChange}
                 value={playerFormik.values.contact}
                 stateKey="contact"
                 placeholder=""
+                errorMessage={playerFormik.errors.contact}
               />
             </Col>
             <Col span={8}>

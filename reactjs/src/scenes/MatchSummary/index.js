@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, PageHeader, Tabs, Icon, Collapse, Row, Col, Radio } from 'antd';
+import { Card, PageHeader, Tabs, Icon, Collapse, Row, Col, Radio, Result, Button, Empty, Skeleton } from 'antd';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import AppConsts from '../../lib/appconst';
 import { Label } from 'recharts';
@@ -12,6 +12,12 @@ const MatchSummary = () => {
   const [secondInningBatsman, setSecondInningBatsman] = useState([]);
   const [firstInningBowler, setFirstInningBowler] = useState([]);
   const [secondInningBowler, setSecondInningBowler] = useState([]);
+
+  const [firstInningTop3Batsman, setFirstInningTop3Batsman] = useState([]);
+  const [secondInningTop3Batsman, setSecondInningTop3Batsman] = useState([]);
+  const [firstInningTop3Bowler, setFirstInningTop3Bowler] = useState([]);
+  const [secondInningTop3Bowler, setSecondInningTop3Bowler] = useState([]);
+
   const [team1Score, setTeam1Score] = useState({});
   const [team2Score, setTeam2Score] = useState({});
   const [matchDetails, setMatchDetails] = useState({
@@ -19,13 +25,16 @@ const MatchSummary = () => {
     matchDate: 0,
     toss: '',
     stadium: '',
-    matchType: ''
+    matchType: '',
   });
 
   const [team1PlayerList, setTeam1PlayerList] = useState([]);
   const [team2PlayerList, setTeam2PlayerList] = useState([]);
 
   const [selectedInning, setInning] = useState(1);
+
+  const [loading, setLoading] = useState(true);
+  const [playersLoading, setPlayersLoading] = useState(true);
 
   const { TabPane } = Tabs;
   const { Panel } = Collapse;
@@ -49,6 +58,7 @@ const MatchSummary = () => {
   const getTeamScorecard = () => {
     ScoreCardService.getTeamScorecard(+param.team1Id, +param.team2Id, param.matchId).then((res) => {
       if (res.success) {
+        setLoading(false);
         console.log('scorecard', res);
         setFirstInningBatsman(res.result.firstInningBatsman);
         setSecondInningBatsman(res.result.secondInningBatsman);
@@ -61,8 +71,12 @@ const MatchSummary = () => {
           matchDate: res.result.date,
           toss: res.result.toss,
           stadium: res.result.ground,
-          matchType: res.result.matchType
+          matchType: res.result.matchType,
         });
+        setFirstInningTop3Batsman(res.result.firstInningTop3Batsman);
+        setSecondInningTop3Batsman(res.result.secondInningTop3Batsman);
+        setFirstInningTop3Bowler(res.result.firstInningTop3Bowler);
+        setSecondInningTop3Bowler(res.result.secondInningTop3Bowler);
       }
     });
   };
@@ -70,6 +84,7 @@ const MatchSummary = () => {
   const getTeamPlayersByMatchId = () => {
     ScoreCardService.getTeamPlayersByMatchId(param.matchId).then((res) => {
       if (res) {
+        setPlayersLoading(false);
         let tp1 = res.filter((i) => i.teamId == +param.team1Id);
         let tp2 = res.filter((i) => i.teamId == +param.team2Id);
         setTeam1PlayerList(tp1);
@@ -88,38 +103,44 @@ const MatchSummary = () => {
         title={'Match Summary'}
       />
       <Card>
-        <h1>{moment(matchDetails.date).format('DD MMM YYYY')}</h1>
-        <Row style={{ margin: '100px', textAlign: 'center' }}>
-          <Col span={6}>
-            <div>
-              <img src={AppConsts.dummyImage} height={50} width={50} />
-            </div>
-            <h1>{team1Score.name}</h1>
-          </Col>
-          <Col span={6}>
-            <h1>
-              {team1Score.score}/{team1Score.wickets}
-            </h1>
-          </Col>
-          <Col span={6}>
-            <h1>
-              {team2Score.score}/{team2Score.wickets}
-            </h1>
-          </Col>
-          <Col span={6}>
-            <div>
-              <img src={AppConsts.dummyImage} height={50} width={50} />
-            </div>
-            <h1>{team2Score.name}</h1>
-          </Col>
-        </Row>
-        <Row style={{ textAlign: 'center' }}>
-          <h1>{matchDetails.matchResult}</h1>
-        </Row>
+        <Skeleton loading={loading}>
+          <h1>{moment(matchDetails.date).format('DD MMM YYYY')}</h1>
+          <Row style={{ margin: '100px', textAlign: 'center' }}>
+            <Col span={6}>
+              <div>
+                <img src={AppConsts.dummyImage} height={50} width={50} />
+              </div>
+              <Link to={'/teamProfile/' + team1Score.id}>
+                <h1>{team1Score.name}</h1>
+              </Link>
+            </Col>
+            <Col span={6}>
+              <h1>
+                {team1Score.score}/{team1Score.wickets}
+              </h1>
+            </Col>
+            <Col span={6}>
+              <h1>
+                {team2Score.score}/{team2Score.wickets}
+              </h1>
+            </Col>
+            <Col span={6}>
+              <div>
+                <img src={AppConsts.dummyImage} height={50} width={50} />
+              </div>
+              <Link to={'/teamProfile/' + team2Score.id}>
+                <h1>{team2Score.name}</h1>
+              </Link>
+            </Col>
+          </Row>
+          <Row style={{ textAlign: 'center' }}>
+            <h1>{matchDetails.matchResult}</h1>
+          </Row>
 
-        <Row style={{ textAlign: 'center' }}>
-          <h1>{matchDetails.matchType}</h1>
-        </Row>
+          <Row style={{ textAlign: 'center' }}>
+            <h1>{matchDetails.matchType}</h1>
+          </Row>
+        </Skeleton>
       </Card>
       <Tabs defaultActiveKey="1" style={{ marginTop: '5px', textAlign: 'center' }}>
         <TabPane
@@ -131,74 +152,85 @@ const MatchSummary = () => {
           }
           key="1"
         >
-          <Row style={{ textAlign: 'left', marginLeft: '15%', marginRight: '15%' }}>
-            <PageHeader
-              style={{
-                border: '1px solid rgb(235, 237, 240)',
-              }}
-              title={'Pakistan - 162/8 (20)'}
-            />
-            <Col span={12}>
-              <Col span={20}>
-                <h1>Babar Azam</h1>
-                <h1>Khushdil Shah</h1>
-                <h1>Muhammad Rizwan</h1>
+          <Skeleton loading={loading}>
+            <Row style={{ textAlign: 'left', marginLeft: '15%', marginRight: '15%' }}>
+              <PageHeader
+                style={{
+                  border: '1px solid rgb(235, 237, 240)',
+                }}
+                title={team1Score.name + ' - ' + team1Score.score + '/' + team1Score.wickets + '(' + team1Score.overs + ')'}
+              />
+
+              <Col span={12} style={{ padding: '10px' }}>
+                {firstInningTop3Batsman.map((data, index) => (
+                  <Row id={index}>
+                    <Col span={20}>
+                      <h1>{data.playerName}</h1>
+                    </Col>
+                    <Col span={4}>
+                      <h1>
+                        {data.runs} ({data.balls})
+                      </h1>
+                    </Col>
+                  </Row>
+                ))}
               </Col>
-              <Col span={4}>
-                <h1>66 (46)</h1>
-                <h1>24 (21)</h1>
-                <h1>23 (19)</h1>
+              <Col span={12} style={{ padding: '10px' }}>
+                {firstInningTop3Bowler.map((data, index) => (
+                  <Row id={index}>
+                    <Col span={20}>
+                      <h1>{data.playerName || '-'}</h1>
+                    </Col>
+                    <Col span={4}>
+                      <h1>
+                        {data.wickets || '-'}/{data.runs || '-'} ({data.overs || '-'})
+                      </h1>
+                    </Col>
+                  </Row>
+                ))}
               </Col>
-            </Col>
-            <Col span={12}>
-              <Col span={18}>
-                <h1>Nathan Ellis</h1>
-                <h1>Cameron Green</h1>
-                <h1>Sean Abbot</h1>
+            </Row>
+            <Row style={{ textAlign: 'left', marginLeft: '15%', marginRight: '15%', marginTop: '20px' }}>
+              <PageHeader
+                style={{
+                  border: '1px solid rgb(235, 237, 240)',
+                }}
+                title={team2Score.name + ' - ' + team2Score.score + '/' + team2Score.wickets + '(' + team2Score.overs + ')'}
+              />
+              <Col span={12} style={{ padding: '10px' }}>
+                {secondInningTop3Batsman.map((data, index) => (
+                  <Row id={index}>
+                    <Col span={20}>
+                      <h1>{data.playerName}</h1>
+                    </Col>
+                    <Col span={4}>
+                      <h1>
+                        {data.runs} ({data.balls})
+                      </h1>
+                    </Col>
+                  </Row>
+                ))}
               </Col>
-              <Col span={6}>
-                <h1>4/48 (4)</h1>
-                <h1>2/16 (3)</h1>
-                <h1>1/28 (4)</h1>
+              <Col span={12} style={{ padding: '10px' }}>
+                {secondInningTop3Bowler.map((data, index) => (
+                  <Row id={index}>
+                    <Col span={20}>
+                      <h1>{data.playerName || '-'}</h1>
+                    </Col>
+                    <Col span={4}>
+                      <h1>
+                        {data.wickets || '-'}/{data.runs || '-'} ({data.overs || '-'})
+                      </h1>
+                    </Col>
+                  </Row>
+                ))}
               </Col>
-            </Col>
-          </Row>
-          <Row style={{ textAlign: 'left', marginLeft: '15%', marginRight: '15%', marginTop: '20px' }}>
-            <PageHeader
-              style={{
-                border: '1px solid rgb(235, 237, 240)',
-              }}
-              title={'Australia - 163/7 (19.1)'}
-            />
-            <Col span={12}>
-              <Col span={20}>
-                <h1>Babar Azam</h1>
-                <h1>Khushdil Shah</h1>
-                <h1>Muhammad Rizwan</h1>
-              </Col>
-              <Col span={4}>
-                <h1>66 (46)</h1>
-                <h1>24 (21)</h1>
-                <h1>23 (19)</h1>
-              </Col>
-            </Col>
-            <Col span={12}>
-              <Col span={18}>
-                <h1>Nathan Ellis</h1>
-                <h1>Cameron Green</h1>
-                <h1>Sean Abbot</h1>
-              </Col>
-              <Col span={6}>
-                <h1>4/48 (4)</h1>
-                <h1>2/16 (3)</h1>
-                <h1>1/28 (4)</h1>
-              </Col>
-            </Col>
-          </Row>
-          <Row style={{ marginTop: '10px' }}>
-            <h2>Toss: Australia won the toss and decided to bat first</h2>
-            <h2>Ground: Pak Star</h2>
-          </Row>
+            </Row>
+            <Row style={{ textAlign: 'left', marginTop: '10px', marginLeft: '15%', marginRight: '15%' }}>
+              <h1>Toss: {matchDetails.toss || 'N/A'}</h1>
+              <h1>Ground: {matchDetails.ground || 'N/A'}</h1>
+            </Row>
+          </Skeleton>
         </TabPane>
         <TabPane
           tab={
@@ -209,23 +241,25 @@ const MatchSummary = () => {
           }
           key="2"
         >
-          <div style={{ textAlign: 'center' }}>
-            <Radio.Group
-              onChange={(e) => handleRadio(e)}
-              defaultValue="1"
-              buttonStyle="solid"
-              style={{ display: 'flex', justifyContent: 'center', margin: '20px' }}
-            >
-              <Radio.Button value="1">{team1Score.name}</Radio.Button>
-              <Radio.Button value="2">{team2Score.name}</Radio.Button>
-            </Radio.Group>
-          </div>
-          <Scorecard
-            batsman={selectedInning == 1 ? firstInningBatsman : secondInningBatsman}
-            bowler={selectedInning == 1 ? firstInningBowler : secondInningBowler}
-            teamScore={selectedInning == 1 ? team1Score : team2Score}
-            matchDetails = {matchDetails}
-          ></Scorecard>
+          <Skeleton loading={loading}>
+            <div style={{ textAlign: 'center' }}>
+              <Radio.Group
+                onChange={(e) => handleRadio(e)}
+                defaultValue="1"
+                buttonStyle="solid"
+                style={{ display: 'flex', justifyContent: 'center', margin: '20px' }}
+              >
+                <Radio.Button value="1">{team1Score.name}</Radio.Button>
+                <Radio.Button value="2">{team2Score.name}</Radio.Button>
+              </Radio.Group>
+            </div>
+            <Scorecard
+              batsman={selectedInning == 1 ? firstInningBatsman : secondInningBatsman}
+              bowler={selectedInning == 1 ? firstInningBowler : secondInningBowler}
+              teamScore={selectedInning == 1 ? team1Score : team2Score}
+              matchDetails={matchDetails}
+            ></Scorecard>
+          </Skeleton>
         </TabPane>
         <TabPane
           tab={
@@ -235,7 +269,17 @@ const MatchSummary = () => {
             </span>
           }
           key="3"
-        ></TabPane>
+        >
+          <Result
+            status="warning"
+            title="Coming Soon"
+            extra={
+              <Button type="primary" key="console">
+                Go Console
+              </Button>
+            }
+          ></Result>
+        </TabPane>
         <TabPane
           tab={
             <span>
@@ -245,14 +289,16 @@ const MatchSummary = () => {
           }
           key="4"
         >
-          <Collapse defaultActiveKey={['1']} onChange={callback}>
-            <Panel header="Team1" key="1">
-              <PlayerViewBox data={team1PlayerList}></PlayerViewBox>
-            </Panel>
-            <Panel header="Team2" key="2">
-              <PlayerViewBox data={team2PlayerList}></PlayerViewBox>
-            </Panel>
-          </Collapse>
+          <Skeleton loading={playersLoading}>
+            <Collapse defaultActiveKey={['1']} onChange={callback}>
+              <Panel header={team1Score.name} key="1">
+                <PlayerViewBox data={team1PlayerList}></PlayerViewBox>
+              </Panel>
+              <Panel header={team2Score.name} key="2">
+                <PlayerViewBox data={team2PlayerList}></PlayerViewBox>
+              </Panel>
+            </Collapse>
+          </Skeleton>
         </TabPane>
         <TabPane
           tab={
@@ -262,7 +308,9 @@ const MatchSummary = () => {
             </span>
           }
           key="5"
-        ></TabPane>
+        >
+          <Empty></Empty>
+        </TabPane>
       </Tabs>
     </Card>
   );
