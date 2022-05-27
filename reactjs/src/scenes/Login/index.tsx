@@ -9,7 +9,7 @@ import AccountStore from '../../stores/accountStore';
 import AuthenticationStore from '../../stores/authenticationStore';
 import { FormComponentProps } from 'antd/lib/form';
 import { L } from '../../lib/abpUtility';
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import SessionStore from '../../stores/sessionStore';
 import Stores from '../../stores/storeIdentifier';
 import TenantAvailabilityState from '../../services/account/dto/tenantAvailabilityState';
@@ -117,9 +117,10 @@ class Login extends React.Component<ILoginProps> {
                   </Col>
                   <Col>
                     <FormItem>
-                      {getFieldDecorator('tenancyName', {})(
-                        <Input placeholder={L('TenancyName')} prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} size="large" />
-                      )}
+                      {getFieldDecorator(
+                        'tenancyName',
+                        {}
+                      )(<Input placeholder={L('TenancyName')} prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} size="large" />)}
                     </FormItem>
                     {!getFieldValue('tenancyName') ? <div>{L('LeaveEmptyToSwitchToHost')}</div> : ''}
                   </Col>
@@ -161,6 +162,9 @@ class Login extends React.Component<ILoginProps> {
                         {L('LogIn')}
                       </Button>
                     </Col>
+                  </Row>
+                  <Row style={{ margin: '0px 0px 10px 15px ' }}>
+                    <Link to={'/user/register'}>{L('Register')}</Link>
                   </Row>
                 </Card>
               </Col>

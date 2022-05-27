@@ -20,14 +20,14 @@ export const userRouter: any = [
     isLayout: true,
     showInMenu: false,
   },
-  // {
-  //   path: '/user/home',
-  //   name: 'home',
-  //   title: 'Home',
-  //   component: LoadableComponent(() => import('../../scenes/Home')),
-  //   isLayout: false,
-  //   showInMenu: false,
-  // },
+  {
+    path: '/user/register',
+    name: 'register',
+    title: 'Register',
+    component: LoadableComponent(() => import('../../scenes/Login/register')),
+    isLayout: false,
+    showInMenu: false,
+  },
   {
     path: '/user/login',
     name: 'login',
