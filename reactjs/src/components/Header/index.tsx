@@ -18,6 +18,12 @@ export interface IHeaderProps {
 const userDropdownMenu = (
   <Menu>
     <Menu.Item key="2">
+      <Link to={'/playerProfile/' + 4}>
+        <Icon type="profile" />
+        <span> {L('My Profile')}</span>
+      </Link>
+    </Menu.Item>
+    <Menu.Item key="3">
       <Link to="/logout">
         <Icon type="logout" />
         <span> {L('Logout')}</span>
@@ -37,7 +43,8 @@ export class Header extends React.Component<IHeaderProps> {
           <LanguageSelect /> {'   '}
           <Dropdown overlay={userDropdownMenu} trigger={['click']}>
             <Badge style={{}} count={3}>
-              <Avatar style={{height:24, width:24}} shape="circle" alt={'profile'} src={profilePicture} />
+              {sessionStorage.userName}
+              <Avatar style={{ height: 24, width: 24 }} shape="circle" alt={'profile'} src={profilePicture} />
             </Badge>
           </Dropdown>
         </Col>

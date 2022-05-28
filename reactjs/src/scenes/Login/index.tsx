@@ -62,6 +62,7 @@ class Login extends React.Component<ILoginProps> {
     const { loginModel } = this.props.authenticationStore!;
     await this.props.form.validateFields(async (err: any, values: any) => {
       if (!err) {
+        console.log('Users', values);
         await this.props.authenticationStore!.login(values);
         sessionStorage.setItem('rememberMe', loginModel.rememberMe ? '1' : '0');
         const { state } = this.props.location;

@@ -7,7 +7,7 @@ import EventService from '../../services/event/EventService';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import ViewBracket from './viewBracket';
-import ViewBracket1 from './viewBracket1';
+import ViewBracket2 from './viewBracket2';
 import MatchService from '../../services/match/matchService';
 const success = Modal.success;
 const error = Modal.error;
@@ -188,7 +188,7 @@ const Bracket = () => {
           </div>
         </TabPane>
         <TabPane tab="View Bracket" key="2">
-          <ViewBracket1 formikData={bracketFormik.values} event={param.event} />
+          <ViewBracket2 formikData={bracketFormik.values} event={param.event} />
         </TabPane>
       </Tabs>
     </Card>

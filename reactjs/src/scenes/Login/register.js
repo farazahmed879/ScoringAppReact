@@ -12,9 +12,7 @@ const marginTop = {
   marginTop: '10px',
 };
 
-export const  validateMobile = new RegExp(
-  '^.{11,11}$'
-);
+export const validateMobile = new RegExp('^.{11,11}$');
 
 const userInitial = {
   id: 0,
@@ -34,8 +32,7 @@ const userValidation = Yup.object().shape({
   gender: Yup.string().required('Required'),
   surname: Yup.string().required('Required'),
   username: Yup.string().required('Required'),
-  contact: Yup.string().required('Required').min(11, 'Contact must contain 12 numbers').max(11, 'Contact must contain 12 numbers'),
-  role: Yup.number().required('Required'),
+  phoneNumber: Yup.string().required('Required').min(11, 'Contact must contain 12 numbers').max(11, 'Contact must contain 12 numbers'),
   email: Yup.string()
     .required('Required')
     .matches(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i, 'Invalid email format'),
@@ -46,49 +43,61 @@ const userValidation = Yup.object().shape({
   passwordConfirmation: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
 });
 
+const phoneNumberValidation = Yup.object().shape({
+  phoneNumber: Yup.string().required('Required').min(11, 'Contact must contain 12 numbers').max(11, 'Contact must contain 12 numbers'),
+});
+
 const Register = () => {
   const [mobile, setMobileNumber] = useState(null);
   const [layout, setLayoutMode] = useState(1);
   const [roles, setRoles] = useState([]);
   const [disabledMode, setDisabledMode] = useState(false);
+  const history = useHistory();
   //const [user, setUser] = useState(userInitial);
   const handleChange = (value, key) => {
-    setMobileNumber(value);
+    phoneNumberFormik.setValues({ ...phoneNumberFormik.values, [key]: value });
   };
-
-
 
   const handleChangeUser = (value, key) => {
     userFormik.setValues({ ...userFormik.values, [key]: value });
   };
 
   const handleSubmitMobileNumber = () => {
-    // if(!validateMobile(mobile)){
-    //   alert("Enter Valid Mobile Number");
-    // }
-    userService.getUerDetailByContactNumber(mobile).then((res) => {
+    if(!phoneNumberFormik.values.phoneNumber){
+      return;
+    }
+    userService.getUerDetailByContactNumber(phoneNumberFormik.values.phoneNumber).then((res) => {
       if (res.success) {
+        setDisabledMode(true);
         setLayoutMode(2);
         getRoles();
         console.log('res', res);
-        let user = {
-          id: 0,
-          name: res.result.user.name,
-          phoneNumber: res.result.user.contact,
-          gender: res.result.user.gender,
-          role: res.result.roleId,
-          surname: '',
-          username: '',
-          email: '',
-          password: '',
-          confirmEmail: '',
-          passwordConfirmation: '',
-          roleName: res.result.role,
-        };
-        if (res.result.roleId) setDisabledMode(true);
+        if (res.result.user) {
+          let user = {
+            id: 0,
+            name: res.result.user.name,
+            phoneNumber: res.result.user.contact,
+            gender: res.result.user.gender,
+            //role: res.result.roleId,
+            surname: '',
+            username: '',
+            email: '',
+            password: '',
+            confirmEmail: '',
+            passwordConfirmation: '',
+            roleName: res.result.role,
+          };
+          if (res.result.roleId) setDisabledMode(true);
+          userFormik.setValues({
+            ...userFormik.values,
+            ...user,
+          });
+          return;
+        }
+        debugger
         userFormik.setValues({
           ...userFormik.values,
-          ...user,
+          ...{ phoneNumber: phoneNumberFormik.values.phoneNumber, roleName: 'Player'},
         });
       }
     });
@@ -111,14 +120,21 @@ const Register = () => {
       username: userFormik.values.username,
       emailAddress: userFormik.values.email,
       password: userFormik.values.password,
-      isActive: true
+      isActive: true,
     };
     userService.create(req).then((res) => {
       if (res) {
-        History.push('/user/login')
+        history.push('/user/login');
       }
     });
   };
+
+  const phoneNumberFormik = useFormik({
+    enableReinitialize: true,
+    initialValues: { phoneNumber : null },
+    validationSchema: phoneNumberValidation,
+    onSubmit: handleSubmitMobileNumber,
+  });
 
   const userFormik = useFormik({
     enableReinitialize: true,
@@ -127,7 +143,7 @@ const Register = () => {
     onSubmit: handleRegisterSubmit,
   });
 
-  const history = useHistory();
+  
   return (
     <Col className="name">
       <Row>
@@ -141,10 +157,10 @@ const Register = () => {
                     <CustomInput
                       type="number"
                       handleChange={handleChange}
-                      value={mobile}
-                      stateKey="mobile"
+                      value={phoneNumberFormik.values.phoneNumber}
+                      stateKey="phoneNumber"
                       placeholder="Enter Mobile Number"
-                      errorMessage={''}
+                      errorMessage={phoneNumberFormik.errors.phoneNumber}
                     />
                   </Row>
                   <Row style={{ marginTop: '10px' }}>
@@ -202,7 +218,7 @@ const Register = () => {
                         disabled={disabledMode}
                         stateKey="phoneNumber"
                         placeholder="Enter Mobile Number"
-                        errorMessage={userFormik.errors.contact}
+                        errorMessage={userFormik.errors.phoneNumber}
                       />
                     </Col>
                     <Col span={12} style={marginTop}>
@@ -222,14 +238,13 @@ const Register = () => {
                       {' '}
                       <CustomInput
                         title="Role"
-                        type="select"
-                        options={roles}
+                        type="text"
                         handleChange={handleChangeUser}
-                        value={userFormik.values.role}
+                        value={userFormik.values.roleName}
                         disabled={disabledMode}
-                        stateKey="role"
+                        stateKey="roleName"
                         placeholder="Role"
-                        errorMessage={userFormik.errors.role}
+                        errorMessage={userFormik.errors.roleName}
                       />
                     </Col>
                     <Col span={12} style={marginTop}>
