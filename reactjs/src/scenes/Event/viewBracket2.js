@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Card, Row, Col, Tooltip, Empty, Icon, Badge, Modal, Popover } from 'antd';
+import { Button, Card, Row, Col, Tooltip, Empty, Icon, Badge, Modal, Popover, Tag, Skeleton } from 'antd';
 import { truncateText } from '../../helper/helper';
 import { useFormik } from 'formik';
 import './style.css';
@@ -13,6 +13,8 @@ import TeamService from '../../services/team/TeamService';
 import GroundService from '../../services/ground/GroundService';
 import * as Yup from 'yup';
 import AppConsts from '../../lib/appconst';
+import { matches } from 'lodash';
+import cup from '../../images/PNG Files/cup.png';
 
 const hr1 = {
   width: '100%',
@@ -37,10 +39,11 @@ const column = {
 const success = Modal.success;
 const error = Modal.error;
 
-const ViewBracket2 = ({ formikData, event }) => {
+const ViewBracket2 = ({ formikData, event, loading = true }) => {
   console.log('viewBracketsFormik', formikData);
   const [column1Teams, setColumn1Teams] = useState([]);
   const [column2Teams, setColumn2Teams] = useState([]);
+  const [finalist, setFinalist] = useState({});
 
   //editMatch
   const [playerList, setPlayerList] = useState([]);
@@ -61,8 +64,14 @@ const ViewBracket2 = ({ formikData, event }) => {
         column2.push(element.matches);
       }
     });
+
+    if (formikData.matches && formikData.matches[formikData.matches.length - 1]) {
+      let data = formikData.matches[formikData.matches.length - 1].matches[0];
+      setFinalist(data);
+    }
     setColumn1Teams(column1);
     setColumn2Teams(column2);
+
     console.log('c1', column1);
     console.log('c2', column2);
   }, [formikData]);
@@ -78,7 +87,8 @@ const ViewBracket2 = ({ formikData, event }) => {
   };
 
   const checkConditionTeam = (matches, index, index2) => {
-    return matches && matches[index] && matches[index][index2];
+    var isMatch = matches && matches[index] && matches[index][index2];
+    return isMatch;
   };
 
   const handleCreateOrEditMatch = (data) => {
@@ -87,24 +97,24 @@ const ViewBracket2 = ({ formikData, event }) => {
     return 2;
   };
 
-  const createBadge = (data) => {
+  const createBadge = (data, stage) => {
     if (data) {
       if (data.id) {
         return data.dateOfMatch ? (
           <Badge
             count={moment(data.dateOfMatch).format('MM/DD/YYYY')}
             style={{ backgroundColor: '#52c41a', cursor: 'pointer' }}
-            onClick={() => viewMatchModal(data)}
+            onClick={() => viewMatchModal(data, stage)}
           ></Badge>
         ) : (
           <Tooltip title={'Date Missing'}>
-            <Badge count={'Schedule'} style={{ backgroundColor: 'orange', cursor: 'pointer' }} onClick={() => viewMatchModal(data)}></Badge>
+            <Badge count={'Schedule'} style={{ backgroundColor: 'orange', cursor: 'pointer' }} onClick={() => viewMatchModal(data, stage)}></Badge>
           </Tooltip>
         );
       }
       return (
-        <Tooltip title={'Create Match'}>
-          <Badge count={'?'} onClick={() => viewMatchModal(data || null)} style={{ cursor: 'pointer' }} />
+        <Tooltip title={data.team1Id && data.team2Id ? 'Create Match' : null}>
+          <Badge count={'?'} onClick={() => viewMatchModal(data || null, stage)} style={{ cursor: 'pointer' }} />
         </Tooltip>
       );
     } else {
@@ -118,7 +128,7 @@ const ViewBracket2 = ({ formikData, event }) => {
 
   const checkConditionDate = (matches, index, index2) => {
     let data = matches && matches[index] && matches[index][index2] ? matches[index][index2] : null;
-    return createBadge(data);
+    return createBadge(data, index);
   };
 
   const generateUperBar = (index) => {
@@ -173,16 +183,12 @@ const ViewBracket2 = ({ formikData, event }) => {
           </Link>
         </p>
       ) : null}
-      {/* <p>
-        {handleCreateOrEditMatch(match) == 1 || 2 ? (
-          <div onClick={() => viewMatchModal(match)}>{handleCreateOrEditMatch(match) == 1 ? 'Edit Match' : 'Create Match'}</div>
-        ) : null}
-      </p> */}
     </div>
   );
 
-  const generateBracket = (matches = []) => {
+  const generateBracket = (matches = [], final, fIndex) => {
     if (matches.length == 0) return;
+    let item = calculateColumns(matches[0].length);
     let assignedTeams = JSON.parse(JSON.stringify(matches));
     console.log('assignedTeams', assignedTeams);
     return (
@@ -204,8 +210,16 @@ const ViewBracket2 = ({ formikData, event }) => {
                     <Link
                       to={checkConditionTeam(assignedTeams, index, index2) ? redirectToTeamProfile(assignedTeams[index][index2].team1Id, 1) : null}
                     >
-                      <Button dir="LTR" style={{ width: '120px' }}>
-                        {checkConditionTeam(assignedTeams, index, index2) ? truncateText(assignedTeams[index][index2].team1, 10) : 'Unknown Team'}
+                      <Button
+                        dir="LTR"
+                        style={{
+                          width: '120px',
+                          color: checkConditionTeam(assignedTeams, index, index2) && assignedTeams[index][index2].team1 ? 'black' : 'red',
+                        }}
+                      >
+                        {checkConditionTeam(assignedTeams, index, index2)
+                          ? truncateText(assignedTeams[index][index2].team1 || 'Update Score', 10)
+                          : 'Unknown Team'}
                       </Button>
                     </Link>
                   </Tooltip>
@@ -219,8 +233,10 @@ const ViewBracket2 = ({ formikData, event }) => {
                     <Link
                       to={checkConditionTeam(assignedTeams, index, index2) ? redirectToTeamProfile(assignedTeams[index][index2].team2Id, 2) : null}
                     >
-                      <Button dir="LTR" style={{ width: '120px' }}>
-                        {checkConditionTeam(assignedTeams, index, index2) ? truncateText(assignedTeams[index][index2].team2, 10) : 'Unknown Team'}
+                      <Button dir="LTR" style={{ width: '120px', color: checkConditionTeam(assignedTeams, index, index2) && assignedTeams[index][index2].team2 ? 'black' : 'red' }}>
+                        {checkConditionTeam(assignedTeams, index, index2)
+                          ? truncateText(assignedTeams[index][index2].team2 || 'Update Score', 10)
+                          : 'Unknown Team'}
                       </Button>
                     </Link>
                   </Tooltip>
@@ -230,19 +246,37 @@ const ViewBracket2 = ({ formikData, event }) => {
               </Popover>
             ))}
           </div>
-        ))}{' '}
+        ))}
         <div style={{ display: 'grid', alignItems: 'center' }}>
-          <Tooltip title="Finalist">
-            <div style={{ display: 'flex' }}>
-              <Button dir="LTR" style={{ width: '120px' }}>
-                {truncateText('Finalist1', 10)}
-              </Button>
-              <hr style={{ width: '100%', marginTop: '15px', marginLeft: '0', marginRight: '0' }} />
-            </div>
-          </Tooltip>
+          <Popover content={content(final)} title={checkFinalistDate(final, item[0] - 1)}>
+            <Tooltip title={checkFinalist(final, fIndex)}>
+              <div style={{ display: 'flex' }}>
+                <Link to={redirectFinalist(final, fIndex)}>
+                  <Button dir="LTR" style={{ width: '120px' }}>
+                    {truncateText(checkFinalist(final, fIndex), 10)}
+                  </Button>
+                </Link>
+                <hr style={{ width: '100%', marginTop: '15px', marginLeft: '0', marginRight: '0' }} />
+                {}
+              </div>
+            </Tooltip>
+          </Popover>
         </div>
       </div>
     );
+  };
+
+  const checkFinalist = (finalist, index) => {
+    return finalist && index == 0 ? finalist.team1 : finalist && index == 1 ? finalist.team2 : 'Finalist';
+  };
+
+  const redirectFinalist = (final, index) => {
+    if (final && final.team1Id && index == 0) return `/teamProfile/${final.team1Id}`;
+    if (final && final.team2Id && index == 1) return `/teamProfile/${final.team2Id}`;
+  };
+
+  const checkFinalistDate = (match, fIndex) => {
+    return createBadge(match || null, fIndex);
   };
 
   const matchValidation = Yup.object().shape({
@@ -341,17 +375,17 @@ const ViewBracket2 = ({ formikData, event }) => {
     });
   };
 
-  const viewMatchModal = (match) => {
+  const viewMatchModal = (match, stage) => {
     if (!match) return;
+    if (!match.team1Id || !match.team2Id) return;
     if (match.id) {
       handleEditMatch(match.id);
-      //getMatchTeams(match.id);
       getAllPlayersByMatchId(match.id);
       getAllGrounds();
     } else {
       match.matchTypeId = AppConsts.tournament;
       match.eventId = param.eventId;
-      match.eventStage = 2;
+      match.eventStage = ++stage;
       match.event = event;
       matchFormik.setValues({
         ...matchFormik.values,
@@ -359,7 +393,6 @@ const ViewBracket2 = ({ formikData, event }) => {
       });
     }
     var teams = [];
-    debugger;
     teams.push({ id: match.team1Id, name: match.team1 }, { id: match.team2Id, name: match.team2 });
     setTeamList(teams);
     getAllGrounds();
@@ -367,29 +400,47 @@ const ViewBracket2 = ({ formikData, event }) => {
   };
 
   return (
-    <Card>
-      {arr.includes(formikData.selectedTeams.length) ? (
-        <Row>
-          {Array.from(Array(2), (e, index) => (
-            <Col span={12} dir={index == 0 ? 'LTR' : 'RTL'}>
-              {generateBracket(index == 0 ? column1Teams : column2Teams)}
-            </Col>
-          ))}
-        </Row>
-      ) : (
-        <Empty />
-      )}
-      {!isOpenModal || (
-        <CreateOrUpdateKnockOutMatch
-          matchFormik={matchFormik}
-          handleCancel={handleCancel}
-          editMatch={editMatch}
-          teamList={teamList}
-          playerList={playerList}
-          groundList={groundList}
-        ></CreateOrUpdateKnockOutMatch>
-      )}
-    </Card>
+    <Skeleton loading={loading}>
+      <Card>
+        {arr.includes(formikData.selectedTeams.length) ? (
+          <>
+            <Row style={{ textAlign: 'center' }}>
+              <p>
+                <img src={cup} height={100} width={120} />
+              </p>
+              <p>
+                {formikData && formikData.winner ? (
+                  <Link to={`/teamProfile/${formikData.winner.id}`}>
+                    <Tag color="#108ee9">{formikData.winner.name || 'Winner'}</Tag>
+                  </Link>
+                ) : (
+                  <Tag color="#108ee9">{formikData.winner.name || 'Winner'}</Tag>
+                )}
+              </p>
+            </Row>
+            <Row>
+              {Array.from(Array(2), (e, index) => (
+                <Col span={12} dir={index == 0 ? 'LTR' : 'RTL'}>
+                  {generateBracket(index == 0 ? column1Teams : column2Teams, finalist, index)}
+                </Col>
+              ))}
+            </Row>
+          </>
+        ) : (
+          <Empty />
+        )}
+        {!isOpenModal || (
+          <CreateOrUpdateKnockOutMatch
+            matchFormik={matchFormik}
+            handleCancel={handleCancel}
+            editMatch={editMatch}
+            teamList={teamList}
+            playerList={playerList}
+            groundList={groundList}
+          ></CreateOrUpdateKnockOutMatch>
+        )}
+      </Card>
+    </Skeleton>
   );
 };
 

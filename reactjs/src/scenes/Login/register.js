@@ -94,7 +94,6 @@ const Register = () => {
           });
           return;
         }
-        debugger
         userFormik.setValues({
           ...userFormik.values,
           ...{ phoneNumber: phoneNumberFormik.values.phoneNumber, roleName: 'Player'},

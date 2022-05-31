@@ -305,7 +305,6 @@ const ViewBracket1 = ({ formikData,event }) => {
       });
     }
     var teams = [];
-    debugger;
     teams.push({ id: match.team1Id, name: match.team1 }, { id: match.team2Id, name: match.team2 });
     setTeamList(teams);
     getAllGrounds();

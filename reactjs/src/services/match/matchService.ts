@@ -31,11 +31,6 @@ class MatchService {
     return result.data.result;
   }
 
-  public async getTeamsOfStage(id: number) {
-    let result = await http.get(`/api/services/app/Match/getTeamsOfStage?eventId=${id}`);
-    return result.data.result;
-  }
-
   public async getAllMatchesByEventId(id: number) {
     let result = await http.get(`/api/services/app/Match/GetAllStagedMatchesByEventId?eventId=${id}`);
     return result.data.result;

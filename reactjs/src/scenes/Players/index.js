@@ -169,7 +169,6 @@ const Player = () => {
   };
 
   const viewPlayerProfile = (item) => {
-    debugger;
     playerStatistics(item.id);
     setIsSetDrawerVisible(true);
   };

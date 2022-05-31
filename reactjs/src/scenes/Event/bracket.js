@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Modal, Row, Col, Radio, Transfer, Descriptions, Tabs, PageHeader } from 'antd';
+import { Button, Card, Modal, Row, Col, Radio, Transfer, Descriptions, Tabs, PageHeader, Skeleton } from 'antd';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import CustomInput from '../../components/Input';
 import TeamService from '../../services/team/TeamService';
@@ -12,9 +12,30 @@ import MatchService from '../../services/match/matchService';
 const success = Modal.success;
 const error = Modal.error;
 const { TabPane } = Tabs;
+
+const pageHeader = {
+  border: '1px solid rgb(235, 237, 240)',
+};
+const footer = {
+  right: 0,
+  bottom: 0,
+  width: '100%',
+  borderTop: '1px solid #e9e9e9',
+  padding: '10px 16px',
+  background: '#fff',
+  textAlign: 'right',
+  marginTop: '20px',
+};
+
+const listStyle = {
+  width: '40%',
+  height: '100%',
+};
+
 const Bracket = () => {
   //const [teamList, setTeamList] = useState([]);
   const [viewBracket, setViewBracket] = useState(false);
+  const [loading, setLoading] = useState(true);
   //const [selectedTeamList, setSelectedTeamList] = useState([]);
   const param = useParams();
   const history = useHistory();
@@ -51,16 +72,11 @@ const Bracket = () => {
   const getAllMatchesByEventId = (teams, eventTeams) => {
     MatchService.getAllMatchesByEventId(param.eventId).then((res) => {
       getMock(teams, eventTeams, res);
+      setLoading(false);
     });
   };
 
-  const getTeamsOfStage = (teams, eventTeams, matches) => {
-    MatchService.getTeamsOfStage(param.eventId).then((res) => {
-      getMock(teams, eventTeams, res, matches);
-    });
-  };
-
-  const getMock = (teams, eventTeams, matches) => {
+  const getMock = (teams, eventTeams, res) => {
     const targetKeys = [];
     const mockData = [];
     eventTeams.forEach((item, index) => {
@@ -90,8 +106,8 @@ const Bracket = () => {
       selectedTeams: targetKeys,
       radio: radio,
       noOfTeams: targetKeys.length,
-      //stage2Teams: stage2Teams,
-      matches: matches,
+      matches: res.eventMatches,
+      winner: res.winner,
     });
     //setState({ mockData, targetKeys });
   };
@@ -129,69 +145,51 @@ const Bracket = () => {
     lineHeight: '30px',
   };
   return (
-    <Card>
-      <PageHeader
-        style={{
-          border: '1px solid rgb(235, 237, 240)',
-        }}
-        onBack={history.goBack}
-        title={param.event}
-      />
-      <Tabs tabPosition={'top'}>
-        <TabPane tab="Bracket Details" key="1">
-          <div>
-            {bracketFormik.values.radio == 1 ? (
-              <div style={{ marginTop: '24px', padding: '10px' }}>
-                <Descriptions title="How-To">
-                  <Descriptions.Item label="1">Enter in order they will play (1 vs 2, 3 vs 4, 5 vs 6, etc)</Descriptions.Item>
-                  <Descriptions.Item label="2">This Generator is only applicable of Knock-out bases</Descriptions.Item>
-                  <Descriptions.Item label="3">No of Team must be in series(4,8,16,32,64,128 .... etc)</Descriptions.Item>
-                  <Descriptions.Item label="4">Selected Teams must be equal to the no of teams</Descriptions.Item>
-                  <Descriptions.Item label="4">Tournament Matches will be created automatically</Descriptions.Item>
-                  <Descriptions.Item label="5">Once Team has been selected will not be edited make sure before generate</Descriptions.Item>
-                </Descriptions>
-                <Transfer
-                  titles={['All Players', 'Selected Players']}
-                  dataSource={bracketFormik.values.mockData}
-                  showSearch
-                  listStyle={{
-                    width: '40%',
-                    height: '100%',
-                  }}
-                  operations={['', '']}
-                  targetKeys={bracketFormik.values.selectedTeams}
-                  onChange={(e) => handleChange(e, 'selectedTeams')}
-                  render={(item) => `${item.title}-${item.description}`}
-                />
-              </div>
-            ) : null}
+    <Skeleton loading={loading}>
+      <Card>
+        <PageHeader style={pageHeader} onBack={history.goBack} title={param.event} />
+        <Tabs tabPosition={'top'}>
+          <TabPane tab="Bracket Details" key="1">
+            <div>
+              {bracketFormik.values.radio == 1 ? (
+                <div style={{ marginTop: '24px', padding: '10px' }}>
+                  <Descriptions title="How-To">
+                    <Descriptions.Item label="1">Enter in order they will play (1 vs 2, 3 vs 4, 5 vs 6, etc)</Descriptions.Item>
+                    <Descriptions.Item label="2">This Generator is only applicable of Knock-out bases</Descriptions.Item>
+                    <Descriptions.Item label="3">No of Team must be in series(4,8,16,32,64,128 .... etc)</Descriptions.Item>
+                    <Descriptions.Item label="4">Selected Teams must be equal to the no of teams</Descriptions.Item>
+                    <Descriptions.Item label="4">Tournament Matches will be created automatically</Descriptions.Item>
+                    <Descriptions.Item label="5">Once Team has been selected will not be edited make sure before generate</Descriptions.Item>
+                  </Descriptions>
+                  <Transfer
+                    titles={['All Players', 'Selected Players']}
+                    dataSource={bracketFormik.values.mockData}
+                    showSearch
+                    listStyle={listStyle}
+                    operations={['', '']}
+                    targetKeys={bracketFormik.values.selectedTeams}
+                    onChange={(e) => handleChange(e, 'selectedTeams')}
+                    render={(item) => `${item.title}-${item.description}`}
+                  />
+                </div>
+              ) : null}
 
-            <div
-              style={{
-                right: 0,
-                bottom: 0,
-                width: '100%',
-                borderTop: '1px solid #e9e9e9',
-                padding: '10px 16px',
-                background: '#fff',
-                textAlign: 'right',
-                marginTop: '20px',
-              }}
-            >
-              <Button style={{ marginRight: 8 }}>
-                <Link to={'/events'}>Back</Link>
-              </Button>
-              <Button onClick={handleSubmit} type="primary">
-                Save
-              </Button>
+              <div style={footer}>
+                <Button style={{ marginRight: 8 }}>
+                  <Link to={'/events'}>Back</Link>
+                </Button>
+                <Button onClick={handleSubmit} type="primary">
+                  Save
+                </Button>
+              </div>
             </div>
-          </div>
-        </TabPane>
-        <TabPane tab="View Bracket" key="2">
-          <ViewBracket2 formikData={bracketFormik.values} event={param.event} />
-        </TabPane>
-      </Tabs>
-    </Card>
+          </TabPane>
+          <TabPane tab="View Bracket" key="2">
+            <ViewBracket2 formikData={bracketFormik.values} event={param.event} loading={loading} />
+          </TabPane>
+        </Tabs>
+      </Card>
+    </Skeleton>
   );
 };
 export default Bracket;
