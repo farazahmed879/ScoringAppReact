@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Modal, Table, Dropdown, Menu, Row, Tabs, Divider, Col,Card, PageHeader } from 'antd';
+import { Button, Form, Modal, Dropdown, Menu, Row, Tabs, Divider, Col, Card, PageHeader, Skeleton } from 'antd';
 import { L } from '../../lib/abpUtility';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -15,13 +15,13 @@ import TeamScoreDrawer from './teamScore';
 import ViewTeamScore from './viewTeamScore';
 import FallofWicket from './fallofWicket';
 import ViewFallOfWicket from './viewFallofWicket';
+import CustomTable from '../../components/Table';
 
 const { TabPane } = Tabs;
 
 const success = Modal.success;
 const error = Modal.error;
 const AddScore = (prop) => {
-
   const fallofWicketInitial = {
     id: 0,
     first: null,
@@ -63,6 +63,7 @@ const AddScore = (prop) => {
   };
 
   const teamScoreCardInitial = {
+    id: 0,
     totalScore: '',
     overs: '',
     wickets: '',
@@ -92,7 +93,11 @@ const AddScore = (prop) => {
   const [team1FallofWicket, setTeam1FallofWicket] = useState([]);
   const [team2FallofWicket, setTeam2FallofWicket] = useState([]);
 
+  const [team1, setTeam1] = useState('');
+  const [team2, setTeam2] = useState('');
+
   const [editScoreCard, setEditScoreCard] = useState({});
+  const [loading, setLoading] = useState(true);
   //const history = useHistory();
   const param = useParams();
   const history = useHistory();
@@ -107,6 +112,11 @@ const AddScore = (prop) => {
     overs: Yup.string().required('Required'),
     wickets: Yup.string().required('Required'),
   });
+
+  //UseEffects
+  useEffect(() => {
+    getFullScoreCard(+param.team1Id, +param.team2Id, +param.matchId);
+  }, []);
 
   const callback = (key) => {
     console.log(key);
@@ -144,10 +154,15 @@ const AddScore = (prop) => {
       setIsOpenModal(false);
       getScoreCard(+param.team1Id, +param.matchId);
       getScoreCard(+param.team2Id, +param.matchId);
+
+      scoreCardFormik.setValues({});
+      // setScoreCardListTeam1({});
+      // setScoreCardListTeam2({});
     });
   };
 
   const teamScoreCardhandleSubmit = (e) => {
+    debugger;
     let req = {
       id: e.id || 0,
       totalScore: e.totalScore,
@@ -157,7 +172,7 @@ const AddScore = (prop) => {
       noBalls: e.noBalls,
       byes: e.byes,
       legByes: e.legByes,
-      teamId: activeTag == '1' ? +param.team1Id : activeTag == '2' ? +param.team2Id : 0,
+      teamId: e.teamId,
       matchId: +param.matchId,
     };
 
@@ -182,7 +197,7 @@ const AddScore = (prop) => {
       eight: +e.eight,
       ninth: +e.ninth,
       tenth: +e.tenth,
-      teamId: activeTag == '1' ? +param.team1Id : activeTag == '2' ? +param.team2Id : 0,
+      teamId: e.team1Id,
       matchId: +param.matchId,
     };
     //console.log('Team SCore Object', req);
@@ -230,6 +245,92 @@ const AddScore = (prop) => {
   });
 
   //get Calls
+  const getFullScoreCard = (team1Id, team2Id, matchId) => {
+    setLoading(true);
+    ScoreCardService.getFullScorecard(team1Id, team2Id, matchId).then((res) => {
+      if (res.success) {
+        var result = res.result;
+        if (!result) return;
+        debugger;
+        var team1Playerscores = result.team1Playerscore;
+        var team2Playerscores = result.team2Playerscore;
+
+        var team1FallofWickets = result.team1FallofWicket;
+        var team2FallofWickets = result.team2FallofWicket;
+
+        var team1Score = result.team1Score;
+        var team2Score = result.team2Score;
+
+        setTeam1(result.team1);
+        setTeam2(result.team2);
+
+        if (team1Playerscores && team1Playerscores.length > 0) {
+          setScoreCardListTeam1(
+            team1Playerscores.map((r) => ({
+              ...r,
+              key: r.id,
+            }))
+          );
+        }
+
+        if (team2Playerscores && team2Playerscores.length > 0) {
+          setScoreCardListTeam2(
+            team2Playerscores.map((r) => ({
+              ...r,
+              key: r.id,
+            }))
+          );
+        }
+
+        if (team1Score) {
+          setTeam1Score(team1Score);
+          team1ScoreFormik.setValues({
+            ...team1ScoreFormik.values,
+            ...team1Score,
+          });
+        }
+
+        if (team2Score) {
+          setTeam2Score(team2Score);
+          team2ScoreFormik.setValues({
+            ...team2ScoreFormik.values,
+            ...team2Score,
+          });
+        }
+
+        if (team1FallofWickets && team1FallofWickets[0]) {
+          fallofWicketTeam1Formik.setValues({
+            ...fallofWicketTeam1Formik.values,
+            ...team1FallofWickets[0],
+          });
+          setTeam1FallofWicket(
+            team1FallofWickets.map((r) => ({
+              ...r,
+              key: r.id,
+            }))
+          );
+        }
+
+        if (team2FallofWickets && team2FallofWickets[0]) {
+          fallofWicketTeam2Formik.setValues({
+            ...fallofWicketTeam2Formik.values,
+            ...team2FallofWickets[0],
+          });
+          setTeam2FallofWicket(
+            team2FallofWickets.map((r) => ({
+              ...r,
+              key: r.id,
+            }))
+          );
+        }
+
+        setLoading(false);
+        //setScoreCardStateUpdate(res, teamId);
+      }
+    });
+    //
+  };
+
   const getScoreCard = (teamId, matchId) => {
     ScoreCardService.getAll(teamId, matchId).then((res) => {
       //console.log('PLayer Scores 1', res);
@@ -272,6 +373,7 @@ const AddScore = (prop) => {
   // };
 
   const getAllPlayers = () => {
+    debugger;
     playerService.getAllByTeamId(activeTag == 1 ? +param.team1Id : activeTag == 2 ? +param.team2Id : null).then((res) => {
       // console.log('Players', res);
       setPlayerList(res);
@@ -299,15 +401,6 @@ const AddScore = (prop) => {
   const handleChangeTeamScore = (value, key) => {
     team1ScoreFormik.setValues({ ...team1ScoreFormik.values, [key]: value });
   };
-  //UseEffects
-  useEffect(() => {
-    getScoreCard(+param.team2Id, +param.matchId);
-    getScoreCard(+param.team1Id, +param.matchId);
-    getTeamScore(+param.team1Id, +param.matchId);
-    getTeamScore(+param.team2Id, +param.matchId);
-    getFallofWicket(+param.team1Id, +param.matchId);
-    getFallofWicket(+param.team2Id, +param.matchId);
-  }, []);
 
   useEffect(() => {
     if (isOpenModal) {
@@ -469,10 +562,12 @@ const AddScore = (prop) => {
       ),
     },
   ];
-  console.log('fallofWicketTeam1Formik', fallofWicketTeam2Formik);
-  console.log('param', param);
+  //console.log('fallofWicketTeam1Formik', fallofWicketTeam2Formik);
+  console.log('team1ScoreFormik', team1ScoreFormik.values);
+  console.log('team2ScoreFormik', team2ScoreFormik.values);
+  console.log('activeTag', activeTag);
 
-  const { tabPosition } = { tabPosition: 'left' };
+  const { tabPosition } = { tabPosition: 'top' };
   return (
     <Card>
       <PageHeader
@@ -488,27 +583,35 @@ const AddScore = (prop) => {
         </Button> */}
       </div>
       <Tabs tabPosition={tabPosition} onChange={onTabChange}>
-        <TabPane tab="Team-1" key="1">
-          <ViewTeamScore data={team1Score} opemTeamScoreModal={opemTeamScoreModal}></ViewTeamScore>
+        <TabPane tab={team1} key="1">
+          <Skeleton loading={loading}>
+            <ViewTeamScore data={team1Score} teamName={team1} opemTeamScoreModal={opemTeamScoreModal}></ViewTeamScore>
+          </Skeleton>
+
           <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '10px' }}>
             <Button type="primary" shape="round" icon="plus" onClick={openModal}>
               Add
             </Button>
           </div>
-          <Table columns={columns} dataSource={scoreCardListTeam1} scroll={{ x: 1500, y: 1000 }} pagination={false} />
-          <ViewFallOfWicket data={team1FallofWicket} visible={openFallofWicketDrawer} openModal={openModal}></ViewFallOfWicket>
+          <CustomTable loading={loading} data={scoreCardListTeam1} columns={columns}></CustomTable>
+          <Skeleton loading={loading}>
+            <ViewFallOfWicket data={team1FallofWicket} visible={openFallofWicketDrawer} openModal={openModal}></ViewFallOfWicket>
+          </Skeleton>
         </TabPane>
-        <TabPane tab="Team-2" key="2">
-          <ViewTeamScore data={team2Score} opemTeamScoreModal={opemTeamScoreModal}></ViewTeamScore>
+        <TabPane tab={team2} key="2">
+          <Skeleton loading={loading}>
+            <ViewTeamScore data={team2Score} teamName={team2} opemTeamScoreModal={opemTeamScoreModal}></ViewTeamScore>
+          </Skeleton>
           <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '10px' }}>
             <Button type="primary" shape="round" icon="plus" onClick={openModal}>
               Add
             </Button>
           </div>
-          <Table columns={columns} dataSource={scoreCardListTeam2} scroll={{ x: 1500, y: 1000 }} pagination={false} />
-          <ViewFallOfWicket data={team2FallofWicket} visible={openFallofWicketDrawer} openModal={openModal}></ViewFallOfWicket>
+          <CustomTable loading={loading} data={scoreCardListTeam2} columns={columns}></CustomTable>
+          <Skeleton loading={loading}>
+            <ViewFallOfWicket data={team2FallofWicket} visible={openFallofWicketDrawer} openModal={openModal}></ViewFallOfWicket>
+          </Skeleton>
         </TabPane>
-        {/* <TabPane tab="Fall of wickets" key="3"></TabPane> */}
       </Tabs>
 
       <CustomModal

@@ -32,6 +32,11 @@ class ScoreCardService {
     let result = await http.get(`/api/services/app/TeamScores/GetTeamScorecard?team1Id=${team1Id}&team2Id=${team2Id}&matchId=${matchId}`);
     return result.data;
   }
+
+  public async getFullScorecard(team1Id: Number, team2Id: Number, matchId: Number) {
+    let result = await http.get(`/api/services/app/TeamScores/GetFullScorecard?team1Id=${team1Id}&team2Id=${team2Id}&matchId=${matchId}`);
+    return result.data;
+  }
 }
 
 export default new ScoreCardService();

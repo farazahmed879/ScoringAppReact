@@ -138,12 +138,6 @@ const Bracket = () => {
   };
 
   //console.log('Bracket Values', bracketFormik.values);
-
-  const radioStyle = {
-    display: 'block',
-    height: '30px',
-    lineHeight: '30px',
-  };
   return (
     <Skeleton loading={loading}>
       <Card>

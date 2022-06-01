@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Button, Card, Row, Col, Tooltip, Empty, Icon, Badge, Modal, Popover, Tag, Skeleton } from 'antd';
+import { Button, Card, Row, Col, Tooltip, Empty, Icon, Badge, Modal, Popover, Tag, Skeleton, Radio } from 'antd';
 import { truncateText } from '../../helper/helper';
 import { useFormik } from 'formik';
 import './style.css';
@@ -233,7 +233,13 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
                     <Link
                       to={checkConditionTeam(assignedTeams, index, index2) ? redirectToTeamProfile(assignedTeams[index][index2].team2Id, 2) : null}
                     >
-                      <Button dir="LTR" style={{ width: '120px', color: checkConditionTeam(assignedTeams, index, index2) && assignedTeams[index][index2].team2 ? 'black' : 'red' }}>
+                      <Button
+                        dir="LTR"
+                        style={{
+                          width: '120px',
+                          color: checkConditionTeam(assignedTeams, index, index2) && assignedTeams[index][index2].team2 ? 'black' : 'red',
+                        }}
+                      >
                         {checkConditionTeam(assignedTeams, index, index2)
                           ? truncateText(assignedTeams[index][index2].team2 || 'Update Score', 10)
                           : 'Unknown Team'}
@@ -404,6 +410,15 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
       <Card>
         {arr.includes(formikData.selectedTeams.length) ? (
           <>
+            <Row>
+              <div>
+                <Radio.Group defaultValue="a" buttonStyle="solid">
+                  <Radio.Button value="a">Small</Radio.Button>
+                  <Radio.Button value="b">Medium</Radio.Button>
+                  <Radio.Button value="c">Large</Radio.Button>
+                </Radio.Group>
+              </div>
+            </Row>
             <Row style={{ textAlign: 'center' }}>
               <p>
                 <img src={cup} height={100} width={120} />
