@@ -34,9 +34,9 @@ export const teamTypeOptions = [
   { id: 8, name: 'Office' },
 ];
 export const matchTypes = [
-  { id: 1, name: 'Friendly' },
-  { id: 2, name: 'Tournament' },
-  { id: 3, name: 'Series' },
+  { id: 3, name: 'Friendly' },
+  { id: 1, name: 'Tournament' },
+  { id: 2, name: 'Series' },
 ];
 export const eventStage = [
   { id: 1, name: '1' },

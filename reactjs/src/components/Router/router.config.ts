@@ -77,6 +77,15 @@ export const appRouters: any = [
     component: LoadableComponent(() => import('../../scenes/Event/bracket')),
   },
   {
+    path: '/eventTeams/:event/:eventId/groups/:group',
+    permission: '',
+    title: 'bracket',
+    name: 'about',
+    icon: 'info-circle',
+    showInMenu: false,
+    component: LoadableComponent(() => import('../../scenes/Event/add-event-teams')),
+  },
+  {
     path: '/teams',
     permission: 'Pages.Roles',
     title: 'Teams',

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams,useHistory } from 'react-router-dom';
-import { Card, Tabs, Icon, Empty, Tooltip, Tag, Row, Skeleton,PageHeader } from 'antd';
+import { Link, useParams, useHistory } from 'react-router-dom';
+import { Card, Tabs, Icon, Empty, Tooltip, Tag, Row, Skeleton, PageHeader, Button } from 'antd';
 import { truncateText } from '../../helper/helper';
 import playerService from '../../services/player/playerService';
 import matchService from '../../services/match/matchService';
@@ -12,6 +12,8 @@ import ViewMatchBox from '../../components/ViewMatchBox';
 import PlayerViewBox from '../../components/PlayerViewBox';
 import TeamViewBox from '../../components/TeamViewBox';
 import moment from 'moment';
+import ViewBracket2 from './viewBracket2';
+import PointsTable from './points-table';
 
 const gridStyle = {
   width: '20%',
@@ -19,19 +21,33 @@ const gridStyle = {
   margin: '10px',
   cursor: 'pointer',
 };
+
+const filterButon = {
+  position: 'fixed',
+  right: '32px',
+  bottom: '102px',
+  Zindex: '2147483640',
+  display: 'flex',
+  flexDirection: 'column',
+  cursor: 'pointer',
+};
 const EventProfile = () => {
   const [players, setPlayerList] = useState([]);
   const [teamList, setTeamList] = useState([]);
   const [matchList, setMatchList] = useState([]);
   const [stats, setEventStats] = useState({});
+  const [pointsTable, setPointsTable] = useState([]);
   const [statsLoading, setStatsLoading] = useState(true);
+  const [bracketsData, setBracketsData] = useState({ matches: [], winner: {}, selectedTeamsLen: 0 });
   const param = useParams();
   const history = useHistory();
   useEffect(() => {
     getEventStats(param.eventId);
     getAllTeamsByEventId(param.eventId);
-    getAllMatchesByEventId(param.eventId);
+    getMatchesViewByEventId(param.eventId);
     getAllPlayersByEventId(param.eventId);
+    getAllMatchesByEventId(param.eventId);
+    getPointsTable(param.eventId);
   }, []);
   const getAllPlayersByEventId = (id) => {
     playerService.getPlayersByEventId(id).then((res) => {
@@ -39,14 +55,14 @@ const EventProfile = () => {
       setPlayerList(res);
     });
   };
-  const getAllMatchesByEventId = (id) => {
+  const getMatchesViewByEventId = (id) => {
     matchService.getMatchesViewByEventId(id).then((res) => {
       console.log('Event Matches', res);
       setMatchList(res);
     });
   };
   const getAllTeamsByEventId = (id) => {
-    TeamService.getAllEventTeams(id).then((res) => {
+    TeamService.getAllEventTeams(id, undefined).then((res) => {
       console.log('Event Teams', res);
       setTeamList(res);
     });
@@ -59,6 +75,30 @@ const EventProfile = () => {
       setStatsLoading(false);
     });
   };
+
+  const getAllMatchesByEventId = () => {
+    matchService.getAllMatchesByEventId(param.eventId).then((res) => {
+      if (res) {
+        let noOfTeams = 0;
+        if (res.eventMatches && res.eventMatches[0] && res.eventMatches[0].matches) {
+          noOfTeams = res.eventMatches[0].matches.length * 2;
+        }
+        setBracketsData({ matches: res.eventMatches, winner: res.winner, noOfTeams: noOfTeams });
+      }
+    });
+  };
+
+  const getPointsTable = () => {
+    EventService.getPointsTable(param.eventId).then((res) => {
+      if (res.success) {
+        setPointsTable(res.result);
+      }
+    });
+  };
+
+  const handleAddMatch = () => {
+    
+  }
 
   const { TabPane } = Tabs;
   const { Meta } = Card;
@@ -165,6 +205,13 @@ const EventProfile = () => {
             key="2"
           >
             <ViewMatchBox data={matchList}></ViewMatchBox>
+            {stats.groups ? (
+              <Tooltip title={'Add Match'}>
+                <Button type="primary" size="large" shape="circle" style={filterButon} onClick={handleAddMatch}>
+                  <Icon style={{ marginLeft: '8px', marginTop: '8px' }} type="plus" />
+                </Button>
+              </Tooltip>
+            ) : null}
           </TabPane>
           <TabPane
             tab={
@@ -176,6 +223,15 @@ const EventProfile = () => {
             key="3"
           >
             <TeamViewBox data={teamList}></TeamViewBox>
+            {stats.groups ? (
+              <Tooltip title={'Add Team'}>
+                <Link to={`/eventTeams/${stats.event}/${param.eventId}/groups/${stats.groups}`}>
+                  <Button type="primary" size="large" shape="circle" style={filterButon}>
+                    <Icon style={{ marginLeft: '8px', marginTop: '8px' }} type="plus" />
+                  </Button>
+                </Link>
+              </Tooltip>
+            ) : null}
           </TabPane>
 
           <TabPane
@@ -199,6 +255,28 @@ const EventProfile = () => {
             key="5"
           >
             <LeaderBoard data={[]} columns={[]}></LeaderBoard>
+          </TabPane>
+          <TabPane
+            tab={
+              <span>
+                <Icon type="apple" />
+                Brackets
+              </span>
+            }
+            key="6"
+          >
+            <ViewBracket2 formikData={bracketsData} event={stats.event} loading={false}></ViewBracket2>
+          </TabPane>
+          <TabPane
+            tab={
+              <span>
+                <Icon type="apple" />
+                Points Table
+              </span>
+            }
+            key="7"
+          >
+            <PointsTable data={pointsTable}></PointsTable>
           </TabPane>
         </Tabs>
       </div>

@@ -71,9 +71,6 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
     }
     setColumn1Teams(column1);
     setColumn2Teams(column2);
-
-    console.log('c1', column1);
-    console.log('c2', column2);
   }, [formikData]);
 
   const calculateColumns = (num) => {
@@ -135,7 +132,7 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
     return (
       <div style={{ display: 'grid', gridTemplateColumns: '1fr' }}>
         {Array.from(Array(index + 1), (e, index3) => (
-          <span style={{ marginTop: '10.5px' }}>|</span>
+          <span key={index3} style={{ marginTop: '10.5px' }}>|</span>
         ))}
       </div>
     );
@@ -167,6 +164,7 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
   };
 
   const content = (match) => (
+    
     <div>
       {match && match.id ? (
         <p>
@@ -202,9 +200,9 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
       >
         {calculateColumns(matches[0].length).map((i, index) => (
           <div style={column}>
+            {console.log("Check", i)}
             {Array.from(Array(i), (e, index2) => (
-              <Popover content={content(assignedTeams[index][index2])} title={checkConditionDate(assignedTeams, index, index2)}>
-                {console.log('match', assignedTeams[index][index2])}
+              <Popover key={index2} content={checkConditionTeam(assignedTeams, index, index2) ? content(assignedTeams[index][index2]) : 'Upcoming'} title={checkConditionDate(assignedTeams, index, index2)}>
                 <div style={{ display: 'flex' }}>
                   <Tooltip title={checkConditionTeam(assignedTeams, index, index2) ? assignedTeams[index][index2].team1 : 'Upcoming'}>
                     <Link
@@ -222,7 +220,7 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
                           : 'Unknown Team'}
                       </Button>
                     </Link>
-                  </Tooltip>
+                  </Tooltip> 
 
                   <span style={{ fontSize: '15px' }}>{checkConditionDate(assignedTeams, index, index2)}</span>
                   <hr style={hr1} />
@@ -408,7 +406,7 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
   return (
     <Skeleton loading={loading}>
       <Card>
-        {arr.includes(formikData.selectedTeams.length) ? (
+        {arr.includes(formikData.noOfTeams) ? (
           <>
             <Row>
               <div>
@@ -435,7 +433,7 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
             </Row>
             <Row>
               {Array.from(Array(2), (e, index) => (
-                <Col span={12} dir={index == 0 ? 'LTR' : 'RTL'}>
+                <Col key={index} span={12} dir={index == 0 ? 'LTR' : 'RTL'}>
                   {generateBracket(index == 0 ? column1Teams : column2Teams, finalist, index)}
                 </Col>
               ))}

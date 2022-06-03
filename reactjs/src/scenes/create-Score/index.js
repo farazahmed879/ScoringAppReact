@@ -162,7 +162,6 @@ const AddScore = (prop) => {
   };
 
   const teamScoreCardhandleSubmit = (e) => {
-    debugger;
     let req = {
       id: e.id || 0,
       totalScore: e.totalScore,
@@ -251,7 +250,6 @@ const AddScore = (prop) => {
       if (res.success) {
         var result = res.result;
         if (!result) return;
-        debugger;
         var team1Playerscores = result.team1Playerscore;
         var team2Playerscores = result.team2Playerscore;
 
@@ -373,7 +371,6 @@ const AddScore = (prop) => {
   // };
 
   const getAllPlayers = () => {
-    debugger;
     playerService.getAllByTeamId(activeTag == 1 ? +param.team1Id : activeTag == 2 ? +param.team2Id : null).then((res) => {
       // console.log('Players', res);
       setPlayerList(res);

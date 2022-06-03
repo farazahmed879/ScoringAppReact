@@ -50,7 +50,7 @@ const Player = () => {
     name: Yup.string().required('Required'),
     startDate: Yup.string().required('Required'),
     endDate: Yup.string().required('Required'),
-    eventType: Yup.string().required('Required'),
+    eventType: Yup.number().required('Required'),
   });
 
   const callback = (key) => {
@@ -141,6 +141,8 @@ const Player = () => {
     });
   };
 
+
+
   const columns = [
     {
       title: 'Name',
@@ -207,6 +209,10 @@ const Player = () => {
                   <Menu.Item>
                     <Link to={'/bracket/' + item.name + '/' + item.id}>{L('Fixture Generator')}</Link>
                   </Menu.Item>
+                ) : item.eventType == 1 && item.tournamentType == 2 ? (
+                  <Menu.Item>
+                    <Link to={'/eventTeams/' + item.name + '/' + item.id + '/' + 'groups' + '/' + item.numberOfGroup}>{L('Add Team')}</Link>
+                  </Menu.Item>
                 ) : null}
               </Menu>
             }
@@ -233,7 +239,14 @@ const Player = () => {
           <FilterPanel handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
-      <CustomTable loading={loading}  pagination={pagination} columns={columns} data={eventList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
+      <CustomTable
+        loading={loading}
+        pagination={pagination}
+        columns={columns}
+        data={eventList}
+        scroll={{ x: 1500 }}
+        handleTableChange={handleTableChange}
+      />
       <CustomModal
         title={Object.keys(editEvent).length ? 'Edit Event' : 'Add Event'}
         isModalVisible={isOpenModal}
@@ -324,17 +337,18 @@ const Player = () => {
                 />
               </Col>
             ) : null}
-
-            <Col span={12}>
-              <CustomInput
-                title="No of Groups"
-                type="number"
-                handleChange={handleChange}
-                value={eventFormik.values.numberOfGroup}
-                stateKey="numberOfGroup"
-                placeholder=""
-              />
-            </Col>
+            {eventFormik.values.eventType == 1 && eventFormik.values.tournamentType == 2 ? (
+              <Col span={12}>
+                <CustomInput
+                  title="No of Groups"
+                  type="number"
+                  handleChange={handleChange}
+                  value={eventFormik.values.numberOfGroup}
+                  stateKey="numberOfGroup"
+                  placeholder=""
+                />
+              </Col>
+            ) : null}
           </Row>
 
           <Form.Item>

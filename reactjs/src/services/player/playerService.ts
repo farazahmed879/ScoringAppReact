@@ -27,6 +27,11 @@ class PlayerService {
     return result.data.result;
   }
 
+  public async AllPlayersByTeamIds(teamIds: []) {
+    let result = await http.post('/api/services/app/Player/AllPlayersByTeamIds', teamIds);
+    return result.data.result;
+  }
+
   public async getPlayersByEventId(eventId: number) {
     let result = await http.get(`/api/services/app/Player/GetAllByEventId?id=${eventId}`);
     return result.data.result;

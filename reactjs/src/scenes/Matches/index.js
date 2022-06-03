@@ -37,6 +37,7 @@ const matchInitial = {
   dateOfMatch: '',
   tossWinningTeam: '',
   playerOTM: '',
+  group: 0,
 };
 
 const success = Modal.success;
@@ -48,6 +49,8 @@ const Matches = () => {
   const [matchList, setMatchList] = useState([]);
   // const [match, setPlayer] = useState(matchInitial);
   const [teamList, setTeamList] = useState([]);
+  const [filterTeamList, setFilterTeamList] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [groundList, setGroundList] = useState([]);
   const [playerList, setPlayerList] = useState([]);
   const [eventList, setEventList] = useState([]);
@@ -84,6 +87,7 @@ const Matches = () => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);
       getAll();
+      reset();
     });
   };
 
@@ -119,17 +123,59 @@ const Matches = () => {
   }, [pagination.current]);
 
   useEffect(() => {
+    debugger;
     if (matchFormik.values.eventId) {
-      getAllTeamsByEventId(matchFormik.values.eventId);
+      matchFormik.setValues({ ...matchFormik.values, group: 0 });
+      setTeamList([]);
+      let currentEvent = eventList.filter((i) => i.id == matchFormik.values.eventId)[0];
+      if (!currentEvent.numberOfGroup || currentEvent.numberOfGroup <= 1) {
+        getAllTeamsByEventId(matchFormik.values.eventId);
+        setGroups([]);
+        return;
+      }
+      calculateGruops(currentEvent.numberOfGroup);
     }
   }, [matchFormik.values.eventId]);
 
   useEffect(() => {
-    if (isOpenModal) {
-      getAllPlayers();
-      getAllEvents();
+    if (matchFormik.values.group && matchFormik.values.group > 0) {
+      getAllTeamsByEventId(matchFormik.values.eventId, matchFormik.values.group);
     }
-  }, [isOpenModal]);
+  }, [matchFormik.values.group]);
+
+  useEffect(() => {
+    if (matchFormik.values.matchTypeId == 3) {
+      var obj = matchFormik.values;
+      obj.eventId = '';
+      obj.group = 0;
+      matchFormik.setValues({ ...matchFormik.values, obj });
+      setTeamList(filterTeamList);
+    }
+    if (matchFormik.values.matchTypeId == 1 || matchFormik.values.matchTypeId == 2) {
+      var a = matchFormik.values;
+      a.team1Id = '';
+      a.team2Id = '';
+      matchFormik.setValues({ ...matchFormik.values, a });
+      getAllEvents();
+      setTeamList([]);
+    }
+  }, [matchFormik.values.matchTypeId]);
+
+  useEffect(() => {
+    if (matchFormik.values.team1Id && matchFormik.values.team2Id) {
+      AllPlayersByTeamIds();
+    }
+  }, [matchFormik.values.team1Id, matchFormik.values.team2Id]);
+
+  const calculateGruops = (num) => {
+    let group = [];
+    for (let i = 1; i <= num; i++) {
+      group.push({ id: i, name: i });
+    }
+    setGroups(group);
+
+    console.log('groups', groups);
+  };
 
   const getAll = (filter) => {
     setLoading(true);
@@ -160,8 +206,8 @@ const Matches = () => {
     //
   };
 
-  const getAllTeamsByEventId = (id) => {
-    TeamService.getAllEventTeams(id).then((res) => {
+  const getAllTeamsByEventId = (id, group) => {
+    TeamService.getAllEventTeams(id, group).then((res) => {
       console.log('Event Teams', res);
       setTeamList(res);
     });
@@ -170,7 +216,7 @@ const Matches = () => {
   const getAllTeams = () => {
     TeamService.getAll().then((res) => {
       console.log('Teams', res);
-      setTeamList(res);
+      setFilterTeamList(res);
     });
   };
 
@@ -181,8 +227,11 @@ const Matches = () => {
     });
   };
 
-  const getAllPlayers = () => {
-    playerService.getAll().then((res) => {
+  const AllPlayersByTeamIds = () => {
+    var teamIds = [];
+    teamIds.push(matchFormik.values.team1Id);
+    teamIds.push(matchFormik.values.team2Id);
+    playerService.AllPlayersByTeamIds(teamIds).then((res) => {
       console.log('Players', res);
       setPlayerList(res);
     });
@@ -216,6 +265,11 @@ const Matches = () => {
     setIsOpenModal(true);
     setModalMode('Add Match');
   };
+
+  const reset = () => {
+    matchFormik.setValues({});
+  };
+
   console.log('matchFormik', matchFormik.values);
   const columns = [
     {
@@ -308,7 +362,7 @@ const Matches = () => {
       ),
     },
   ];
-  console.log('matchFormik', matchFormik);
+  // console.log('matchFormik', matchFormik);
 
   return (
     <Card>
@@ -321,7 +375,7 @@ const Matches = () => {
 
       <Collapse onChange={callback} style={{ marginBottom: '10px' }}>
         <Panel header="Advance Filters" key="1">
-          <FilterPanel teams={teamList} grounds={groundList} handleSubmit={filterHandleSubmit}></FilterPanel>
+          <FilterPanel teams={filterTeamList} grounds={groundList} handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
       <CustomTable
@@ -354,12 +408,16 @@ const Matches = () => {
               />
             </Col>
             <Col span={8}>
-              {matchFormik.values.matchTypeId == 2 ? (
+              {matchFormik.values.matchTypeId == 1 || matchFormik.values.matchTypeId == 2 ? (
                 <CustomInput
                   title="Event"
                   type="select"
                   handleChange={handleChange}
-                  options={matchFormik.values.id ? eventList : eventList.filter((i) => i.eventType != 1)}
+                  options={
+                    matchFormik.values.id
+                      ? eventList
+                      : eventList.filter((i) => i.eventType == matchFormik.values.matchTypeId && i.tournamentType == 2)
+                  }
                   value={matchFormik.values.eventId}
                   stateKey="eventId"
                   placeholder="Select Event"
@@ -367,15 +425,15 @@ const Matches = () => {
               ) : null}
             </Col>
             <Col span={8}>
-              {matchFormik.values.matchTypeId == 2 && matchFormik.values.eventId ? (
+              {matchFormik.values.matchTypeId == 1 && matchFormik.values.eventId && groups.length > 0 ? (
                 <CustomInput
-                  title="Event Stage"
+                  title="Group"
                   type="select"
                   handleChange={handleChange}
-                  options={eventStage}
-                  value={matchFormik.values.eventStage}
-                  stateKey="eventStage"
-                  placeholder="Select Stage"
+                  options={groups}
+                  value={matchFormik.values.group}
+                  stateKey="group"
+                  placeholder="Select Group"
                 />
               ) : null}
             </Col>
@@ -453,8 +511,8 @@ const Matches = () => {
               />
             </Col>
           </Row>
-          <Row span={16}>
-            <Col gutter={8}>
+          <Row gutter={16}>
+            <Col span={8}>
               {matchFormik.values.team1Id && matchFormik.values.team2Id ? (
                 <CustomInput
                   title="Toss Winning Team"
@@ -467,27 +525,31 @@ const Matches = () => {
                 />
               ) : null}
             </Col>
-            <Col gutter={8}>
+            {matchFormik.values.team1Id && matchFormik.values.team2Id ? (
+              <Col span={8}>
+                <CustomInput
+                  title="Player Of the Match"
+                  type="select"
+                  handleChange={handleChange}
+                  options={playerList}
+                  value={matchFormik.values.playerOTM}
+                  stateKey="playerOTM"
+                  placeholder="Man of the match"
+                />
+              </Col>
+            ) : null}
+          </Row>
+          <Row gutter={16}>
+            <Col>
               <CustomInput
-                title="Player Of the Match"
-                type="select"
+                title="Description"
+                type="text"
                 handleChange={handleChange}
-                options={playerList}
-                value={matchFormik.values.playerOTM}
-                stateKey="playerOTM"
-                placeholder="Man of the match"
+                value={matchFormik.values.matchDescription}
+                stateKey="matchDescription"
+                placeholder="Optional"
               />
             </Col>
-          </Row>
-          <Row span={16}>
-            <CustomInput
-              title="Description"
-              type="text"
-              handleChange={handleChange}
-              value={matchFormik.values.matchDescription}
-              stateKey="matchDescription"
-              placeholder="Optional"
-            />
           </Row>
 
           <Form.Item>

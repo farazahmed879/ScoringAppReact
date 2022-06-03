@@ -44,8 +44,6 @@ const Bracket = () => {
     noOfTeams: 0,
     selectedTeams: [],
     mockData: [],
-    isCreateMatch: true,
-    matches: [],
   };
 
   const bracketValidation = Yup.object().shape({
@@ -64,7 +62,7 @@ const Bracket = () => {
   };
 
   const getAllEventTeamsByEventId = (teams) => {
-    TeamService.getAllEventTeams(param.eventId).then((res) => {
+    TeamService.getAllEventTeams(param.eventId,undefined).then((res) => {
       getAllMatchesByEventId(teams, res);
     });
   };
@@ -96,18 +94,13 @@ const Bracket = () => {
       };
       mockData.push(data);
     });
-    let radio = 0;
-    if (targetKeys.length > 0) {
-      radio = 1;
-    }
     bracketFormik.setValues({
       ...bracketFormik.values,
       mockData: mockData,
       selectedTeams: targetKeys,
-      radio: radio,
       noOfTeams: targetKeys.length,
-      matches: res.eventMatches,
-      winner: res.winner,
+      matches: res ? res.eventMatches: [],
+      winner: res ? res.winner: 'Winner',
     });
     //setState({ mockData, targetKeys });
   };
@@ -117,8 +110,7 @@ const Bracket = () => {
     }
     let req = {
       eventId: +param.eventId,
-      teamIds: bracketFormik.values.selectedTeams,
-      isCreateMatch: bracketFormik.values.isCreateMatch,
+      teamIds: bracketFormik.values.selectedTeams
     };
     EventService.createEventTeams(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
@@ -145,7 +137,6 @@ const Bracket = () => {
         <Tabs tabPosition={'top'}>
           <TabPane tab="Bracket Details" key="1">
             <div>
-              {bracketFormik.values.radio == 1 ? (
                 <div style={{ marginTop: '24px', padding: '10px' }}>
                   <Descriptions title="How-To">
                     <Descriptions.Item label="1">Enter in order they will play (1 vs 2, 3 vs 4, 5 vs 6, etc)</Descriptions.Item>
@@ -156,7 +147,7 @@ const Bracket = () => {
                     <Descriptions.Item label="5">Once Team has been selected will not be edited make sure before generate</Descriptions.Item>
                   </Descriptions>
                   <Transfer
-                    titles={['All Players', 'Selected Players']}
+                    titles={['All Teaams', 'Selected Teams']}
                     dataSource={bracketFormik.values.mockData}
                     showSearch
                     listStyle={listStyle}
@@ -166,7 +157,6 @@ const Bracket = () => {
                     render={(item) => `${item.title}-${item.description}`}
                   />
                 </div>
-              ) : null}
 
               <div style={footer}>
                 <Button style={{ marginRight: 8 }}>

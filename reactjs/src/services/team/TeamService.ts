@@ -34,8 +34,15 @@ class TeamService {
     return result.data.result;
   }
 
-  public async getAllEventTeams(eventId: number) {
-    let result = await http.get(`/api/services/app/Team/GetAllTeamsByEventId?id=${eventId}`);
+  public async getAllEventTeams(eventId: number, group: number) {
+    var url = `/api/services/app/Team/GetAllTeamsByEventId?id=${eventId}`;
+    if (group && group > 0) url = url + `&group=${group}`;
+    let result = await http.get(url);
+    return result.data.result;
+  }
+
+  public async getEventGroupWiseTeams(eventId: number) {
+    let result = await http.get(`/api/services/app/Team/GetAllTeamsByGroupWiseEventId?id=${eventId}`);
     return result.data.result;
   }
 

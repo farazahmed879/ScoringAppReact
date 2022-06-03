@@ -32,6 +32,11 @@ class EventService {
     return result.data.result;
   }
 
+  public async createGroupWiseEventTeams(model: any) {
+    let result = await http.post('/api/services/app/Event/AddGroupWiseEventTeam', model);
+    return result.data.result;
+  }
+
   public async getAllEventsByTeamId(id: number, typeId: number) {
     let result = await http.get(`/api/services/app/Event/GetAllEventsByTeamId?id=${id}&typeId=${typeId}`);
     return result.data.result;
@@ -40,6 +45,12 @@ class EventService {
   public async getEventStats(eventId: number) {
     let result = await http.get(`/api/services/app/Event/GetEventStat?id=${eventId}`);
     return result.data.result;
+  }
+
+
+  public async getPointsTable(eventId: number) {
+    let result = await http.get(`/api/services/app/Event/GetPointsTable?id=${eventId}`);
+    return result.data;
   }
 }
 
