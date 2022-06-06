@@ -8,9 +8,9 @@ const ViewMatchBox = ({ data = [] }) => {
     <>
       {Object.keys(data).length ? (
         <Skeleton loading={!Object.keys(data).length}>
-          <Card>
+          <Card >
             {data.map((e, index2) => (
-              <Link to={'/summary/' + e.id + '/team1/' + e.team1Id + '/team2/' + e.team2Id}>
+              <Link to={'/summary/' + e.id + '/team1/' + e.team1Id + '/team2/' + e.team2Id} key={index2}>
                 <Card.Grid key={index2} style={{ padding: 0 }}>
                   <Card title={e.tournament} key={index2} hoverable={false}>
                     <div style={{ margin: '10px' }}>

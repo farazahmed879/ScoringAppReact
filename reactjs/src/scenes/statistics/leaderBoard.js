@@ -28,13 +28,13 @@ const resetButton = {
   cursor: 'pointer',
 };
 
-const LeaderBoard = ({ teamId = null }) => {
+const LeaderBoard = ({ teamId = null, eventId = null }) => {
   const [leaderStats, setLeaderStats] = useState([]);
   const [leaderType, setLeaderType] = useState(1);
   const [filters, setFilters] = useState({
     teamId: teamId,
     matchType: null,
-    eventId: null,
+    eventId: eventId,
     season: null,
     position: null,
     overs: null,

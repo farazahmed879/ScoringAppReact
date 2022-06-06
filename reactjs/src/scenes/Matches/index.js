@@ -123,7 +123,6 @@ const Matches = () => {
   }, [pagination.current]);
 
   useEffect(() => {
-    debugger;
     if (matchFormik.values.eventId) {
       matchFormik.setValues({ ...matchFormik.values, group: 0 });
       setTeamList([]);
