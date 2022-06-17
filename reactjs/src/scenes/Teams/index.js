@@ -185,6 +185,10 @@ const Team = () => {
     });
   };
 
+  const resetForm =() => {
+    
+  }
+
   const addTeam = () => {
     resetForm();
     setIsOpenModal(true);
