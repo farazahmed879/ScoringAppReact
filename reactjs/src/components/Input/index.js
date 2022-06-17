@@ -38,7 +38,7 @@ const CustomInput = ({
           {OptionGenerator(options)}
         </Select>
       ) : type == 'datePicker' ? (
-        <DatePicker style={{ width: width }} onChange={(e) => handleChange(e, stateKey)} name={stateKey}></DatePicker>
+        <DatePicker value={value} style={{ width: width }} onChange={(e) => handleChange(e, stateKey)} name={stateKey}></DatePicker>
       ) : type == 'checkbox' ? (
         <Checkbox onChange={(e) => handleChange(e.target.checked, stateKey)} name={stateKey}></Checkbox>
       ) : type == 'switch' ? (

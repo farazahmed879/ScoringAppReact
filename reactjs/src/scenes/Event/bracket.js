@@ -29,7 +29,7 @@ const footer = {
 
 const listStyle = {
   width: '40%',
-  height: '100%',
+  minHeight: '300px',
 };
 
 const Bracket = () => {

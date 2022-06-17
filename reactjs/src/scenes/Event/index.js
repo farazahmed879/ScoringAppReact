@@ -11,6 +11,8 @@ import { tournamentTypes, eventTypes } from '../../components/Enum/enum';
 import moment from 'moment';
 import FilterPanel from './filter-panel';
 import CustomTable from '../../components/Table';
+import './style.css';
+import './add-team.scss';
 
 const success = Modal.success;
 const error = Modal.error;
@@ -141,7 +143,7 @@ const Player = () => {
     });
   };
 
-
+  console.log('Edit Event', eventFormik.values);
 
   const columns = [
     {
@@ -256,8 +258,8 @@ const Player = () => {
         handleSubmit={handleSubmit}
       >
         <Form>
-          <Row gutter={16}>
-            <Col span={12}>
+          <Row gutter={16} className="form-container">
+            <Col span={24}>
               <CustomInput
                 title="Name"
                 type="text"
@@ -295,7 +297,7 @@ const Player = () => {
                 title="Start Date"
                 type="datePicker"
                 handleChange={handleChange}
-                value={eventFormik.values.startDate}
+                value={moment(eventFormik.values.startDate)}
                 stateKey="startDate"
                 placeholder=""
                 errorMessage={eventFormik.errors.startDate}
@@ -306,7 +308,7 @@ const Player = () => {
                 title="End Date"
                 type="datePicker"
                 handleChange={handleChange}
-                value={eventFormik.values.endDate}
+                value={moment(eventFormik.values.endDate)}
                 stateKey="endDate"
                 placeholder=""
                 errorMessage={eventFormik.errors.endDate}

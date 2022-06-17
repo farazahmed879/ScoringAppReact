@@ -5,13 +5,14 @@ import TeamService from '../../services/team/TeamService';
 import { useFormik } from 'formik';
 import CollapsePanel from 'antd/lib/collapse/CollapsePanel';
 import EventService from '../../services/event/EventService';
+import './add-team.scss';
 const pageHeader = {
   border: '1px solid rgb(235, 237, 240)',
 };
 
 const listStyle = {
   width: '40%',
-  height: '100%',
+  minHeight: '300px',
 };
 
 const footer = {
@@ -84,6 +85,8 @@ const AddEvenTeams = () => {
     });
   };
 
+  const filterOption = (inputValue, option) => option.title.indexOf(inputValue) > -1;
+
   const getMock = (teams, eventTeams) => {
     const targetKeys = [];
     const mockData = [];
@@ -125,15 +128,15 @@ const AddEvenTeams = () => {
     <Card>
       <PageHeader style={pageHeader} onBack={history.goBack} title={param.event} />
       <Skeleton loading={loading}>
-        <Collapse>
+        <Collapse  className='teamListContainer'>
           {Array.from(Array(+param.group), (e, index) => (
             <Panel header={`Group-${++index}`} key={index}>
               <Transfer
                 titles={['All Teams', 'Selected Teams']}
                 dataSource={groupTeamFormik.values.mockData}
                 showSearch
+                filterOption={filterOption}
                 listStyle={listStyle}
-                operations={['', '']}
                 targetKeys={groupTeamFormik.values.selectedTeams[--index]}
                 onChange={(e) => handleChange(e, 'selectedTeams', index)}
                 render={(item) => `${item.title}-${item.description}`}

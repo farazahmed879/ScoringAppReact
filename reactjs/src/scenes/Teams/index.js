@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload, Row, Col, Collapse } from 'antd';
+import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload, Row, Col, Collapse, Popover, Icon } from 'antd';
 import { Link } from 'react-router-dom';
 import { L } from '../../lib/abpUtility';
 import TeamService from '../../services/team/TeamService';
@@ -10,7 +10,10 @@ import { teamTypeOptions } from '../../components/Enum/enum';
 import * as Yup from 'yup';
 import FilterPanel from './filter-panel';
 import CustomTable from '../../components/Table';
-
+import { env } from 'process';
+import { elementType } from 'prop-types';
+import { getBase64 } from '../../helper/getBase64';
+const baseUrl = 'http://localhost:21021';
 const Team = () => {
   const success = Modal.success;
   const error = Modal.error;
@@ -26,7 +29,10 @@ const Team = () => {
   const [mode, setModalMode] = useState('');
   const [editTeam, setEditTeam] = useState({});
   const [loading, setLoading] = useState(true);
-  //const [validation, setPlayerValidation] = useState(playerValidation);
+  const [profile, setProfile] = useState([]);
+  const [gallery, setGallery] = useState([]);
+  const [preview, setPreview] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
 
   let teamInitial = {
     id: 0,
@@ -38,12 +44,14 @@ const Team = () => {
     city: '',
     fileName: '',
     type: 0,
+    gallery: [],
   };
 
   const teamFormHandler = () => {
     if (!teamFormik.isValid) return;
     let teamForm = {
       id: teamFormik.values.id,
+      //profile: { name: profile.fileList[0].name, blob: profile.fileList[0].thumbUrl },
       name: teamFormik.values.name,
       place: teamFormik.values.place,
       zone: teamFormik.values.zone,
@@ -52,8 +60,17 @@ const Team = () => {
       city: teamFormik.values.city,
       fileName: teamFormik.values.fileName,
       type: teamFormik.values.type,
+      profileUrl: teamFormik.values.profileUrl,
+      gallery: gallery.map((data) => ({
+        id: data.key,
+        name: data.name,
+        blob: data.thumbUrl,
+      })),
     };
-
+    if (profile && profile[0]) {
+      teamForm['profile'] = { name: profile[0].name, blob: profile[0].thumbUrl, url: profile[0].url };
+    }
+    debugger;
     TeamService.createOrUpdate(teamForm).then((res) => {
       console.log('res', res);
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
@@ -64,6 +81,7 @@ const Team = () => {
 
   const teamValidation = Yup.object().shape({
     name: Yup.string().required('Required'),
+    city: Yup.string().required('Required'),
   });
 
   const filterHandleSubmit = (event) => {
@@ -114,21 +132,21 @@ const Team = () => {
     teamFormik.setValues({ ...teamFormik.values, [key]: value });
   };
 
-  const handleUpload = (e) => {};
-  const fileList = [
-    {
-      uid: '-1',
-      name: 'xxx.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      thumbUrl: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-2',
-      name: 'yyy.png',
-      status: 'error',
-    },
-  ];
+  useEffect(() => {
+    if (!isOpenModal) {
+      teamFormik.setValues({});
+      //setProfile([]);
+    }
+  }, [isOpenModal]);
+
+  const handleUpload = ({ file, fileList }) => {
+    setGallery(fileList);
+  };
+
+  const handleProfileUpload = ({ fileList }) => {
+    setProfile(fileList);
+    //console.log('profile', e.file);
+  };
 
   const handleTableChange = (e) => {
     setPagination({
@@ -140,24 +158,55 @@ const Team = () => {
   const handleEditTeam = (item) => {
     setIsOpenModal(true);
     setModalMode('Edit Team');
+    setGallery([]);
+    setProfile([]);
     TeamService.getTeamById(item.id).then((res) => {
       if (res) {
         setEditTeam(res);
-        console.log('player', res);
+        console.log('Team', res);
         teamFormik.setValues({
           ...teamFormik.values,
           ...res,
         });
+
+        let obj = [];
+        res.pictures.forEach((element) => {
+          var ob = {
+            key: element.id,
+            name: element.name,
+            uid: element.id,
+            url: baseUrl + '/' + element.url,
+          };
+          obj.push(ob);
+        });
+        setGallery(obj);
+        setProfile([{ key: res.id, name: res.name, uid: res.id, url: baseUrl + '/' + res.profileUrl }]);
       }
     });
   };
 
   const addTeam = () => {
+    resetForm();
     setIsOpenModal(true);
     setModalMode('Create Team');
   };
 
-  console.log('validations', teamFormik);
+  const handleDeletePicture = () => {
+    setProfile([]);
+  };
+
+  const handlePreviewCancel = () => setPreview(false);
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+
+    setPreviewImage(file.url || file.preview);
+    setPreview(true);
+  };
+
+  console.log('gallery', gallery);
 
   const columns = [
     {
@@ -217,6 +266,7 @@ const Team = () => {
     },
   ];
 
+  console.log('profile', profile);
   return (
     <Card>
       <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px' }}>
@@ -230,7 +280,14 @@ const Team = () => {
           <FilterPanel teams={teamList} handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
-      <CustomTable loading={loading} pagination={pagination} columns={columns} data={teamList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
+      <CustomTable
+        loading={loading}
+        pagination={pagination}
+        columns={columns}
+        data={teamList}
+        scroll={{ x: 1500 }}
+        handleTableChange={handleTableChange}
+      />
 
       <CustomModal
         title={Object.keys(editTeam).length ? 'Edit Team' : 'Add Team'}
@@ -241,7 +298,22 @@ const Team = () => {
         handleSubmit={teamFormHandler}
       >
         <Form className="form" onSubmit={teamFormik.handleSubmit}>
-          <Row gutter={16}>
+          <Row gutter={16} className="form-container">
+            <Col span={24}>
+              <Upload
+                multiple={false}
+                listType="picture-card"
+                fileList={profile}
+                type="FormFile"
+                disabled={!!Object.keys(profile).length}
+                onChange={(e) => handleProfileUpload(e)}
+                beforeUpload={() => false}
+                onPreview={handlePreview}
+              >
+                Profile
+              </Upload>{' '}
+              {!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}
+            </Col>
             <Col span={12}>
               <CustomInput
                 title="Name"
@@ -256,8 +328,6 @@ const Team = () => {
             <Col span={12}>
               <CustomInput title="Zone" type="number" handleChange={handleChange} value={teamFormik.values.zone} stateKey="zone" placeholder="" />
             </Col>
-          </Row>
-          <Row gutter={16}>
             <Col span={12}>
               <CustomInput
                 title="Contact"
@@ -280,33 +350,45 @@ const Team = () => {
                 placeholder=""
               />
             </Col>
-          </Row>
-          <Row gutter={16}>
             <Col span={12}>
               {' '}
-              <CustomInput title="City" type="text" handleChange={handleChange} value={teamFormik.values.city} stateKey="city" placeholder="" />
+              <CustomInput
+                title="City"
+                type="text"
+                handleChange={handleChange}
+                value={teamFormik.values.city}
+                stateKey="city"
+                placeholder=""
+                errorMessage={teamFormik.errors.city}
+              />
             </Col>
             <Col span={12}>
               <CustomInput title="Area" type="text" handleChange={handleChange} value={teamFormik.values.place} stateKey="place" placeholder="" />
             </Col>
+            <Col span={24}>
+              <Upload
+                beforeUpload={() => false}
+                onPreview={handlePreview}
+                value={teamFormik.values.gallery}
+                fileList={gallery}
+                multiple={true}
+                listType="picture-card"
+                onChange={(e) => handleUpload(e)}
+              >
+                Gallery
+              </Upload>
+            </Col>
+            {/* <Col span={12}>
+              <CustomInput
+                title="Registered"
+                type="checkbox"
+                handleChange={handleChange}
+                value={teamFormik.values.isRegistered}
+                stateKey="isRegistered"
+                placeholder=""
+              />
+            </Col> */}
           </Row>
-
-          <Upload
-            action="https://run.mocky.io/v3/418c5840-7f93-4be9-833f-fe11c4d47116"
-            listType="picture"
-            defaultFileList={fileList}
-            onChange={(e) => handleUpload(e)}
-          >
-            <Button>Image</Button>
-          </Upload>
-          <CustomInput
-            title="Registered"
-            type="checkbox"
-            handleChange={handleChange}
-            value={teamFormik.values.isRegistered}
-            stateKey="isRegistered"
-            placeholder=""
-          />
           <Form.Item>
             <Button type="primary" htmlType="submit" disabled={!teamFormik.isValid} onClick={teamFormik.handleSubmit}>
               {mode == 'Create Team' ? 'Add' : 'Update'}
@@ -317,6 +399,10 @@ const Team = () => {
           </Form.Item>
         </Form>
       </CustomModal>
+
+      <Modal visible={preview} footer={null} onCancel={handlePreviewCancel}>
+        <img alt="example" style={{ width: '100%' }} src={previewImage} />
+      </Modal>
     </Card>
   );
 };

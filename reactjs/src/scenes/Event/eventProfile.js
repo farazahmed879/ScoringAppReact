@@ -65,7 +65,6 @@ const matchValidation = Yup.object().shape({
 const success = Modal.success;
 const error = Modal.error;
 const EventProfile = () => {
-  const [players, setPlayerList] = useState([]);
   const [teamList, setTeamList] = useState([]);
   const [matchList, setMatchList] = useState([]);
   const [stats, setEventStats] = useState({});
@@ -84,16 +83,10 @@ const EventProfile = () => {
     getEventStats(param.eventId);
     getAllTeamsByEventId(param.eventId, undefined);
     getMatchesViewByEventId(param.eventId);
-    getAllPlayersByEventId(param.eventId);
     getAllMatchesByEventId(param.eventId);
     getPointsTable(param.eventId);
   }, []);
-  const getAllPlayersByEventId = (id) => {
-    playerService.getPlayersByEventId(id).then((res) => {
-      console.log('Team Players', res);
-      setPlayerList(res);
-    });
-  };
+
   const getMatchesViewByEventId = (id) => {
     matchService.getMatchesViewByEventId(id).then((res) => {
       console.log('Event Matches', res);
@@ -117,14 +110,14 @@ const EventProfile = () => {
       setEventStats(res);
       setStatsLoading(false);
     });
-  }; 
+  };
 
   const getAllGrouds = () => {
     GroundService.getAll().then((res) => {
       console.log('Grounds', res);
       setGrounds(res);
     });
-  }
+  };
 
   const getAllMatchesByEventId = () => {
     matchService.getAllMatchesByEventId(param.eventId).then((res) => {
@@ -379,18 +372,6 @@ const EventProfile = () => {
                 </Tooltip>
               ) : null}
             </TabPane>
-
-            <TabPane
-              tab={
-                <span>
-                  <Icon type="apple" />
-                  Players
-                </span>
-              }
-              key="4"
-            >
-              <PlayerViewBox data={players}></PlayerViewBox>
-            </TabPane>
             <TabPane
               tab={
                 <span>
@@ -402,28 +383,32 @@ const EventProfile = () => {
             >
               <LeaderBoard eventId={param.eventId}></LeaderBoard>
             </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <Icon type="apple" />
-                  Brackets
-                </span>
-              }
-              key="6"
-            >
-              <ViewBracket2 formikData={bracketsData} event={stats.event} loading={false}></ViewBracket2>
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <Icon type="apple" />
-                  Points Table
-                </span>
-              }
-              key="7"
-            >
-              <PointsTable data={pointsTable}></PointsTable>
-            </TabPane>
+
+            {stats.type == 1 ? (
+              <TabPane
+                tab={
+                  <span>
+                    <Icon type="apple" />
+                    Brackets
+                  </span>
+                }
+                key="6"
+              >
+                <ViewBracket2 formikData={bracketsData} event={stats.event} loading={false}></ViewBracket2>
+              </TabPane>
+            ) : (
+              <TabPane
+                tab={
+                  <span>
+                    <Icon type="apple" />
+                    Points Table
+                  </span>
+                }
+                key="7"
+              >
+                <PointsTable data={pointsTable}></PointsTable>
+              </TabPane>
+            )}
           </Tabs>
         </div>
       </Card>

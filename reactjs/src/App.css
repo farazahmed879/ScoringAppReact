@@ -32,3 +32,11 @@
     transform: rotate(360deg);
   }
 }
+
+.form-container > div{
+  margin: 10px 0px;
+}
+
+.blocked {
+  pointer-events: none;
+}

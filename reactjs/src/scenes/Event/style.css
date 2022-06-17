@@ -1,6 +1,9 @@
 .bracketPipes {
-    margin-left: -1px;
+  margin-left: -1px;
+}
 
+.rowSpace {
+  margin: 5px 0px;
 }
 
 /* .bracketPipes:nth-child(odd){

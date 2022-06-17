@@ -127,7 +127,7 @@ const Matches = () => {
       matchFormik.setValues({ ...matchFormik.values, group: 0 });
       setTeamList([]);
       let currentEvent = eventList.filter((i) => i.id == matchFormik.values.eventId)[0];
-      if (!currentEvent.numberOfGroup || currentEvent.numberOfGroup <= 1) {
+      if (!currentEvent || !currentEvent.numberOfGroup || currentEvent.numberOfGroup <= 1) {
         getAllTeamsByEventId(matchFormik.values.eventId);
         setGroups([]);
         return;
@@ -298,6 +298,7 @@ const Matches = () => {
     {
       title: 'Type',
       width: 250,
+      key: 'type',
       dataIndex: 'matchType',
       render: (item) => {
         // return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
@@ -307,12 +308,14 @@ const Matches = () => {
     {
       title: 'Event',
       width: 250,
+      key: 'eventName',
       dataIndex: 'eventName',
     },
     {
       title: 'Date',
       width: 250,
       dataIndex: 'date',
+      key: 'date',
       render: (item) => {
         return moment(item).format('MM/DD/YYYY');
       },
@@ -334,7 +337,7 @@ const Matches = () => {
     },
     {
       title: 'Action',
-      key: 'operation',
+      key: 'action',
       fixed: 'right',
       width: 100,
       render: (text, item) => (
@@ -393,7 +396,7 @@ const Matches = () => {
         }}
       >
         <Form className="form" onSubmit={matchFormik.handleSubmit}>
-          <Row gutter={16}>
+          <Row gutter={16} className="form-container">
             <Col span={8}>
               <CustomInput
                 title="Match Type"
@@ -438,7 +441,7 @@ const Matches = () => {
             </Col>
           </Row>
           <Divider></Divider>
-          <Row gutter={16}>
+          <Row gutter={16} className="form-container">
             <Col span={12}>
               <CustomInput
                 title="Team 1"
@@ -464,7 +467,7 @@ const Matches = () => {
               />
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} className="form-container">
             <Col span={12}>
               <CustomInput
                 title="Ground"
@@ -481,14 +484,14 @@ const Matches = () => {
                 title="Date of Match"
                 type="datePicker"
                 handleChange={handleChange}
-                value={matchFormik.values.dateOfMatch}
+                value={moment(matchFormik.values.dateOfMatch)}
                 stateKey="dateOfMatch"
                 placeholder="Select Date"
               />
             </Col>
           </Row>
 
-          <Row gutter={16}>
+          <Row gutter={16} className="form-container">
             <Col span={12}>
               <CustomInput
                 title="Season"
@@ -510,7 +513,7 @@ const Matches = () => {
               />
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} className="form-container">
             <Col span={8}>
               {matchFormik.values.team1Id && matchFormik.values.team2Id ? (
                 <CustomInput
@@ -538,7 +541,7 @@ const Matches = () => {
               </Col>
             ) : null}
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} className="form-container">
             <Col>
               <CustomInput
                 title="Description"

@@ -60,6 +60,11 @@ class TeamService {
     let result = await http.post('/api/services/app/Team/TeamStats', data);
     return result.data.result;
   }
+
+  public async SaveImages(data: any) {
+    let result = await http.post('/api/services/app/Team/SaveImages', data);
+    return result.data.result;
+  }
 }
 
 export default new TeamService();
