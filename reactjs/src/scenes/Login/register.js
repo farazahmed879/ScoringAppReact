@@ -6,7 +6,6 @@ import { useFormik } from 'formik';
 import { useHistory } from 'react-router-dom';
 import userService from '../../services/user/userService';
 import { genderOptions } from '../../components/Enum/enum';
-import { userRouter } from '../../components/Router/router.config';
 
 const marginTop = {
   marginTop: '10px',
@@ -48,7 +47,6 @@ const phoneNumberValidation = Yup.object().shape({
 });
 
 const Register = () => {
-  const [mobile, setMobileNumber] = useState(null);
   const [layout, setLayoutMode] = useState(1);
   const [roles, setRoles] = useState([]);
   const [disabledMode, setDisabledMode] = useState(false);

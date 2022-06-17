@@ -27,6 +27,9 @@ const Scorecard = ({ batsman = [], bowler = [], teamScore, matchDetails }) => {
       case 7: {
         return 'run out ' + data.fielder;
       }
+      default: {
+        return 'N/A'
+      }
     }
   };
 

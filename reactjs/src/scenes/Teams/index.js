@@ -185,9 +185,7 @@ const Team = () => {
     });
   };
 
-  const resetForm =() => {
-    
-  }
+  const resetForm = () => {};
 
   const addTeam = () => {
     resetForm();
@@ -304,19 +302,20 @@ const Team = () => {
         <Form className="form" onSubmit={teamFormik.handleSubmit}>
           <Row gutter={16} className="form-container">
             <Col span={24}>
-              <Upload
-                multiple={false}
-                listType="picture-card"
-                fileList={profile}
-                type="FormFile"
-                disabled={!!Object.keys(profile).length}
-                onChange={(e) => handleProfileUpload(e)}
-                beforeUpload={() => false}
-                onPreview={handlePreview}
-              >
-                Profile
-              </Upload>{' '}
-              {!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}
+              <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
+                <Upload
+                  multiple={false}
+                  listType="picture-card"
+                  fileList={profile}
+                  type="FormFile"
+                  disabled={!!Object.keys(profile).length}
+                  onChange={(e) => handleProfileUpload(e)}
+                  beforeUpload={() => false}
+                  onPreview={handlePreview}
+                >
+                  Profile
+                </Upload>{' '}
+              </Popover>
             </Col>
             <Col span={12}>
               <CustomInput
