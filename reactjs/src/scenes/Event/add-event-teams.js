@@ -5,7 +5,7 @@ import TeamService from '../../services/team/TeamService';
 import { useFormik } from 'formik';
 import CollapsePanel from 'antd/lib/collapse/CollapsePanel';
 import EventService from '../../services/event/EventService';
-import './add-team.scss';
+import './add-team.css';
 const pageHeader = {
   border: '1px solid rgb(235, 237, 240)',
 };

@@ -12,7 +12,7 @@ import moment from 'moment';
 import FilterPanel from './filter-panel';
 import CustomTable from '../../components/Table';
 import './style.css';
-import './add-team.scss';
+import './add-team.css';
 
 const success = Modal.success;
 const error = Modal.error;

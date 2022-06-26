@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload, Row, Col, Collapse, Popover, Icon } from 'antd';
+import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload, Row, Col, Collapse, Popover, Icon, message } from 'antd';
+import { InboxOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { L } from '../../lib/abpUtility';
 import TeamService from '../../services/team/TeamService';
@@ -27,6 +28,7 @@ const Team = () => {
     total: 0,
   });
   const [mode, setModalMode] = useState('');
+  const [picture, setPicture] = useState(true);
   const [editTeam, setEditTeam] = useState({});
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState([]);
@@ -37,6 +39,7 @@ const Team = () => {
   let teamInitial = {
     id: 0,
     name: '',
+    profile: '',
     place: '',
     zone: '',
     contact: '',
@@ -54,7 +57,7 @@ const Team = () => {
       //profile: { name: profile.fileList[0].name, blob: profile.fileList[0].thumbUrl },
       name: teamFormik.values.name,
       place: teamFormik.values.place,
-      zone: teamFormik.values.zone,
+      profile: teamFormik.values.profile,
       contact: teamFormik.values.contact,
       isRegistered: teamFormik.values.isRegistered,
       city: teamFormik.values.city,
@@ -68,15 +71,21 @@ const Team = () => {
       })),
     };
     if (profile && profile[0]) {
+      setPicture(false)
       teamForm['profile'] = { name: profile[0].name, blob: profile[0].thumbUrl, url: profile[0].url };
     }
+    else {
+      message.error('Profile picture is not uploaded!');
+      setPicture(true)
+      return setIsOpenModal(true);
+    }
     debugger;
-    TeamService.createOrUpdate(teamForm).then((res) => {
-      console.log('res', res);
-      res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
-      getAll();
-      setIsOpenModal(false);
-    });
+      TeamService.createOrUpdate(teamForm).then((res) => {
+        console.log('res', res);
+        res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
+        getAll();
+        setIsOpenModal(false)
+      });
   };
 
   const teamValidation = Yup.object().shape({
@@ -185,7 +194,7 @@ const Team = () => {
     });
   };
 
-  const resetForm = () => {};
+  const resetForm = () => { };
 
   const addTeam = () => {
     resetForm();
@@ -208,7 +217,7 @@ const Team = () => {
     setPreview(true);
   };
 
-  console.log('gallery', gallery);
+  //console.log('gallery', gallery);
 
   const columns = [
     {
@@ -268,7 +277,7 @@ const Team = () => {
     },
   ];
 
-  console.log('profile', profile);
+  //console.log('profile', profile);
   return (
     <Card>
       <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px' }}>
@@ -303,19 +312,24 @@ const Team = () => {
           <Row gutter={16} className="form-container">
             <Col span={24}>
               <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
+                <span style={{color:"#C9236A", fontStyle:"italic"}}>{picture ? "Required" : ""}</span>
+                {''}
                 <Upload
                   multiple={false}
                   listType="picture-card"
+                  accept='.png,.jpeg,.jpg'
                   fileList={profile}
                   type="FormFile"
+                  stateKey="profile"
                   disabled={!!Object.keys(profile).length}
                   onChange={(e) => handleProfileUpload(e)}
-                  beforeUpload={() => false}
+                  beforeUpload={(false)}
                   onPreview={handlePreview}
                 >
                   Profile
-                </Upload>{' '}
+                </Upload>
               </Popover>
+
             </Col>
             <Col span={12}>
               <CustomInput

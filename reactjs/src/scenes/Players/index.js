@@ -27,7 +27,7 @@ const playerInitial = {
   bowlingStyleId: 0,
   playingRoleId: 0,
   teamIds: [],
-  dob: Date(),
+  dob: null,
   fileName: '',
 };
 
