@@ -28,7 +28,7 @@ const Team = () => {
     total: 0,
   });
   const [mode, setModalMode] = useState('');
-  const [picture, setPicture] = useState(true);
+  const [picture, setPicture] = useState(false);
   const [editTeam, setEditTeam] = useState({});
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState([]);
@@ -71,21 +71,20 @@ const Team = () => {
       })),
     };
     if (profile && profile[0]) {
-      setPicture(false)
+      setPicture(false);
       teamForm['profile'] = { name: profile[0].name, blob: profile[0].thumbUrl, url: profile[0].url };
+    } else {
+      //message.error('Profile picture is not uploaded!');
+      setPicture(true);
+      return;
+      //setIsOpenModal(true);
     }
-    else {
-      message.error('Profile picture is not uploaded!');
-      setPicture(true)
-      return setIsOpenModal(true);
-    }
-    debugger;
-      TeamService.createOrUpdate(teamForm).then((res) => {
-        console.log('res', res);
-        res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
-        getAll();
-        setIsOpenModal(false)
-      });
+    TeamService.createOrUpdate(teamForm).then((res) => {
+      console.log('res', res);
+      res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
+      getAll();
+      setIsOpenModal(false);
+    });
   };
 
   const teamValidation = Yup.object().shape({
@@ -148,6 +147,14 @@ const Team = () => {
     }
   }, [isOpenModal]);
 
+  useEffect(() => {
+    if (profile.length > 0) {
+      setPicture(false);
+    } else {
+      setPicture(true);
+    }
+  }, [profile]);
+
   const handleUpload = ({ file, fileList }) => {
     setGallery(fileList);
   };
@@ -194,7 +201,7 @@ const Team = () => {
     });
   };
 
-  const resetForm = () => { };
+  const resetForm = () => {};
 
   const addTeam = () => {
     resetForm();
@@ -311,25 +318,24 @@ const Team = () => {
         <Form className="form" onSubmit={teamFormik.handleSubmit}>
           <Row gutter={16} className="form-container">
             <Col span={24}>
-              <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
-                <span style={{color:"#C9236A", fontStyle:"italic"}}>{picture ? "Required" : ""}</span>
+              <Popover >
+                <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
                 {''}
                 <Upload
                   multiple={false}
                   listType="picture-card"
-                  accept='.png,.jpeg,.jpg'
+                  accept=".png,.jpeg,.jpg"
                   fileList={profile}
                   type="FormFile"
                   stateKey="profile"
                   disabled={!!Object.keys(profile).length}
                   onChange={(e) => handleProfileUpload(e)}
-                  beforeUpload={(false)}
+                  beforeUpload={false}
                   onPreview={handlePreview}
                 >
                   Profile
                 </Upload>
               </Popover>
-
             </Col>
             <Col span={12}>
               <CustomInput
