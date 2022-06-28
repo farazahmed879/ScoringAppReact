@@ -205,6 +205,7 @@ const Team = () => {
 
   const addTeam = () => {
     resetForm();
+    setProfile([]);
     setIsOpenModal(true);
     setModalMode('Create Team');
   };
@@ -318,9 +319,8 @@ const Team = () => {
         <Form className="form" onSubmit={teamFormik.handleSubmit}>
           <Row gutter={16} className="form-container">
             <Col span={24}>
-              <Popover >
+              <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
                 <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
-                {''}
                 <Upload
                   multiple={false}
                   listType="picture-card"
