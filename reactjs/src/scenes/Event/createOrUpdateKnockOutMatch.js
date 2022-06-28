@@ -3,7 +3,7 @@ import { Button, Form, Row, Col, Divider } from 'antd';
 import CustomModal from '../../components/Modal';
 import { matchTypes, eventStage } from '../../components/Enum/enum';
 import CustomInput from '../../components/Input';
-
+import moment from 'moment';
 const CreateOrUpdateKnockOutMatch = ({
   matchFormik,
   isOpenModal,
@@ -112,7 +112,7 @@ const CreateOrUpdateKnockOutMatch = ({
               title="Date of Match"
               type="datePicker"
               handleChange={handleChange}
-              value={matchFormik.values.dateOfMatch}
+              value={moment(matchFormik.values.dateOfMatch)}
               stateKey="dateOfMatch"
               placeholder="Select Date"
             />
