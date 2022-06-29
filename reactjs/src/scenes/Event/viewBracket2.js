@@ -51,6 +51,7 @@ const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate =
   const [groundList, setGroundList] = useState([]);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [editMatch, setEditMatch] = useState({});
+  const [finalStage, setFinalStage] = useState(0);
   //const [bracketUpdated, setBracketUpdated] = useState(false);
   const param = useParams();
   const arr = [4, 8, 16, 32, 64, 128];
@@ -58,6 +59,14 @@ const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate =
   let column1 = [];
   let column2 = [];
   useEffect(() => {
+    if (formikData.matches) {
+      setFinalStage(formikData.matches.length);
+      if (formikData.matches[formikData.matches.length - 1]) {
+        let data = formikData.matches[formikData.matches.length - 1].matches[0];
+        setFinalist(data);
+      }
+    }
+
     formikData.matches.forEach((element) => {
       if (element) {
         let col1 = element.matches.splice(0, element.matches.length / 2);
@@ -66,10 +75,6 @@ const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate =
       }
     });
 
-    if (formikData.matches && formikData.matches[formikData.matches.length - 1]) {
-      let data = formikData.matches[formikData.matches.length - 1].matches[0];
-      setFinalist(data);
-    }
     setColumn1Teams(column1);
     setColumn2Teams(column2);
   }, [formikData]);
@@ -257,7 +262,7 @@ const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate =
           </div>
         ))}
         <div style={{ display: 'grid', alignItems: 'center' }}>
-          <Popover content={content(final)} title={checkFinalistDate(final, item[0] - 1)} key={fIndex}>
+          <Popover content={content(final)} title={checkFinalistDate(final, finalStage - 1)} key={fIndex}>
             <Tooltip title={checkFinalist(final, fIndex)}>
               <div style={{ display: 'flex' }}>
                 <Link to={redirectFinalist(final, fIndex)}>

@@ -142,7 +142,10 @@ const Bracket = () => {
       <Card>
         <PageHeader style={pageHeader} onBack={history.goBack} title={param.event} />
         <Tabs tabPosition={'top'}>
-          <TabPane tab="Bracket Details" key="1">
+        <TabPane tab="Bracket" key="1">
+            <ViewBracket2 formikData={bracketFormik.values} event={param.event} loading={loading} handleBracketUpdate={handleBracketUpdate} />
+          </TabPane>
+          <TabPane tab="Edit Bracket Teams" key="2">
             <div>
               <div style={{ marginTop: '24px', padding: '10px' }}>
                 <Descriptions title="How-To">
@@ -175,9 +178,7 @@ const Bracket = () => {
               </div>
             </div>
           </TabPane>
-          <TabPane tab="View Bracket" key="2">
-            <ViewBracket2 formikData={bracketFormik.values} event={param.event} loading={loading} handleBracketUpdate={handleBracketUpdate} />
-          </TabPane>
+          
         </Tabs>
       </Card>
     </Skeleton>
