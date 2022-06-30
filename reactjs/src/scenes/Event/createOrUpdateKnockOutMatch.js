@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Row, Col, Divider } from 'antd';
+import { Button, Form, Row, Col, Divider, Icon, Tooltip } from 'antd';
 import CustomModal from '../../components/Modal';
 import { matchTypes, eventStage } from '../../components/Enum/enum';
 import CustomInput from '../../components/Input';
@@ -18,6 +18,10 @@ const CreateOrUpdateKnockOutMatch = ({
   console.log('playerList', playerList);
   const handleChange = (value, key) => {
     matchFormik.setValues({ ...matchFormik.values, [key]: value });
+  };
+
+  const handleSwapTeams = () => {
+    
   };
   return (
     <CustomModal
@@ -70,7 +74,7 @@ const CreateOrUpdateKnockOutMatch = ({
         </Row>
         <Divider></Divider>
         <Row gutter={16}>
-          <Col span={12}>
+          <Col span={11}>
             <CustomInput
               title="Team 1"
               type="text"
@@ -82,7 +86,12 @@ const CreateOrUpdateKnockOutMatch = ({
               errorMessage={matchFormik.errors.team1Id}
             />
           </Col>
-          <Col span={12}>
+          <Col span={2}>
+            <Tooltip title={'Swap'}>
+              <Icon style={{ marginTop: '25px', marginLeft: '5px', cursor: 'pointer' }} type="swap" onClick={handleSwapTeams} />
+            </Tooltip>
+          </Col>
+          <Col span={11}>
             <CustomInput
               title="Team 2"
               type="text"
