@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse, Skeleton } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse, Skeleton, Upload, Popover, Icon } from 'antd';
 import { useFormik } from 'formik';
 import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -11,6 +11,7 @@ import { tournamentTypes, eventTypes } from '../../components/Enum/enum';
 import moment from 'moment';
 import FilterPanel from './filter-panel';
 import CustomTable from '../../components/Table';
+import { getBase64 } from '../../helper/getBase64';
 import './style.css';
 import './add-team.css';
 
@@ -33,6 +34,11 @@ const Player = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [eventList, setEventList] = useState([]);
   // const [visible, setIsSetDrawerVisible] = useState(false);
+  const [picture, setPicture] = useState(false);
+  const [preview, setPreview] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
+  const [profile, setProfile] = useState([]);
+  const [gallery, setGallery] = useState([]);
   const [editEvent, setEditEvent] = useState({});
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
@@ -40,6 +46,36 @@ const Player = () => {
     pageSize: 10,
     total: 0,
   });
+
+  useEffect(() => {
+    if (!isOpenModal) {
+      eventFormik.setValues({});
+      //setProfile([]);
+    }
+  }, [isOpenModal]);
+
+  useEffect(() => {
+    if (profile.length > 0) {
+      setPicture(false);
+    } else {
+      setPicture(true);
+    }
+  }, [profile]);
+
+  const handleUpload = ({ file, fileList }) => {
+    setGallery(fileList);
+  };
+
+  const handleProfileUpload = ({ fileList }) => {
+    setProfile(fileList);
+    //console.log('profile', e.file);
+  };
+
+  const handleDeletePicture = () => {
+    setProfile([]);
+  };
+
+  const handlePreviewCancel = () => setPreview(false);
 
   const handleTableChange = (e) => {
     setPagination({
@@ -144,6 +180,15 @@ const Player = () => {
   };
 
   console.log('Edit Event', eventFormik.values);
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+
+    setPreviewImage(file.url || file.preview);
+    setPreview(true);
+  };
 
   const columns = [
     {
@@ -260,6 +305,25 @@ const Player = () => {
         <Form>
           <Row gutter={16} className="form-container">
             <Col span={24}>
+              <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
+                <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
+                <Upload
+                  multiple={false}
+                  listType="picture-card"
+                  accept=".png,.jpeg,.jpg"
+                  fileList={profile}
+                  type="FormFile"
+                  stateKey="profile"
+                  disabled={!!Object.keys(profile).length}
+                  onChange={(e) => handleProfileUpload(e)}
+                  beforeUpload={false}
+                  onPreview={handlePreview}
+                >
+                  Profile
+                </Upload>
+              </Popover>
+            </Col>
+            <Col span={24}>
               <CustomInput
                 title="Name"
                 type="text"
@@ -351,6 +415,20 @@ const Player = () => {
                 />
               </Col>
             ) : null}
+            <Col span={24}>
+              <Upload
+                className='Gallery'
+                beforeUpload={() => false}
+                onPreview={handlePreview}
+                value={eventFormik.values.gallery}
+                fileList={gallery}
+                multiple={true}
+                listType="picture-card"
+                onChange={(e) => handleUpload(e)}
+              >
+                Gallery
+              </Upload>
+            </Col>
           </Row>
 
           <Form.Item>
@@ -363,6 +441,9 @@ const Player = () => {
           </Form.Item>
         </Form>
       </CustomModal>
+      <Modal visible={preview} footer={null} onCancel={handlePreviewCancel}>
+        <img alt="example" style={{ width: '100%' }} src={previewImage} />
+      </Modal>
     </Card>
   );
 };

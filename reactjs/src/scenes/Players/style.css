@@ -10,3 +10,7 @@
 .ant-collapse-content > .ant-collapse-content-box {
      padding: 5px; 
 }
+
+  .ant-upload-picture-card-wrapper{
+  padding-top: 10px;
+}

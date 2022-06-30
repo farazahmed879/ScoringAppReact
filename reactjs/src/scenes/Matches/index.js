@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { render } from 'react-dom';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse, Divider, Icon } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse, Divider, Icon, Popover, Upload } from 'antd';
 import { Link } from 'react-router-dom';
 import { L } from '../../lib/abpUtility';
 import { useFormik } from 'formik';
@@ -16,6 +16,8 @@ import GroundService from '../../services/ground/GroundService';
 import FilterPanel from './filter-panel';
 import EventService from '../../services/event/EventService';
 import CustomTable from '../../components/Table';
+import { getBase64 } from '../../helper/getBase64';
+
 const matchValidation = Yup.object().shape({
   team1Id: Yup.string().required('Required'),
   team2Id: Yup.string().required('Required'),
@@ -54,6 +56,11 @@ const Matches = () => {
   const [groundList, setGroundList] = useState([]);
   const [playerList, setPlayerList] = useState([]);
   const [eventList, setEventList] = useState([]);
+  const [picture, setPicture] = useState(false);
+  const [preview, setPreview] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
+  const [profile, setProfile] = useState([]);
+  const [gallery, setGallery] = useState([]);
   const [editMatch, setEditMatch] = useState({});
   const [mode, setModalMode] = useState('');
   const [loading, setLoading] = useState(true);
@@ -105,6 +112,12 @@ const Matches = () => {
   const callback = (key) => {
     console.log(key);
   };
+
+  const handleDeletePicture = () => {
+    setProfile([]);
+  };
+
+  const handlePreviewCancel = () => setPreview(false);
 
   const handleTableChange = (e) => {
     setPagination({
@@ -242,6 +255,30 @@ const Matches = () => {
     });
   };
 
+  useEffect(() => {
+    if (!isOpenModal) {
+      matchFormik.setValues({});
+      //setProfile([]);
+    }
+  }, [isOpenModal]);
+
+  useEffect(() => {
+    if (profile.length > 0) {
+      setPicture(false);
+    } else {
+      setPicture(true);
+    }
+  }, [profile]);
+
+  const handleUpload = ({ file, fileList }) => {
+    setGallery(fileList);
+  };
+
+  const handleProfileUpload = ({ fileList }) => {
+    setProfile(fileList);
+    //console.log('profile', e.file);
+  };
+
   const handleChange = (value, key) => {
     matchFormik.setValues({ ...matchFormik.values, [key]: value });
   };
@@ -262,6 +299,7 @@ const Matches = () => {
 
   const addMatch = () => {
     setIsOpenModal(true);
+    setProfile([]);
     setModalMode('Add Match');
   };
 
@@ -270,6 +308,16 @@ const Matches = () => {
   };
 
   console.log('matchFormik', matchFormik.values);
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+
+    setPreviewImage(file.url || file.preview);
+    setPreview(true);
+  };
+
   const columns = [
     {
       title: 'Ground',
@@ -397,6 +445,25 @@ const Matches = () => {
       >
         <Form className="form" onSubmit={matchFormik.handleSubmit}>
           <Row gutter={16} className="form-container">
+          <Col span={24}>
+              <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
+                <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
+                <Upload
+                  multiple={false}
+                  listType="picture-card"
+                  accept=".png,.jpeg,.jpg"
+                  fileList={profile}
+                  type="FormFile"
+                  stateKey="profile"
+                  disabled={!!Object.keys(profile).length}
+                  onChange={(e) => handleProfileUpload(e)}
+                  beforeUpload={false}
+                  onPreview={handlePreview}
+                >
+                  Profile
+                </Upload>
+              </Popover>
+            </Col>
             <Col span={8}>
               <CustomInput
                 title="Match Type"
@@ -552,6 +619,20 @@ const Matches = () => {
                 placeholder="Optional"
               />
             </Col>
+            <Col span={24}>
+              <Upload
+              className='Gallery'
+                beforeUpload={() => false}
+                onPreview={handlePreview}
+                value={matchFormik.values.gallery}
+                fileList={gallery}
+                multiple={true}
+                listType="picture-card"
+                onChange={(e) => handleUpload(e)}
+              >
+                Gallery
+              </Upload>
+            </Col>
           </Row>
 
           <Form.Item>
@@ -564,6 +645,10 @@ const Matches = () => {
           </Form.Item>
         </Form>
       </CustomModal>
+
+      <Modal visible={preview} footer={null} onCancel={handlePreviewCancel}>
+        <img alt="example" style={{ width: '100%' }} src={previewImage} />
+      </Modal>
     </Card>
   );
 };
