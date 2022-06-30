@@ -39,7 +39,7 @@ const column = {
 const success = Modal.success;
 const error = Modal.error;
 
-const ViewBracket2 = ({ formikData, event, loading = true }) => {
+const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate = (e) => {} }) => {
   console.log('viewBracketsFormik', formikData);
   const [column1Teams, setColumn1Teams] = useState([]);
   const [column2Teams, setColumn2Teams] = useState([]);
@@ -51,6 +51,7 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
   const [groundList, setGroundList] = useState([]);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [editMatch, setEditMatch] = useState({});
+  //const [bracketUpdated, setBracketUpdated] = useState(false);
   const param = useParams();
   const arr = [4, 8, 16, 32, 64, 128];
 
@@ -132,7 +133,9 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
     return (
       <div style={{ display: 'grid', gridTemplateColumns: '1fr' }}>
         {Array.from(Array(index + 1), (e, index3) => (
-          <span key={index3} style={{ marginTop: '10.5px' }}>|</span>
+          <span key={index3} style={{ marginTop: '10.5px' }}>
+            |
+          </span>
         ))}
       </div>
     );
@@ -164,7 +167,6 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
   };
 
   const content = (match) => (
-    
     <div>
       {match && match.id ? (
         <p>
@@ -200,9 +202,12 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
       >
         {calculateColumns(matches[0].length).map((i, index) => (
           <div style={column}>
-            {console.log("Check", i)}
             {Array.from(Array(i), (e, index2) => (
-              <Popover key={index2} content={checkConditionTeam(assignedTeams, index, index2) ? content(assignedTeams[index][index2]) : 'Upcoming'} title={checkConditionDate(assignedTeams, index, index2)}>
+              <Popover
+                key={index2}
+                content={checkConditionTeam(assignedTeams, index, index2) ? content(assignedTeams[index][index2]) : 'Upcoming'}
+                title={checkConditionDate(assignedTeams, index, index2)}
+              >
                 <div style={{ display: 'flex' }}>
                   <Tooltip title={checkConditionTeam(assignedTeams, index, index2) ? assignedTeams[index][index2].team1 : 'Upcoming'}>
                     <Link
@@ -220,7 +225,7 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
                           : 'Unknown Team'}
                       </Button>
                     </Link>
-                  </Tooltip> 
+                  </Tooltip>
 
                   <span style={{ fontSize: '15px' }}>{checkConditionDate(assignedTeams, index, index2)}</span>
                   <hr style={hr1} />
@@ -252,7 +257,7 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
           </div>
         ))}
         <div style={{ display: 'grid', alignItems: 'center' }}>
-          <Popover content={content(final)} title={checkFinalistDate(final, item[0] - 1)}>
+          <Popover content={content(final)} title={checkFinalistDate(final, item[0] - 1)} key={fIndex}>
             <Tooltip title={checkFinalist(final, fIndex)}>
               <div style={{ display: 'flex' }}>
                 <Link to={redirectFinalist(final, fIndex)}>
@@ -302,7 +307,7 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
     matchTypeId: '',
     eventType: '',
     eventStage: '',
-    dateOfMatch: '',
+    dateOfMatch: null,
     tossWinningTeam: '',
     playerOTM: '',
   };
@@ -329,6 +334,7 @@ const ViewBracket2 = ({ formikData, event, loading = true }) => {
     console.log('Match Object', req);
     matchService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
+      if (res.success) handleBracketUpdate(true);
       setIsOpenModal(false);
       //  createBadge()
     });

@@ -36,6 +36,7 @@ const Bracket = () => {
   //const [teamList, setTeamList] = useState([]);
   const [viewBracket, setViewBracket] = useState(false);
   const [loading, setLoading] = useState(true);
+  //const [bracketUpdated, setBracketUpdated] = useState(false);
   //const [selectedTeamList, setSelectedTeamList] = useState([]);
   const param = useParams();
   const history = useHistory();
@@ -44,6 +45,7 @@ const Bracket = () => {
     noOfTeams: 0,
     selectedTeams: [],
     mockData: [],
+    bracketUpdated: false,
   };
 
   const bracketValidation = Yup.object().shape({
@@ -62,7 +64,7 @@ const Bracket = () => {
   };
 
   const getAllEventTeamsByEventId = (teams) => {
-    TeamService.getAllEventTeams(param.eventId,undefined).then((res) => {
+    TeamService.getAllEventTeams(param.eventId, undefined).then((res) => {
       getAllMatchesByEventId(teams, res);
     });
   };
@@ -99,8 +101,8 @@ const Bracket = () => {
       mockData: mockData,
       selectedTeams: targetKeys,
       noOfTeams: targetKeys.length,
-      matches: res ? res.eventMatches: [],
-      winner: res ? res.winner: 'Winner',
+      matches: res ? res.eventMatches : [],
+      winner: res ? res.winner : 'Winner',
     });
     //setState({ mockData, targetKeys });
   };
@@ -110,7 +112,7 @@ const Bracket = () => {
     }
     let req = {
       eventId: +param.eventId,
-      teamIds: bracketFormik.values.selectedTeams
+      teamIds: bracketFormik.values.selectedTeams,
     };
     EventService.createEventTeams(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
@@ -124,9 +126,14 @@ const Bracket = () => {
     validationSchema: bracketValidation,
     onSubmit: handleSubmit,
   });
-
   const handleChange = (value, key) => {
     bracketFormik.setValues({ ...bracketFormik.values, [key]: value });
+  };
+
+  const handleBracketUpdate = (e) => {
+    if (e) {
+      getAllTeams();
+    }
   };
 
   //console.log('Bracket Values', bracketFormik.values);
@@ -137,26 +144,26 @@ const Bracket = () => {
         <Tabs tabPosition={'top'}>
           <TabPane tab="Bracket Details" key="1">
             <div>
-                <div style={{ marginTop: '24px', padding: '10px' }}>
-                  <Descriptions title="How-To">
-                    <Descriptions.Item label="1">Enter in order they will play (1 vs 2, 3 vs 4, 5 vs 6, etc)</Descriptions.Item>
-                    <Descriptions.Item label="2">This Generator is only applicable of Knock-out bases</Descriptions.Item>
-                    <Descriptions.Item label="3">No of Team must be in series(4,8,16,32,64,128 .... etc)</Descriptions.Item>
-                    <Descriptions.Item label="4">Selected Teams must be equal to the no of teams</Descriptions.Item>
-                    <Descriptions.Item label="4">Tournament Matches will be created automatically</Descriptions.Item>
-                    <Descriptions.Item label="5">Once Team has been selected will not be edited make sure before generate</Descriptions.Item>
-                  </Descriptions>
-                  <Transfer
-                    titles={['All Teaams', 'Selected Teams']}
-                    dataSource={bracketFormik.values.mockData}
-                    showSearch
-                    listStyle={listStyle}
-                    operations={['', '']}
-                    targetKeys={bracketFormik.values.selectedTeams}
-                    onChange={(e) => handleChange(e, 'selectedTeams')}
-                    render={(item) => `${item.title}-${item.description}`}
-                  />
-                </div>
+              <div style={{ marginTop: '24px', padding: '10px' }}>
+                <Descriptions title="How-To">
+                  <Descriptions.Item label="1">Enter in order they will play (1 vs 2, 3 vs 4, 5 vs 6, etc)</Descriptions.Item>
+                  <Descriptions.Item label="2">This Generator is only applicable of Knock-out bases</Descriptions.Item>
+                  <Descriptions.Item label="3">No of Team must be in series(4,8,16,32,64,128 .... etc)</Descriptions.Item>
+                  <Descriptions.Item label="4">Selected Teams must be equal to the no of teams</Descriptions.Item>
+                  <Descriptions.Item label="4">Tournament Matches will be created automatically</Descriptions.Item>
+                  <Descriptions.Item label="5">Once Team has been selected will not be edited make sure before generate</Descriptions.Item>
+                </Descriptions>
+                <Transfer
+                  titles={['All Teaams', 'Selected Teams']}
+                  dataSource={bracketFormik.values.mockData}
+                  showSearch
+                  listStyle={listStyle}
+                  operations={['', '']}
+                  targetKeys={bracketFormik.values.selectedTeams}
+                  onChange={(e) => handleChange(e, 'selectedTeams')}
+                  render={(item) => `${item.title}-${item.description}`}
+                />
+              </div>
 
               <div style={footer}>
                 <Button style={{ marginRight: 8 }}>
@@ -169,7 +176,7 @@ const Bracket = () => {
             </div>
           </TabPane>
           <TabPane tab="View Bracket" key="2">
-            <ViewBracket2 formikData={bracketFormik.values} event={param.event} loading={loading} />
+            <ViewBracket2 formikData={bracketFormik.values} event={param.event} loading={loading} handleBracketUpdate={handleBracketUpdate} />
           </TabPane>
         </Tabs>
       </Card>

@@ -171,7 +171,7 @@ const AddScore = (prop) => {
       noBalls: e.noBalls,
       byes: e.byes,
       legByes: e.legByes,
-      teamId: e.teamId,
+      teamId: e.teamId || activeTag == 1 ? +param.team1Id : +param.team2Id,
       matchId: +param.matchId,
     };
 

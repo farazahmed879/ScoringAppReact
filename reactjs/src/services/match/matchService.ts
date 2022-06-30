@@ -1,8 +1,8 @@
 import http from '../httpService';
 
 class MatchService {
-  public async createOrUpdate(createRoleInput: any) {
-    let result = await http.post('/api/services/app/Match/CreateOrEdit', createRoleInput);
+  public async createOrUpdate(input: any) {
+    let result = await http.post('/api/services/app/Match/CreateOrEdit', input);
     return result.data.result;
   }
 
