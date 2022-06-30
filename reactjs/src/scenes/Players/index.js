@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse, Upload, Popover, Icon } from 'antd';
 import { L } from '../../lib/abpUtility';
 import playerService from '../../services/player/playerService';
 import CustomModal from '../../components/Modal';
@@ -14,6 +14,8 @@ import TeamService from '../../services/team/TeamService';
 import FilterPanel from './filter-panel';
 import PlayerStatsDrawer from './player-stats-drawer';
 import CustomTable from '../../components/Table';
+import { getBase64 } from '../../helper/getBase64';
+// import './style.css';
 
 //const { Option } = Select;
 const playerInitial = {
@@ -44,6 +46,11 @@ const { Panel } = Collapse;
 const Player = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [playerList, setPlayerList] = useState([]);
+  const [picture, setPicture] = useState(false);
+  const [preview, setPreview] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
+  const [profile, setProfile] = useState([]);
+  const [gallery, setGallery] = useState([]);
   const [teamList, setTeamList] = useState([]);
   const [visible, setIsSetDrawerVisible] = useState(false);
   const [editPlayer, setEditPlayer] = useState({});
@@ -160,6 +167,31 @@ const Player = () => {
     playerFormik.setValues({ ...playerFormik.values, [key]: value });
   };
 
+
+  useEffect(() => {
+    if (!isOpenModal) {
+      playerFormik.setValues({});
+      //setProfile([]);
+    }
+  }, [isOpenModal]);
+
+  useEffect(() => {
+    if (profile.length > 0) {
+      setPicture(false);
+    } else {
+      setPicture(true);
+    }
+  }, [profile]);
+
+  const handleUpload = ({ file, fileList }) => {
+    setGallery(fileList);
+  };
+
+  const handleProfileUpload = ({ fileList }) => {
+    setProfile(fileList);
+    //console.log('profile', e.file);
+  };
+
   const handleChangeDatePicker = (date, dateString) => {
     //setPlayer({ ...player, dob: date });
   };
@@ -188,8 +220,15 @@ const Player = () => {
   };
 
   const addPlayer = () => {
+    setProfile([]);
     setIsOpenModal(true);
   };
+
+  const handleDeletePicture = () => {
+    setProfile([]);
+  };
+
+  const handlePreviewCancel = () => setPreview(false);
 
   const handleTableChange = (e) => {
     setPagination({
@@ -198,6 +237,15 @@ const Player = () => {
     });
 
     getAll();
+  };
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+
+    setPreviewImage(file.url || file.preview);
+    setPreview(true);
   };
 
   const columns = [
@@ -323,6 +371,25 @@ const Player = () => {
       >
         <Form>
           <Row gutter={16}>
+            <Col span={24}>
+              <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
+                <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
+                <Upload
+                  multiple={false}
+                  listType="picture-card"
+                  accept=".png,.jpeg,.jpg"
+                  fileList={profile}
+                  type="FormFile"
+                  stateKey="profile"
+                  disabled={!!Object.keys(profile).length}
+                  onChange={(e) => handleProfileUpload(e)}
+                  beforeUpload={false}
+                  onPreview={handlePreview}
+                >
+                  Profile
+                </Upload>
+              </Popover>
+            </Col>
             <Col span={12}>
               <CustomInput
                 title="Name"
@@ -417,17 +484,32 @@ const Player = () => {
                 placeholder=""
               />
             </Col>
+            <Col span={24}>
+              <CustomInput
+                title="Team"
+                type="multiple"
+                options={teamList}
+                handleChange={handleChange}
+                value={playerFormik.values.teamIds}
+                stateKey="teamIds"
+                placeholder=""
+              />
+            </Col><br/>
+            <Col span={24}>
+              <Upload
+              className='Gallery'
+                beforeUpload={() => false}
+                onPreview={handlePreview}
+                value={playerFormik.values.gallery}
+                fileList={gallery}
+                multiple={true}
+                listType="picture-card"
+                onChange={(e) => handleUpload(e)}
+              >
+                Gallery
+              </Upload>
+            </Col>
           </Row>
-
-          <CustomInput
-            title="Team"
-            type="multiple"
-            options={teamList}
-            handleChange={handleChange}
-            value={playerFormik.values.teamIds}
-            stateKey="teamIds"
-            placeholder=""
-          />
 
           <Form.Item>
             <Button type="primary" htmlType="submit" onClick={playerFormik.handleSubmit}>
@@ -440,6 +522,9 @@ const Player = () => {
         </Form>
       </CustomModal>
       <PlayerStatsDrawer visible={visible} onClose={onClose} stats={playerStats} />
+      <Modal visible={preview} footer={null} onCancel={handlePreviewCancel}>
+        <img alt="example" style={{ width: '100%' }} src={previewImage} />
+      </Modal>
     </Card>
   );
 };

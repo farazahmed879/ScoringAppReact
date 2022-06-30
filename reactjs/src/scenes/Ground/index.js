@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Upload, Popover, Icon } from 'antd';
 import { L } from '../../lib/abpUtility';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -7,6 +7,8 @@ import CustomModal from '../../components/Modal';
 import CustomInput from '../../components/Input';
 import groundService from '../../services/ground/GroundService';
 import CustomTable from '../../components/Table';
+import { getBase64 } from '../../helper/getBase64';
+
 const groundValidation = Yup.object().shape({
   name: Yup.string().required('Required'),
   location: Yup.string().required('Required'),
@@ -24,6 +26,11 @@ const error = Modal.error;
 const Ground = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [groundList, setGroundList] = useState([]);
+  const [picture, setPicture] = useState(false);
+  const [preview, setPreview] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
+  const [profile, setProfile] = useState([]);
+  const [gallery, setGallery] = useState([]);
   const [editGround, setEditGround] = useState({});
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
@@ -39,7 +46,7 @@ const Ground = () => {
       name: groundFormik.values.name,
       location: groundFormik.values.location,
     };
-
+    
     console.log('Ground Object', req);
     groundService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
@@ -70,6 +77,12 @@ const Ground = () => {
       });
     });
   };
+
+  const handleDeletePicture = () => {
+    setProfile([]);
+  };
+
+  const handlePreviewCancel = () => setPreview(false);
 
   const handleTableChange = (e) => {
     setPagination({
@@ -102,8 +115,41 @@ const Ground = () => {
     //
   };
 
+  useEffect(() => {
+    if (!isOpenModal) {
+      groundFormik.setValues({});
+      //setProfile([]);
+    }
+  }, [isOpenModal]);
+
+  useEffect(() => {
+    if (profile.length > 0) {
+      setPicture(false);
+    } else {
+      setPicture(true);
+    }
+  }, [profile]);
+
+  const handleUpload = ({ file, fileList }) => {
+    setGallery(fileList);
+  };
+
+  const handleProfileUpload = ({ fileList }) => {
+    setProfile(fileList);
+    //console.log('profile', e.file);
+  };
+
   const handleChange = (value, key) => {
     groundFormik.setValues({ ...groundFormik.values, [key]: value });
+  };
+
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+
+    setPreviewImage(file.url || file.preview);
+    setPreview(true);
   };
 
   const columns = [
@@ -173,6 +219,25 @@ const Ground = () => {
       >
         <Form>
           <Row>
+          <Col span={24}>
+              <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
+                <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
+                <Upload
+                  multiple={false}
+                  listType="picture-card"
+                  accept=".png,.jpeg,.jpg"
+                  fileList={profile}
+                  type="FormFile"
+                  stateKey="profile"
+                  disabled={!!Object.keys(profile).length}
+                  onChange={(e) => handleProfileUpload(e)}
+                  beforeUpload={false}
+                  onPreview={handlePreview}
+                >
+                  Profile
+                </Upload>
+              </Popover>
+            </Col>
             <CustomInput
               title="Ground"
               type="text"
@@ -191,6 +256,20 @@ const Ground = () => {
               placeholder="Location"
               errorMessage={groundFormik.errors.location}
             />
+            <Col span={24}>
+              <Upload
+              className='Gallery'
+                beforeUpload={() => false}
+                onPreview={handlePreview}
+                value={groundFormik.values.gallery}
+                fileList={gallery}
+                multiple={true}
+                listType="picture-card"
+                onChange={(e) => handleUpload(e)}
+              >
+                Gallery
+              </Upload>
+            </Col>
           </Row>
           <Form.Item gutter={16}>
             <Button type="primary" htmlType="submit" onClick={handleSubmit}>
@@ -202,6 +281,10 @@ const Ground = () => {
           </Form.Item>
         </Form>
       </CustomModal>
+
+      <Modal visible={preview} footer={null} onCancel={handlePreviewCancel}>
+        <img alt="example" style={{ width: '100%' }} src={previewImage} />
+      </Modal>
     </Card>
   );
 };
