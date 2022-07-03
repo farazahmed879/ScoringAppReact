@@ -14,7 +14,7 @@ class PlayerService {
 
   public async getPlayerById(playerId: Number): Promise<PlayerDto> {
     let result = await http.get(`api/services/app/Player/GetById?id=${playerId}`);
-    return result.data.result;
+    return result.data;
   }
 
   public async getAll() {

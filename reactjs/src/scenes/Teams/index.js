@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload, Row, Col, Collapse, Popover, Icon, message } from 'antd';
+import { Button, Card, Dropdown, Menu, Form, Modal, Table, Upload, Row, Col, Collapse, Popover, Icon, message, Skeleton } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { L } from '../../lib/abpUtility';
@@ -28,6 +28,7 @@ const Team = () => {
     total: 0,
   });
   const [mode, setModalMode] = useState('');
+  const [isEditDataLoading, setIsEditDataLoading] = useState(false);
   const [picture, setPicture] = useState(false);
   const [editTeam, setEditTeam] = useState({});
   const [loading, setLoading] = useState(true);
@@ -172,6 +173,7 @@ const Team = () => {
   };
 
   const handleEditTeam = (item) => {
+    setIsEditDataLoading(true);
     setIsOpenModal(true);
     setModalMode('Edit Team');
     setGallery([]);
@@ -197,6 +199,7 @@ const Team = () => {
         });
         setGallery(obj);
         setProfile([{ key: res.id, name: res.name, uid: res.id, url: baseUrl + '/' + res.profileUrl }]);
+        setIsEditDataLoading(false);
       }
     });
   };
@@ -316,92 +319,93 @@ const Team = () => {
         }}
         handleSubmit={teamFormHandler}
       >
-        <Form className="form" onSubmit={teamFormik.handleSubmit}>
-          <Row gutter={16} className="form-container">
-            <Col span={24}>
-              <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
-                <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
+        <Skeleton loading={isEditDataLoading}>
+          <Form className="form" onSubmit={teamFormik.handleSubmit}>
+            <Row gutter={16} className="form-container">
+              <Col span={24}>
+                <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
+                  <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
+                  <Upload
+                    multiple={false}
+                    listType="picture-card"
+                    accept=".png,.jpeg,.jpg"
+                    fileList={profile}
+                    type="FormFile"
+                    stateKey="profile"
+                    disabled={!!Object.keys(profile).length}
+                    onChange={(e) => handleProfileUpload(e)}
+                    beforeUpload={false}
+                    onPreview={handlePreview}
+                  >
+                    Profile
+                  </Upload>
+                </Popover>
+              </Col>
+              <Col span={12}>
+                <CustomInput
+                  title="Name"
+                  type="text"
+                  handleChange={handleChange}
+                  value={teamFormik.values.name}
+                  stateKey="name"
+                  placeholder=""
+                  errorMessage={teamFormik.errors.name}
+                />
+              </Col>
+              <Col span={12}>
+                <CustomInput title="Zone" type="number" handleChange={handleChange} value={teamFormik.values.zone} stateKey="zone" placeholder="" />
+              </Col>
+              <Col span={12}>
+                <CustomInput
+                  title="Contact"
+                  type="number"
+                  handleChange={handleChange}
+                  value={teamFormik.values.contact}
+                  stateKey="contact"
+                  placeholder=""
+                />
+              </Col>
+              <Col span={12}>
+                {' '}
+                <CustomInput
+                  title="Type"
+                  type="select"
+                  options={teamTypeOptions}
+                  handleChange={handleChange}
+                  value={teamFormik.values.type}
+                  stateKey="type"
+                  placeholder=""
+                />
+              </Col>
+              <Col span={12}>
+                {' '}
+                <CustomInput
+                  title="City"
+                  type="text"
+                  handleChange={handleChange}
+                  value={teamFormik.values.city}
+                  stateKey="city"
+                  placeholder=""
+                  errorMessage={teamFormik.errors.city}
+                />
+              </Col>
+              <Col span={12}>
+                <CustomInput title="Area" type="text" handleChange={handleChange} value={teamFormik.values.place} stateKey="place" placeholder="" />
+              </Col>
+              <Col span={24}>
                 <Upload
-                  multiple={false}
-                  listType="picture-card"
-                  accept=".png,.jpeg,.jpg"
-                  fileList={profile}
-                  type="FormFile"
-                  stateKey="profile"
-                  disabled={!!Object.keys(profile).length}
-                  onChange={(e) => handleProfileUpload(e)}
-                  beforeUpload={false}
+                  beforeUpload={() => false}
                   onPreview={handlePreview}
+                  value={teamFormik.values.gallery}
+                  fileList={gallery}
+                  multiple={true}
+                  listType="picture-card"
+                  onChange={(e) => handleUpload(e)}
                 >
-                  Profile
+                  Gallery
                 </Upload>
-              </Popover>
-            </Col>
-            <Col span={12}>
-              <CustomInput
-                title="Name"
-                type="text"
-                handleChange={handleChange}
-                value={teamFormik.values.name}
-                stateKey="name"
-                placeholder=""
-                errorMessage={teamFormik.errors.name}
-              />
-            </Col>
-            <Col span={12}>
-              <CustomInput title="Zone" type="number" handleChange={handleChange} value={teamFormik.values.zone} stateKey="zone" placeholder="" />
-            </Col>
-            <Col span={12}>
-              <CustomInput
-                title="Contact"
-                type="number"
-                handleChange={handleChange}
-                value={teamFormik.values.contact}
-                stateKey="contact"
-                placeholder=""
-              />
-            </Col>
-            <Col span={12}>
-              {' '}
-              <CustomInput
-                title="Type"
-                type="select"
-                options={teamTypeOptions}
-                handleChange={handleChange}
-                value={teamFormik.values.type}
-                stateKey="type"
-                placeholder=""
-              />
-            </Col>
-            <Col span={12}>
-              {' '}
-              <CustomInput
-                title="City"
-                type="text"
-                handleChange={handleChange}
-                value={teamFormik.values.city}
-                stateKey="city"
-                placeholder=""
-                errorMessage={teamFormik.errors.city}
-              />
-            </Col>
-            <Col span={12}>
-              <CustomInput title="Area" type="text" handleChange={handleChange} value={teamFormik.values.place} stateKey="place" placeholder="" />
-            </Col>
-            <Col span={24}>
-              <Upload
-                beforeUpload={() => false}
-                onPreview={handlePreview}
-                value={teamFormik.values.gallery}
-                fileList={gallery}
-                multiple={true}
-                listType="picture-card"
-                onChange={(e) => handleUpload(e)}
-              >
-                Gallery
-              </Upload>
-            </Col>
-            {/* <Col span={12}>
+              </Col>
+              {/* <Col span={12}>
               <CustomInput
                 title="Registered"
                 type="checkbox"
@@ -411,16 +415,17 @@ const Team = () => {
                 placeholder=""
               />
             </Col> */}
-          </Row>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" disabled={!teamFormik.isValid} onClick={teamFormik.handleSubmit}>
-              {mode == 'Create Team' ? 'Add' : 'Update'}
-            </Button>
-            <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
-              Cancel
-            </Button>
-          </Form.Item>
-        </Form>
+            </Row>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" disabled={!teamFormik.isValid} onClick={teamFormik.handleSubmit}>
+                {mode == 'Create Team' ? 'Add' : 'Update'}
+              </Button>
+              <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
+                Cancel
+              </Button>
+            </Form.Item>
+          </Form>
+        </Skeleton>
       </CustomModal>
 
       <Modal visible={preview} footer={null} onCancel={handlePreviewCancel}>

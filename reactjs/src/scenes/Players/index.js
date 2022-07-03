@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse, Upload, Popover, Icon } from 'antd';
+import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse, Upload, Popover, Icon, Skeleton } from 'antd';
 import { L } from '../../lib/abpUtility';
 import playerService from '../../services/player/playerService';
 import CustomModal from '../../components/Modal';
@@ -15,9 +15,11 @@ import FilterPanel from './filter-panel';
 import PlayerStatsDrawer from './player-stats-drawer';
 import CustomTable from '../../components/Table';
 import { getBase64 } from '../../helper/getBase64';
+
 // import './style.css';
 
 //const { Option } = Select;
+const baseUrl = 'http://localhost:21021';
 const playerInitial = {
   id: 0,
   name: '',
@@ -36,7 +38,7 @@ const playerInitial = {
 const playerValidation = Yup.object().shape({
   name: Yup.string().required('Required'),
   gender: Yup.string().required('Required'),
-  contact: Yup.string().required('Required').min(11, "Contact must contain 12 numbers").max(11, "Contact must contain 12 numbers"),
+  contact: Yup.string().required('Required').min(11, 'Contact must contain 12 numbers').max(11, 'Contact must contain 12 numbers'),
 });
 
 const success = Modal.success;
@@ -45,6 +47,8 @@ const { Panel } = Collapse;
 
 const Player = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isEditDataLoading, setIsEditDataLoading] = useState(false);
+  const [mode, setModalMode] = useState('');
   const [playerList, setPlayerList] = useState([]);
   const [picture, setPicture] = useState(false);
   const [preview, setPreview] = useState(false);
@@ -83,7 +87,17 @@ const Player = () => {
       isGuestOrRegisterd: 'Registered',
       teamIds: playerFormik.values.teamIds,
       fileName: playerFormik.values.fileName,
+      profile: playerFormik.values.profile,
+      profileUrl: playerFormik.values.profileUrl,
     };
+
+    if (profile && profile[0]) {
+      setPicture(false);
+      playerObject['profile'] = { name: profile[0].name, blob: profile[0].thumbUrl, url: profile[0].url };
+    } else {
+      setPicture(true);
+      return;
+    }
 
     console.log('Player Object', playerObject);
     playerService.createOrUpdate(playerObject).then((res) => {
@@ -167,7 +181,6 @@ const Player = () => {
     playerFormik.setValues({ ...playerFormik.values, [key]: value });
   };
 
-
   useEffect(() => {
     if (!isOpenModal) {
       playerFormik.setValues({});
@@ -206,15 +219,36 @@ const Player = () => {
   };
 
   const handleEditPlayer = (item) => {
+    setIsEditDataLoading(true);
     setIsOpenModal(true);
+    setModalMode('Edit Player');
     playerService.getPlayerById(item.id).then((res) => {
       if (res) {
-        setEditPlayer(res);
+        // debugger;
+        if (!res.success) {
+          error({ title: res.successMessage })
+          return;
+        }
+        setEditPlayer(res.result);
         console.log('player', res);
         playerFormik.setValues({
           ...playerFormik.values,
-          ...res,
+          ...res.result,
         });
+        let obj = [];
+        if (res.result.pictures)
+        res.result.pictures.forEach((element) => {
+          var ob = {
+            key: element.id,
+            name: element.name,
+            uid: element.id,
+            url: baseUrl + '/' + element.url,
+          };
+          obj.push(ob);
+        });
+      setGallery(obj);
+      setProfile([{ key: res.result.id, name: res.result.name, uid: res.result.id, url: baseUrl + '/' + res.result.profileUrl }]);
+      setIsEditDataLoading(false);
       }
     });
   };
@@ -222,6 +256,7 @@ const Player = () => {
   const addPlayer = () => {
     setProfile([]);
     setIsOpenModal(true);
+    setModalMode('Create Player');
   };
 
   const handleDeletePicture = () => {
@@ -360,7 +395,14 @@ const Player = () => {
           <FilterPanel teams={teamList} handleSubmit={filterHandleSubmit}></FilterPanel>
         </Panel>
       </Collapse>
-      <CustomTable loading={loading} pagination={pagination} columns={columns} data={playerList} scroll={{ x: 1500 }} handleTableChange={handleTableChange} />
+      <CustomTable
+        loading={loading}
+        pagination={pagination}
+        columns={columns}
+        data={playerList}
+        scroll={{ x: 1500 }}
+        handleTableChange={handleTableChange}
+      />
       <CustomModal
         title={Object.keys(editPlayer).length ? 'Edit Player' : 'Add Player'}
         isModalVisible={isOpenModal}
@@ -369,157 +411,161 @@ const Player = () => {
         }}
         handleSubmit={handleSubmit}
       >
-        <Form>
-          <Row gutter={16}>
-            <Col span={24}>
-              <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
-                <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
+        <Skeleton loading={isEditDataLoading}>
+          <Form>
+            <Row gutter={16}>
+              <Col span={24}>
+                <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
+                  <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
+                  <Upload
+                    multiple={false}
+                    listType="picture-card"
+                    accept=".png,.jpeg,.jpg"
+                    fileList={profile}
+                    type="FormFile"
+                    stateKey="profile"
+                    disabled={!!Object.keys(profile).length}
+                    onChange={(e) => handleProfileUpload(e)}
+                    beforeUpload={false}
+                    onPreview={handlePreview}
+                  >
+                    Profile
+                  </Upload>
+                </Popover>
+              </Col>
+              <Col span={12}>
+                <CustomInput
+                  title="Name"
+                  type="text"
+                  handleChange={handleChange}
+                  value={playerFormik.values.name}
+                  stateKey="name"
+                  placeholder=""
+                  errorMessage={playerFormik.errors.name}
+                />
+              </Col>
+              <Col span={12}>
+                <CustomInput
+                  title="Gender"
+                  type="select"
+                  options={genderOptions}
+                  handleChange={handleChange}
+                  value={playerFormik.values.gender}
+                  stateKey="gender"
+                />
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={8}>
+                <CustomInput
+                  title="Player Role"
+                  type="select"
+                  options={playingRoleOptions}
+                  handleChange={handleChange}
+                  value={playerFormik.values.playingRoleId}
+                  stateKey="playingRoleId"
+                  placeholder=""
+                />
+              </Col>
+              <Col span={8}>
+                <CustomInput
+                  title="Batting Style"
+                  type="select"
+                  options={battingStyleOptions}
+                  handleChange={handleChange}
+                  value={playerFormik.values.battingStyleId}
+                  stateKey="battingStyleId"
+                  placeholder=""
+                />
+              </Col>
+              <Col span={8}>
+                <CustomInput
+                  title="Bowling Style"
+                  type="select"
+                  options={bowlingStyleOptions}
+                  handleChange={handleChange}
+                  value={playerFormik.values.bowlingStyleId}
+                  stateKey="bowlingStyleId"
+                  placeholder=""
+                />
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={8}>
+                <CustomInput
+                  title="Contact"
+                  type="number"
+                  handleChange={handleChange}
+                  value={playerFormik.values.contact}
+                  stateKey="contact"
+                  placeholder=""
+                  errorMessage={playerFormik.errors.contact}
+                />
+              </Col>
+              <Col span={8}>
+                <CustomInput title="Cnic" type="text" handleChange={handleChange} value={playerFormik.values.cnic} stateKey="cnic" placeholder="" />
+              </Col>
+              <Col span={8}>
+                <CustomInput
+                  title="Birth"
+                  type="datePicker"
+                  handleChange={handleChangeDatePicker}
+                  value={moment(playerFormik.values.dob)}
+                  stateKey="dob"
+                  placeholder=""
+                />
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={24}>
+                <CustomInput
+                  title="Address"
+                  type="text"
+                  handleChange={handleChange}
+                  value={playerFormik.values.address}
+                  stateKey="address"
+                  placeholder=""
+                />
+              </Col>
+              <Col span={24}>
+                <CustomInput
+                  title="Team"
+                  type="multiple"
+                  options={teamList}
+                  handleChange={handleChange}
+                  value={playerFormik.values.teamIds}
+                  stateKey="teamIds"
+                  placeholder=""
+                />
+              </Col>
+              <br />
+              <Col span={24}>
                 <Upload
-                  multiple={false}
-                  listType="picture-card"
-                  accept=".png,.jpeg,.jpg"
-                  fileList={profile}
-                  type="FormFile"
-                  stateKey="profile"
-                  disabled={!!Object.keys(profile).length}
-                  onChange={(e) => handleProfileUpload(e)}
-                  beforeUpload={false}
+                  className="Gallery"
+                  beforeUpload={() => false}
                   onPreview={handlePreview}
+                  value={playerFormik.values.gallery}
+                  fileList={gallery}
+                  multiple={true}
+                  listType="picture-card"
+                  onChange={(e) => handleUpload(e)}
                 >
-                  Profile
+                  Gallery
                 </Upload>
-              </Popover>
-            </Col>
-            <Col span={12}>
-              <CustomInput
-                title="Name"
-                type="text"
-                handleChange={handleChange}
-                value={playerFormik.values.name}
-                stateKey="name"
-                placeholder=""
-                errorMessage={playerFormik.errors.name}
-              />
-            </Col>
-            <Col span={12}>
-              <CustomInput
-                title="Gender"
-                type="select"
-                options={genderOptions}
-                handleChange={handleChange}
-                value={playerFormik.values.gender}
-                stateKey="gender"
-              />
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={8}>
-              <CustomInput
-                title="Player Role"
-                type="select"
-                options={playingRoleOptions}
-                handleChange={handleChange}
-                value={playerFormik.values.playingRoleId}
-                stateKey="playingRoleId"
-                placeholder=""
-              />
-            </Col>
-            <Col span={8}>
-              <CustomInput
-                title="Batting Style"
-                type="select"
-                options={battingStyleOptions}
-                handleChange={handleChange}
-                value={playerFormik.values.battingStyleId}
-                stateKey="battingStyleId"
-                placeholder=""
-              />
-            </Col>
-            <Col span={8}>
-              <CustomInput
-                title="Bowling Style"
-                type="select"
-                options={bowlingStyleOptions}
-                handleChange={handleChange}
-                value={playerFormik.values.bowlingStyleId}
-                stateKey="bowlingStyleId"
-                placeholder=""
-              />
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={8}>
-              <CustomInput
-                title="Contact"
-                type="number"
-                handleChange={handleChange}
-                value={playerFormik.values.contact}
-                stateKey="contact"
-                placeholder=""
-                errorMessage={playerFormik.errors.contact}
-              />
-            </Col>
-            <Col span={8}>
-              <CustomInput title="Cnic" type="text" handleChange={handleChange} value={playerFormik.values.cnic} stateKey="cnic" placeholder="" />
-            </Col>
-            <Col span={8}>
-              <CustomInput
-                title="Birth"
-                type="datePicker"
-                handleChange={handleChangeDatePicker}
-                value={playerFormik.values.dob}
-                stateKey="dob"
-                placeholder=""
-              />
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={24}>
-              <CustomInput
-                title="Address"
-                type="text"
-                handleChange={handleChange}
-                value={playerFormik.values.address}
-                stateKey="address"
-                placeholder=""
-              />
-            </Col>
-            <Col span={24}>
-              <CustomInput
-                title="Team"
-                type="multiple"
-                options={teamList}
-                handleChange={handleChange}
-                value={playerFormik.values.teamIds}
-                stateKey="teamIds"
-                placeholder=""
-              />
-            </Col><br/>
-            <Col span={24}>
-              <Upload
-              className='Gallery'
-                beforeUpload={() => false}
-                onPreview={handlePreview}
-                value={playerFormik.values.gallery}
-                fileList={gallery}
-                multiple={true}
-                listType="picture-card"
-                onChange={(e) => handleUpload(e)}
-              >
-                Gallery
-              </Upload>
-            </Col>
-          </Row>
+              </Col>
+            </Row>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit" onClick={playerFormik.handleSubmit}>
-              {Object.keys(editPlayer).length ? 'Update' : 'Add'}
-            </Button>
-            <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
-              Cancel
-            </Button>
-          </Form.Item>
-        </Form>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" onClick={playerFormik.handleSubmit}>
+                {/* {Object.keys(editPlayer).length ? 'Update' : 'Add'} */}
+                {mode == 'Create Player' ? 'Add' : 'Update'}
+              </Button>
+              <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
+                Cancel
+              </Button>
+            </Form.Item>
+          </Form>
+        </Skeleton>
       </CustomModal>
       <PlayerStatsDrawer visible={visible} onClose={onClose} stats={playerStats} />
       <Modal visible={preview} footer={null} onCancel={handlePreviewCancel}>
