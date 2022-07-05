@@ -17,6 +17,7 @@ import FilterPanel from './filter-panel';
 import EventService from '../../services/event/EventService';
 import CustomTable from '../../components/Table';
 import { getBase64 } from '../../helper/getBase64';
+import matchTypeConst from '../../lib/matchTypeConst';
 
 const baseUrl = 'http://localhost:21021';
 const matchValidation = Yup.object().shape({
@@ -31,13 +32,13 @@ const matchInitial = {
   matchDescription: '',
   season: 0,
   eventId: '',
-  team1Id: '',
-  team2Id: '',
+  team1Id: null,
+  team2Id: null,
   groundId: '',
   matchTypeId: '',
   eventType: '',
   eventStage: '',
-  dateOfMatch: '',
+  dateOfMatch: null,
   tossWinningTeam: '',
   playerOTM: '',
   group: 0,
@@ -166,18 +167,20 @@ const Matches = () => {
   }, [matchFormik.values.group]);
 
   useEffect(() => {
-    if (matchFormik.values.matchTypeId == 3) {
+    if (matchFormik.values.matchTypeId == matchTypeConst.friendly) {
       var obj = matchFormik.values;
       obj.eventId = '';
       obj.group = 0;
       matchFormik.setValues({ ...matchFormik.values, obj });
       setTeamList(filterTeamList);
     }
-    if (matchFormik.values.matchTypeId == 1 || matchFormik.values.matchTypeId == 2) {
-      var a = matchFormik.values;
-      a.team1Id = '';
-      a.team2Id = '';
-      matchFormik.setValues({ ...matchFormik.values, a });
+    if (matchFormik.values.matchTypeId == matchTypeConst.tournament || matchFormik.values.matchTypeId == matchTypeConst.series) {
+      if (!matchFormik.values.event) {
+        var a = matchFormik.values;
+        a.team1Id = '';
+        a.team2Id = '';
+        matchFormik.setValues({ ...matchFormik.values, a });
+      }
       getAllEvents();
       setTeamList([]);
     }
@@ -298,7 +301,6 @@ const Matches = () => {
     setModalMode('Edit Match');
     matchService.EditEventMatch(item.id).then((res) => {
       if (res) {
-        debugger;
         if (!res.success) {
           error({ title: res.successMessage });
           return;
@@ -306,7 +308,7 @@ const Matches = () => {
         setEditMatch(res.result);
         matchFormik.setValues({
           ...matchFormik.values,
-          ...res,
+          ...res.result,
         });
         let obj = [];
         if (res.result.pictures)

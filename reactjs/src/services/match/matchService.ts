@@ -18,7 +18,7 @@ class MatchService {
 
   public async EditEventMatch(matchId: Number): Promise<any> {
     let result = await http.post(`/api/services/app/Match/EditEventMatch?id=${matchId}`);
-    return result.data.result;
+    return result.data;
   }
 
   public async getAll() {

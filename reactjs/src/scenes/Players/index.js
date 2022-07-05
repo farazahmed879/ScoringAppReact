@@ -224,7 +224,6 @@ const Player = () => {
     setModalMode('Edit Player');
     playerService.getPlayerById(item.id).then((res) => {
       if (res) {
-        // debugger;
         if (!res.success) {
           error({ title: res.successMessage })
           return;

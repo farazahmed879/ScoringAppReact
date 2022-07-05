@@ -81,6 +81,8 @@ const PlayerProfile = () => {
     TeamService.getAllTeamsByPlayerId(id).then((res) => {
       console.log('Player Teams', res);
       setTeamList(res);
+
+      
     });
   };
 

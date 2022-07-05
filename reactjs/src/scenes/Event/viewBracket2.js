@@ -360,10 +360,14 @@ const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate =
     setIsOpenModal(true);
     matchService.EditEventMatch(id).then((res) => {
       if (res) {
-        setEditMatch(res);
+        if (!res.success) {
+          error({ title: res.successMessage });
+          return;
+        }
+        setEditMatch(res.result);
         matchFormik.setValues({
           ...matchFormik.values,
-          ...res,
+          ...res.result,
         });
       }
     });
