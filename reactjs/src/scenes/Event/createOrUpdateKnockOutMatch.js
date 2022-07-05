@@ -23,15 +23,18 @@ const CreateOrUpdateKnockOutMatch = ({
 
   const handleSwapTeams = () => {
     var swap;
+    var swapid;
     var team1 = matchFormik.values.team1;
     var team2 = matchFormik.values.team2;
-    console.log('Team1', team1);
-    console.log('Team2', team2);
+    var teamid1 = matchFormik.values.team1Id;
+    var teamid2 = matchFormik.values.team2Id;
     swap = team1;
     team1 = team2;
     team2 = swap;
-
-    matchFormik.setValues({ ...matchFormik.values, team1: team1, team2: team2 });
+    swapid = teamid1;
+    teamid1 = teamid2;
+    teamid2 = swapid;
+    matchFormik.setValues({ ...matchFormik.values, team1: team1, team2: team2, team1Id: teamid1, team2Id: teamid2 });
     console.log('Team1', matchFormik.values.team1);
     console.log('Team2', matchFormik.values.team2);
   };
