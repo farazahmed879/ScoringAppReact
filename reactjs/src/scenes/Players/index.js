@@ -33,6 +33,9 @@ const playerInitial = {
   teamIds: [],
   dob: null,
   fileName: '',
+  profile:'',
+  profileUrl:'',
+  gallery: [],
 };
 
 const playerValidation = Yup.object().shape({

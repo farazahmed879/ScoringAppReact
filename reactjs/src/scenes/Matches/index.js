@@ -90,6 +90,8 @@ const Matches = () => {
       eventStage: matchFormik.values.eventStage,
       dateOfMatch: moment(matchFormik.values.dateOfMatch).valueOf(),
       playerOTM: matchFormik.values.playerOTM,
+      profile: matchFormik.values.profile,
+      profileUrl: matchFormik.values.profileUrl,
     };
 
     if (profile && profile[0]) {
@@ -297,6 +299,7 @@ const Matches = () => {
   };
 
   const handleEditMatch = (item) => {
+    setIsEditDataLoading(true)
     setIsOpenModal(true);
     setModalMode('Edit Match');
     matchService.EditEventMatch(item.id).then((res) => {
@@ -323,6 +326,7 @@ const Matches = () => {
           });
         setGallery(obj);
         setProfile([{ key: res.result.id, name: res.result.name, uid: res.result.id, url: baseUrl + '/' + res.result.profileUrl }]);
+        setIsEditDataLoading(false)
       }
     });
   };
