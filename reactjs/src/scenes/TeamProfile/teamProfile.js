@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams,useHistory } from 'react-router-dom';
-import { Card, Tabs, Icon, Empty, Tooltip, Tag, Row, Skeleton, Form, Button, Radio,PageHeader } from 'antd';
+import { Link, useParams, useHistory } from 'react-router-dom';
+import { Card, Tabs, Icon, Empty, Tooltip, Tag, Row, Skeleton, Form, Button, Radio, PageHeader } from 'antd';
 import { truncateText } from '../../helper/helper';
 import playerService from '../../services/player/playerService';
 import matchService from '../../services/match/matchService';
@@ -15,6 +15,8 @@ import CustomModal from '../../components/Modal';
 import { matchTypes } from '../../components/Enum/enum';
 import CustomInput from '../../components/Input';
 import { preloadAll } from 'react-loadable';
+import ViewGallery from '../../components/ViewGallery/ViewGallery';
+import GalleryService from '../../services/gallery/GalleryService';
 
 const gridStyle = {
   width: '20%',
@@ -36,6 +38,7 @@ const TeamProfile = () => {
   const [players, setPlayerList] = useState([]);
   const [eventList, setEventList] = useState([]);
   const [matchList, setMatchList] = useState([]);
+  const [gallery, setGAllery] = useState([]);
   const [stats, setTeamStats] = useState({});
   const [statsLoading, setStatsLoading] = useState(true);
   const [isStatsFilterModal, setIsStatsFilterModal] = useState(false);
@@ -51,6 +54,7 @@ const TeamProfile = () => {
   });
   useEffect(() => {
     getTeamStats();
+    getGallery(param.teamId);
     // getAllEventsByTeamId(param.teamId);
     getAllPlayersByTeamId(param.teamId);
   }, []);
@@ -78,6 +82,7 @@ const TeamProfile = () => {
   const getAllEventsByTeamId = (id) => {
     EventService.getAllEventsByTeamId(id, eventFilter).then((res) => {
       console.log('Team Events', res);
+
       setEventList(res);
     });
   };
@@ -86,6 +91,16 @@ const TeamProfile = () => {
       console.log('Team Stats', res);
       setTeamStats(res);
       setStatsLoading(false);
+    });
+  };
+
+  const getGallery = (id) => {
+    GalleryService.getAllByEntity(id).then((res) => {
+      console.log('Gallery', res);
+      if (res.success) {
+        setGAllery(res.result);
+      }
+      
     });
   };
 
@@ -283,6 +298,17 @@ const TeamProfile = () => {
             key="5"
           >
             <LeaderBoard teamId={param.teamId}></LeaderBoard>
+          </TabPane>
+          <TabPane
+            tab={
+              <span>
+                <Icon type="apple" />
+                Gallery
+              </span>
+            }
+            key="6"
+          >
+            <ViewGallery data={gallery}></ViewGallery>
           </TabPane>
         </Tabs>
       </div>
