@@ -257,6 +257,7 @@ const Player = () => {
 
   const addPlayer = () => {
     setProfile([]);
+    setGallery([]);
     setIsOpenModal(true);
     setModalMode('Create Player');
   };

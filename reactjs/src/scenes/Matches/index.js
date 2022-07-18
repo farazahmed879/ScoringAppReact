@@ -334,6 +334,7 @@ const Matches = () => {
   const addMatch = () => {
     setIsOpenModal(true);
     setProfile([]);
+    setGallery([]);
     setModalMode('Add Match');
   };
 

@@ -176,6 +176,7 @@ const Event = () => {
 
   const handleAddEvent = () => {
     setProfile([]);
+    setGallery([]);
     setIsOpenModal(true);
     setModalMode('Create Event');
   };
