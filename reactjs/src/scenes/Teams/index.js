@@ -48,6 +48,7 @@ const Team = () => {
     city: '',
     fileName: '',
     type: 0,
+    profileUrl: '',
     gallery: [],
   };
 

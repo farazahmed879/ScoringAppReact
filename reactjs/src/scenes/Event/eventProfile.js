@@ -6,7 +6,6 @@ import playerService from '../../services/player/playerService';
 import matchService from '../../services/match/matchService';
 import EventService from '../../services/event/EventService';
 import TeamService from '../../services/team/TeamService';
-import AppConsts from '../../lib/appconst';
 import LeaderBoard from '../statistics/leaderBoard';
 import ViewMatchBox from '../../components/ViewMatchBox';
 import PlayerViewBox from '../../components/PlayerViewBox';
@@ -21,6 +20,7 @@ import GroundService from '../../services/ground/GroundService';
 import { tournamentTypes } from '../../components/Enum/enum';
 import eventTypeConst from '../../lib/eventTypeConst';
 import matchTypeConst from '../../lib/matchTypeConst';
+import getImage from '../../lib/getImage';
 
 const gridStyle = {
   width: '20%',
@@ -106,7 +106,7 @@ const EventProfile = () => {
 
   const getEventStats = (id) => {
     EventService.getEventStats(id).then((res) => {
-      console.log('Team Stats', res);
+      console.log('Event Stats', res);
       setEventStats(res);
       setStatsLoading(false);
     });
@@ -243,13 +243,13 @@ const EventProfile = () => {
           <Card
             hoverable
             style={{ width: '100%', height: '200%', marginBottom: '-220px' }}
-            cover={<img alt="example" src={AppConsts.dummyImage} height={500} width={150} />}
+            cover={<img alt="example" src={getImage(stats.profileUrl)} height={500} width={150} />}
           ></Card>
           <Row style={{ marginLeft: '20px', marginTop: '50px', display: 'flex' }}>
             <Card
               hoverable
               style={{ width: '150px', height: '150px' }}
-              cover={<img alt="example" src={AppConsts.dummyImage} height={150} width={150} />}
+              cover={<img alt="example" src={getImage(stats.profileUrl)} height={150} width={150} />}
             ></Card>
             <Skeleton loading={statsLoading}>
               <div style={{ marginLeft: '10px', marginTop: '5px' }}>

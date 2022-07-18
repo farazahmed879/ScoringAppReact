@@ -33,6 +33,9 @@ const playerInitial = {
   teamIds: [],
   dob: null,
   fileName: '',
+  profile:'',
+  profileUrl:'',
+  gallery: [],
 };
 
 const playerValidation = Yup.object().shape({
@@ -254,6 +257,7 @@ const Player = () => {
 
   const addPlayer = () => {
     setProfile([]);
+    setGallery([]);
     setIsOpenModal(true);
     setModalMode('Create Player');
   };

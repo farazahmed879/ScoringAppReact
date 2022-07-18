@@ -7,6 +7,7 @@ import matchService from '../../services/match/matchService';
 import EventService from '../../services/event/EventService';
 import TeamService from '../../services/team/TeamService';
 import AppConsts from '../../lib/appconst';
+import getImage from '../../lib/getImage';
 import LeaderBoard from '../statistics/leaderBoard';
 import ViewMatchBox from '../../components/ViewMatchBox';
 import PlayerViewBox from '../../components/PlayerViewBox';
@@ -15,7 +16,6 @@ import CustomModal from '../../components/Modal';
 import { matchTypes } from '../../components/Enum/enum';
 import CustomInput from '../../components/Input';
 import { preloadAll } from 'react-loadable';
-
 const gridStyle = {
   width: '20%',
   textAlign: 'center',
@@ -62,6 +62,7 @@ const TeamProfile = () => {
   useEffect(() => {
     getAllEventsByTeamId(param.teamId);
   }, [eventFilter]);
+
 
   const getAllPlayersByTeamId = (id) => {
     playerService.getAllByTeamId(id).then((res) => {
@@ -126,13 +127,13 @@ const TeamProfile = () => {
         <Card
           hoverable
           style={{ width: '100%', height: '200%', marginBottom: '-220px' }}
-          cover={<img alt="example" src={AppConsts.dummyImage} height={500} width={150} />}
+          cover={<img alt="example" src={getImage(stats.profileUrl)} height={500} width={150} />}
         ></Card>
         <Row style={{ marginLeft: '20px', marginTop: '50px', display: 'flex' }}>
           <Card
             hoverable
             style={{ width: '150px', height: '150px' }}
-            cover={<img alt="example" src={AppConsts.dummyImage} height={150} width={150} />}
+            cover={<img alt="example" src={getImage(stats.profileUrl)} height={150} width={150} />}
           ></Card>
           <div style={{ marginLeft: '10px', marginTop: '5px' }}>
             <h1 style={{ color: 'white', fontSize: '33px', marginBottom: '0' }}>Name: {stats.name}</h1>

@@ -47,7 +47,7 @@ const Ground = () => {
   const handleSubmit = (e) => {
     if (!groundFormik.isValid) return;
     let req = {
-      id: 0,
+      id: groundFormik.values.id || 0,
       name: groundFormik.values.name,
       location: groundFormik.values.location,
       profileUrl: groundFormik.values.profileUrl,
@@ -117,6 +117,7 @@ const Ground = () => {
 
   const addGround = () => {
     setProfile([]);
+    setGallery([]);
     setIsOpenModal(true);
     setModalMode('Create Ground');
   };
