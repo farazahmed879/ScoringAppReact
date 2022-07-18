@@ -33,8 +33,8 @@ const playerInitial = {
   teamIds: [],
   dob: null,
   fileName: '',
-  profile:'',
-  profileUrl:'',
+  profile: '',
+  profileUrl: '',
   gallery: [],
 };
 
@@ -92,6 +92,11 @@ const Player = () => {
       fileName: playerFormik.values.fileName,
       profile: playerFormik.values.profile,
       profileUrl: playerFormik.values.profileUrl,
+      gallery: gallery.map((data) => ({
+        id: data.key,
+        name: data.name,
+        blob: data.thumbUrl,
+      })),
     };
 
     if (profile && profile[0]) {
@@ -228,7 +233,7 @@ const Player = () => {
     playerService.getPlayerById(item.id).then((res) => {
       if (res) {
         if (!res.success) {
-          error({ title: res.successMessage })
+          error({ title: res.successMessage });
           return;
         }
         setEditPlayer(res.result);
@@ -239,18 +244,18 @@ const Player = () => {
         });
         let obj = [];
         if (res.result.pictures)
-        res.result.pictures.forEach((element) => {
-          var ob = {
-            key: element.id,
-            name: element.name,
-            uid: element.id,
-            url: baseUrl + '/' + element.url,
-          };
-          obj.push(ob);
-        });
-      setGallery(obj);
-      setProfile([{ key: res.result.id, name: res.result.name, uid: res.result.id, url: baseUrl + '/' + res.result.profileUrl }]);
-      setIsEditDataLoading(false);
+          res.result.pictures.forEach((element) => {
+            var ob = {
+              key: element.id,
+              name: element.name,
+              uid: element.id,
+              url: baseUrl + '/' + element.url,
+            };
+            obj.push(ob);
+          });
+        setGallery(obj);
+        setProfile([{ key: res.result.id, name: res.result.name, uid: res.result.id, url: baseUrl + '/' + res.result.profileUrl }]);
+        setIsEditDataLoading(false);
       }
     });
   };
