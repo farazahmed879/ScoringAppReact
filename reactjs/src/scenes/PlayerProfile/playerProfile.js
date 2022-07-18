@@ -12,6 +12,8 @@ import TeamViewBox from '../../components/TeamViewBox';
 import CustomModal from '../../components/Modal';
 import { battingStyleOptions, bowlingStyleOptions, matchTypes, playingRoleOptions } from '../../components/Enum/enum';
 import CustomInput from '../../components/Input';
+import ViewGallery from '../../components/ViewGallery/ViewGallery';
+import GalleryService from '../../services/gallery/GalleryService';
 const { TabPane } = Tabs;
 const { Panel } = Collapse;
 
@@ -50,6 +52,7 @@ const PlayerProfile = () => {
   const [stats, setPlayerStats] = useState({});
   const [teams, setTeamList] = useState([]);
   const [matches, setMatchList] = useState([]);
+  const [gallery, setGAllery] = useState([]);
   const [mom, setMOMList] = useState([]);
   const [statsLoading, setStatsLoading] = useState(true);
   const [isFilterModal, setIsFilterModal] = useState(false);
@@ -65,6 +68,7 @@ const PlayerProfile = () => {
 
   useEffect(() => {
     playerStatistics();
+    getGallery(param.playerId);
     getAllTeamsByPlayerId(param.playerId);
     //getMatchesByPlayerId(param.playerId);
     getMOMByPlayerId(param.playerId);
@@ -99,6 +103,14 @@ const PlayerProfile = () => {
     });
   };
 
+  const getGallery = (id) => {
+    GalleryService.getAllByEntity(undefined, undefined, id).then((res) => {
+      console.log('Gallery', res);
+      if (res.success) {
+        setGAllery(res.result);
+      }
+    });
+  };
   const callback = (key) => {
     console.log(key);
   };
@@ -333,8 +345,10 @@ const PlayerProfile = () => {
                 Gallery
               </span>
             }
-            key="5"
-          ></TabPane>
+            key="6"
+          >
+            <ViewGallery data={gallery}></ViewGallery>
+          </TabPane>
         </Tabs>
       </div>
 

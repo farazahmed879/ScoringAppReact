@@ -21,6 +21,8 @@ import { tournamentTypes } from '../../components/Enum/enum';
 import eventTypeConst from '../../lib/eventTypeConst';
 import matchTypeConst from '../../lib/matchTypeConst';
 import getImage from '../../lib/getImage';
+import ViewGallery from '../../components/ViewGallery/ViewGallery';
+import GalleryService from '../../services/gallery/GalleryService';
 
 const gridStyle = {
   width: '20%',
@@ -67,6 +69,7 @@ const error = Modal.error;
 const EventProfile = () => {
   const [teamList, setTeamList] = useState([]);
   const [matchList, setMatchList] = useState([]);
+  const [gallery, setGAllery] = useState([]);
   const [stats, setEventStats] = useState({});
   const [pointsTable, setPointsTable] = useState([]);
   const [statsLoading, setStatsLoading] = useState(true);
@@ -80,6 +83,7 @@ const EventProfile = () => {
   const param = useParams();
   const history = useHistory();
   useEffect(() => {
+    getGallery(param.eventId);
     getEventStats(param.eventId);
     getAllTeamsByEventId(param.eventId, undefined);
     getMatchesViewByEventId(param.eventId);
@@ -138,6 +142,14 @@ const EventProfile = () => {
       }
     });
   };
+  const getGallery = (id) => {
+    GalleryService.getAllByEntity(undefined, undefined, id).then((res) => {
+      console.log('Gallery', res);
+      if (res.success) {
+        setGAllery(res.result);
+      }
+    });
+  }
 
   //Add-league-based
   const handleAddMatch = () => {
@@ -409,6 +421,17 @@ const EventProfile = () => {
                 <PointsTable data={pointsTable}></PointsTable>
               </TabPane>
             )}
+            <TabPane
+              tab={
+                <span>
+                  <Icon type="apple" />
+                  Gallery
+                </span>
+              }
+              key="6"
+            >
+              <ViewGallery data={gallery}></ViewGallery>
+            </TabPane>
           </Tabs>
         </div>
       </Card>
