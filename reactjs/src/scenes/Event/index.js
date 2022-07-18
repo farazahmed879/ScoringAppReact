@@ -29,7 +29,9 @@ const Event = () => {
     eventType: '',
     tournamentType: 0,
     numberOfGroup: 0,
-    profile: [],
+    profile: '',
+    profileUrl: '',
+    gallery: [],
   };
 
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -141,12 +143,10 @@ const Event = () => {
   });
 
   useEffect(() => {
-
     getAll();
   }, [pagination.current]);
 
   const getAll = (filter) => {
-
     setLoading(true);
     eventService
       .getPaginatedAll({
@@ -185,15 +185,15 @@ const Event = () => {
   };
 
   const handleEditEvent = (item) => {
-    setIsEditDataLoading(true)
+    setIsEditDataLoading(true);
     setModalMode('Edit Event');
     setIsOpenModal(true);
     // setGallery([]);
-    console.log(picture)
+    console.log(picture);
     eventService.getById(item.id).then((res) => {
       if (res) {
         if (!res.success) {
-          error({ title: res.successMessage })
+          error({ title: res.successMessage });
           return;
         }
         setEditEvent(res.result);
@@ -218,7 +218,6 @@ const Event = () => {
         setProfile([{ key: res.result.id, name: res.result.name, uid: res.result.id, url: baseUrl + '/' + res.result.profileUrl }]);
         setIsEditDataLoading(false);
       }
-
     });
   };
 
@@ -461,7 +460,7 @@ const Event = () => {
               ) : null}
               <Col span={24}>
                 <Upload
-                  className='Gallery'
+                  className="Gallery"
                   beforeUpload={() => false}
                   onPreview={handlePreview}
                   value={eventFormik.values.gallery}
@@ -486,7 +485,6 @@ const Event = () => {
             </Form.Item>
           </Form>
         </Skeleton>
-
       </CustomModal>
       <Modal visible={preview} footer={null} onCancel={handlePreviewCancel}>
         <img alt="example" style={{ width: '100%' }} src={previewImage} />

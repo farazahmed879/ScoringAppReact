@@ -4,9 +4,9 @@ import playerService from '../../services/player/playerService';
 import TeamService from '../../services/team/TeamService';
 import matchService from '../../services/match/matchService';
 import { truncateText } from '../../helper/helper';
-import { Col, Row, Drawer, Divider, Card, Tabs, Icon, Collapse, Empty, Tooltip, Tag, Form, Skeleton, Button, Radio,PageHeader } from 'antd';
+import { Col, Row, Drawer, Divider, Card, Tabs, Icon, Collapse, Empty, Tooltip, Tag, Form, Skeleton, Button, Radio, PageHeader } from 'antd';
 import './style.css';
-import AppConsts from '../../lib/appconst';
+import getImage from '../../lib/getImage';
 import ViewMatchBox from '../../components/ViewMatchBox';
 import TeamViewBox from '../../components/TeamViewBox';
 import CustomModal from '../../components/Modal';
@@ -14,6 +14,7 @@ import { battingStyleOptions, bowlingStyleOptions, matchTypes, playingRoleOption
 import CustomInput from '../../components/Input';
 const { TabPane } = Tabs;
 const { Panel } = Collapse;
+
 const pStyle = {
   fontSize: 16,
   color: 'rgba(0,0,0,0.85)',
@@ -81,8 +82,6 @@ const PlayerProfile = () => {
     TeamService.getAllTeamsByPlayerId(id).then((res) => {
       console.log('Player Teams', res);
       setTeamList(res);
-
-      
     });
   };
 
@@ -103,6 +102,7 @@ const PlayerProfile = () => {
   const callback = (key) => {
     console.log(key);
   };
+
   const filterModal = () => {
     setIsFilterModal(!isFilterModal);
   };
@@ -137,13 +137,13 @@ const PlayerProfile = () => {
         <Card
           hoverable
           style={{ width: '100%', height: '200%', marginBottom: '-220px' }}
-          cover={<img alt="example" src={AppConsts.dummyImage} height={500} width={150} />}
+          cover={<img alt="example" src={getImage(stats.profileUrl)} height={500} width={150} />}
         ></Card>
         <Row style={{ marginLeft: '20px', marginTop: '50px', display: 'flex' }}>
           <Card
             hoverable
             style={{ width: '150px', height: '150px' }}
-            cover={<img alt="example" src={AppConsts.dummyImage} height={150} width={150} />}
+            cover={<img alt="example" src={getImage(stats.profileUrl)} height={150} width={150} />}
           ></Card>
           <div style={{ marginLeft: '10px', marginTop: '5px' }}>
             <h2 style={{ color: 'white', marginBottom: '0' }}>{stats.playerName || 'N/A'}</h2>
