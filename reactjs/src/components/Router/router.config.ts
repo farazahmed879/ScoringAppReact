@@ -194,6 +194,15 @@ export const appRouters: any = [
     component: LoadableComponent(() => import('../../scenes/PlayerProfile/playerProfile')),
   },
   {
+    path: '/groundProfile/:groundId',
+    permission: '',
+    title: 'Ground Profile',
+    name: 'ground',
+    icon: 'info-circle',
+    showInMenu: false,
+    component: LoadableComponent(() => import('../../scenes/Ground/groundProfile')),
+  },
+  {
     path: '/teamProfile/:teamId',
     permission: '',
     title: 'Team Profile',

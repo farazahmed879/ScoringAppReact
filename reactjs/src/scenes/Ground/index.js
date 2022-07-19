@@ -8,6 +8,7 @@ import CustomInput from '../../components/Input';
 import groundService from '../../services/ground/GroundService';
 import CustomTable from '../../components/Table';
 import { getBase64 } from '../../helper/getBase64';
+import { Link } from 'react-router-dom';
 const baseUrl = 'http://localhost:21021';
 
 const groundValidation = Yup.object().shape({
@@ -204,7 +205,11 @@ const Ground = () => {
       key: 'name',
       fixed: 'left',
       render: (text, item) => {
-        return (item && item.name) || 'N/A';
+        return (
+          <div>
+            <Link to={'/groundProfile/' + item.id}>{item.name}</Link>
+          </div>
+        );
       },
     },
 
