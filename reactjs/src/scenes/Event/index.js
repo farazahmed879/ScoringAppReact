@@ -115,8 +115,13 @@ const Event = () => {
       numberOfGroup: eventFormik.values.numberOfGroup,
       profile: eventFormik.values.profile,
       profileUrl: eventFormik.values.profileUrl,
+      gallery: gallery.map((data) => ({
+        id: data.key,
+        name: data.name,
+        blob: data.thumbUrl,
+      })),
     };
-
+    debugger;
     if (profile && profile[0]) {
       setPicture(false);
       eventObject['profile'] = { name: profile[0].name, blob: profile[0].thumbUrl, url: profile[0].url };
