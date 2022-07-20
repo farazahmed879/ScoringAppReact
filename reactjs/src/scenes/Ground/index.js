@@ -52,6 +52,11 @@ const Ground = () => {
       location: groundFormik.values.location,
       profileUrl: groundFormik.values.profileUrl,
       profile: groundFormik.values.profile,
+      gallery: gallery.map((data) => ({
+        id: data.key,
+        name: data.name,
+        blob: data.thumbUrl,
+      })),
     };
 
     if (profile && profile[0]) {
