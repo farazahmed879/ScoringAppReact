@@ -14,6 +14,7 @@ import CustomTable from '../../components/Table';
 import { env } from 'process';
 import { elementType } from 'prop-types';
 import { getBase64 } from '../../helper/getBase64';
+import { truncateText } from '../../helper/helper';
 const baseUrl = 'http://localhost:21021';
 const Team = () => {
   const success = Modal.success;
@@ -205,11 +206,12 @@ const Team = () => {
     });
   };
 
-  const resetForm = () => {};
+  const resetForm = () => { };
 
   const addTeam = () => {
     resetForm();
     setProfile([]);
+    setGallery([]);
     setIsOpenModal(true);
     setModalMode('Create Team');
   };
@@ -241,7 +243,7 @@ const Team = () => {
       render: (text, item) => {
         return (
           <div>
-            <Link to={'/teamProfile/' + item.id}>{item.name}</Link>
+            <Link to={'/teamProfile/' + item.id}> {truncateText(item.name, 30)}</Link>
           </div>
         );
       },

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Transfer, Button, Card, Modal } from 'antd';
-import { Link } from 'react-router-dom';
+import { Transfer, Button, Card, Modal, PageHeader } from 'antd';
+import { Link, useHistory } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import playerService from '../../services/player/playerService';
 import TeamService from '../../services/team/TeamService';
@@ -11,6 +11,7 @@ const TeamPlayers = () => {
   const [teamName, setTeamName] = useState([]);
   const [playerList, setPlayerList] = useState([]);
   const [selectedPlayerList, setSelectedPlayerList] = useState([]);
+  const history = useHistory();
   const [state, setState] = useState({
     mockData: [],
     targetKeys: [],
@@ -84,7 +85,14 @@ const TeamPlayers = () => {
   };
   return (
     <Card>
-      <h3>{teamName} Players</h3>{' '}
+      <PageHeader
+        style={{
+          border: '1px solid rgb(235, 237, 240)',
+        }}
+        onBack={history.goBack}
+        title={teamName + ' Players'}
+      />
+      {/* <h3>{teamName} Players</h3>{' '} */}
       <Transfer
         titles={['All Players', 'Selected Players']}
         dataSource={state.mockData}

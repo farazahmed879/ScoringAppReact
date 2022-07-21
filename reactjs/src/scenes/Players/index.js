@@ -279,7 +279,7 @@ const Player = () => {
       pageSize: e.pageSize,
     });
 
-    getAll();
+    //getAll();
   };
 
   const handlePreview = async (file) => {
