@@ -143,13 +143,13 @@ const EventProfile = () => {
     });
   };
   const getGallery = (id) => {
-    GalleryService.getAllByEntity(undefined, undefined, id).then((res) => {
+    GalleryService.getAllByEntity(undefined, id, undefined, undefined, undefined).then((res) => {
       console.log('Gallery', res);
       if (res.success) {
         setGAllery(res.result);
       }
     });
-  }
+  };
 
   //Add-league-based
   const handleAddMatch = () => {
