@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col, Button, Form } from 'antd';
 import CustomInput from '../../components/Input';
 import { battingStyleOptions, bowlingStyleOptions, matchTypes, playingRoleOptions } from '../../components/Enum/enum';
-const FilterPanel = ({ teams = [], grounds, handleSubmit = (e) => {} }) => {
+import { useFormik } from 'formik';
+import matchTypeConst from '../../lib/matchTypeConst';
+import EventService from '../../services/event/EventService';
+import tournamentTypeConst from '../../lib/tournamentTypeConst';
+const FilterPanel = ({ teams = [], grounds = [], groups = [], handleSubmit = (e) => {} }) => {
   const [filters, setFilters] = useState({
     team1: null,
     team2: null,
     groundId: null,
     type: null,
     date: '',
+    eventId: null,
   });
+  const [eventList, setEventList] = useState([]);
 
   const callback = (key) => {
     console.log(key);
@@ -31,6 +37,30 @@ const FilterPanel = ({ teams = [], grounds, handleSubmit = (e) => {} }) => {
     //playerFormik.setValues({ ...playerFormik.values, [key]: value });
   };
   console.log('filters', filters);
+  const getAllEvents = () => {
+    EventService.getAll().then((res) => {
+      console.log('eventList', res);
+      setEventList(res);
+    });
+  };
+
+  useEffect(() => {
+    if (filters.type == matchTypeConst.friendly) {
+      var obj = filters;
+      obj.eventId = '';
+      obj.group = 0;
+      setFilters({ ...filters, obj });
+    }
+    if (filters.type == matchTypeConst.tournament || filters.type == matchTypeConst.series) {
+      if (!filters.event) {
+        var a = filters;
+        a.team1Id = '';
+        a.team2Id = '';
+        setFilters({ ...filters, a });
+      }
+      getAllEvents();
+    }
+  }, [filters.type]);
 
   return (
     <>
@@ -83,6 +113,19 @@ const FilterPanel = ({ teams = [], grounds, handleSubmit = (e) => {} }) => {
             errorMessage={''}
           />
         </Col>
+        {filters.type == matchTypeConst.tournament || filters.type == matchTypeConst.series ? (
+          <Col span={12}>
+            <CustomInput
+              title="Event"
+              type="select"
+              handleChange={filterHandleChange}
+              options={eventList.filter((i) => i.eventType == filters.type && i.tournamentType == tournamentTypeConst.leagueBased)}
+              value={filters.eventId}
+              stateKey="eventId"
+              placeholder="Select Event"
+            />
+          </Col>
+        ) : null}
         <Col span={12}>
           <CustomInput
             title="Date"

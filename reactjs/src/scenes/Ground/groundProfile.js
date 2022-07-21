@@ -42,7 +42,7 @@ const GroupProfile = () => {
     }, []);
 
     const getGallery = (id) => {
-        GalleryService.getAllByEntity(undefined, undefined, id).then((res) => {
+        GalleryService.getAllByEntity(undefined, undefined, undefined, undefined, id).then((res) => {
             console.log('Gallery', res);
             if (res.success) {
                 setGAllery(res.result);

@@ -18,6 +18,8 @@ import EventService from '../../services/event/EventService';
 import CustomTable from '../../components/Table';
 import { getBase64 } from '../../helper/getBase64';
 import matchTypeConst from '../../lib/matchTypeConst';
+import AppConsts from '../../lib/appconst';
+import tournamentTypeConst from '../../lib/tournamentTypeConst';
 
 const baseUrl = 'http://localhost:21021';
 const matchValidation = Yup.object().shape({
@@ -518,7 +520,7 @@ const Matches = () => {
                 />
               </Col>
               <Col span={8}>
-                {matchFormik.values.matchTypeId == 1 || matchFormik.values.matchTypeId == 2 ? (
+                {matchFormik.values.matchTypeId == matchTypeConst.tournament || matchFormik.values.matchTypeId == matchTypeConst.series ? (
                   <CustomInput
                     title="Event"
                     type="select"
@@ -526,7 +528,9 @@ const Matches = () => {
                     options={
                       matchFormik.values.id
                         ? eventList
-                        : eventList.filter((i) => i.eventType == matchFormik.values.matchTypeId && i.tournamentType == 2)
+                        : eventList.filter(
+                            (i) => i.eventType == matchFormik.values.matchTypeId && i.tournamentType == tournamentTypeConst.leagueBased
+                          )
                     }
                     value={matchFormik.values.eventId}
                     stateKey="eventId"

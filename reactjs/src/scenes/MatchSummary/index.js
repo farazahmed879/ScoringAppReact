@@ -7,6 +7,8 @@ import Scorecard from './scoreacard';
 import ScoreCardService from '../../services/scoreCard/ScoreCardService';
 import PlayerViewBox from '../../components/PlayerViewBox';
 import moment from 'moment';
+import GalleryService from '../../services/gallery/GalleryService';
+import ViewGallery from '../../components/ViewGallery/ViewGallery';
 const MatchSummary = () => {
   const [firstInningBatsman, setFirstInningBatsman] = useState([]);
   const [secondInningBatsman, setSecondInningBatsman] = useState([]);
@@ -36,6 +38,8 @@ const MatchSummary = () => {
   const [loading, setLoading] = useState(true);
   const [playersLoading, setPlayersLoading] = useState(true);
 
+  const [gallery, setGAllery] = useState([]);
+
   const { TabPane } = Tabs;
   const { Panel } = Collapse;
   const param = useParams();
@@ -51,6 +55,7 @@ const MatchSummary = () => {
   };
 
   useEffect(() => {
+    getGallery(param.matchId);
     getTeamScorecard();
     getTeamPlayersByMatchId();
   }, []);
@@ -89,6 +94,14 @@ const MatchSummary = () => {
         let tp2 = res.filter((i) => i.teamId == +param.team2Id);
         setTeam1PlayerList(tp1);
         setTeam2PlayerList(tp2);
+      }
+    });
+  };
+  const getGallery = (id) => {
+    GalleryService.getAllByEntity(undefined, undefined, undefined, id, undefined).then((res) => {
+      console.log('Gallery', res);
+      if (res.success) {
+        setGAllery(res.result);
       }
     });
   };
@@ -309,7 +322,7 @@ const MatchSummary = () => {
           }
           key="5"
         >
-          <Empty></Empty>
+          <ViewGallery data={gallery}></ViewGallery>
         </TabPane>
       </Tabs>
     </Card>
