@@ -254,6 +254,20 @@ const Event = () => {
       },
     },
     {
+      title: 'Type',
+      width: 250,
+      dataIndex: 'eventType',
+      key: 'eventType',
+      fixed: 'left',
+      render: (text, item) => {
+        let event = 'N/A',
+          tournament = 'N/A';
+        if (text > 0) event = eventTypes.filter((i) => i.id == text)[0].name || 'N/A';
+        if (item.tournamentType > 0) tournament = tournamentTypes.filter((k) => k.id == item.tournamentType)[0].name || 'N/A';
+        return `${event} -- ${tournament}`;
+      },
+    },
+    {
       title: 'Start Date',
       width: 250,
       dataIndex: 'startDate',
@@ -271,20 +285,6 @@ const Event = () => {
       fixed: 'left',
       render: (item) => {
         return moment(item).format('MM/DD/YYYY') || 'N/A';
-      },
-    },
-    {
-      title: 'Type',
-      width: 250,
-      dataIndex: 'eventType',
-      key: 'eventType',
-      fixed: 'left',
-      render: (text, item) => {
-        let event = 'N/A',
-          tournament = 'N/A';
-        if (text > 0) event = eventTypes.filter((i) => i.id == text)[0].name || 'N/A';
-        if (item.tournamentType > 0) tournament = tournamentTypes.filter((k) => k.id == item.tournamentType)[0].name || 'N/A';
-        return `${event} -- ${tournament}`;
       },
     },
     {
