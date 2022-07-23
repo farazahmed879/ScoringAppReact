@@ -9,9 +9,21 @@ const style = {
 };
 const PointsTable = ({ data = [] }) => {
   console.log('Points Table', data);
+
+  const isHeading = (data = []) => {
+    let isMatchFound = false;
+    data && data.length > 0 && data.forEach((group, index) => {
+      group && group.length > 0 && group.pointsTables.forEach((match, index2) => {
+        if (match) isMatchFound = true;
+        return isMatchFound;
+      })
+    })
+    return isMatchFound;
+  }
+
   return (
     <Card style={style}>
-      {data.length > 0 ? (
+      {data.length > 0 && isHeading(data) ? (
         <>
           <Row>
             <Col span={12}>
@@ -38,17 +50,16 @@ const PointsTable = ({ data = [] }) => {
           </Row>
           {data.map((group, index) => (
             <>
-              {' '}
               {group && group.length > 0 ? (
                 <>
                   {' '}
                   <div key={index}>
-                    <Tag color="volcano">{'Group-' + ++index}</Tag>
+                    <Tag key={index} color="volcano">{'Group-' + ++index}</Tag>
                     <>
                       <hr />
                       {group.pointsTables.map((a, index) => (
                         <div key={index}>
-                          <Row>
+                          <Row key={index}>
                             <Col span={12}>
                               <h1 style={{ marginBottom: '0' }}>{a.playerName}</h1>
                               <h1>{a.team || '-'}</h1>

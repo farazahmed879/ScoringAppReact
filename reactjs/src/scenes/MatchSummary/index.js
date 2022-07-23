@@ -9,6 +9,7 @@ import PlayerViewBox from '../../components/PlayerViewBox';
 import moment from 'moment';
 import GalleryService from '../../services/gallery/GalleryService';
 import ViewGallery from '../../components/ViewGallery/ViewGallery';
+import getImage from '../../lib/getImage';
 const MatchSummary = () => {
   const [firstInningBatsman, setFirstInningBatsman] = useState([]);
   const [secondInningBatsman, setSecondInningBatsman] = useState([]);
@@ -121,7 +122,7 @@ const MatchSummary = () => {
           <Row style={{ margin: '100px', textAlign: 'center' }}>
             <Col span={6}>
               <div>
-                <img src={AppConsts.dummyImage} height={50} width={50} />
+                <img src={getImage(team1Score.profileUrl)} height={50} width={50} />
               </div>
               <Link to={'/teamProfile/' + team1Score.id}>
                 <h1>{team1Score.name}</h1>
@@ -129,17 +130,17 @@ const MatchSummary = () => {
             </Col>
             <Col span={6}>
               <h1>
-                {team1Score.score}/{team1Score.wickets}
+                {team1Score.score || 0}/{team1Score.wickets || 0}
               </h1>
             </Col>
             <Col span={6}>
               <h1>
-                {team2Score.score}/{team2Score.wickets}
+                {team2Score.score || 0}/{team2Score.wickets || 0}
               </h1>
             </Col>
             <Col span={6}>
               <div>
-                <img src={AppConsts.dummyImage} height={50} width={50} />
+                <img src={getImage(team2Score.profileUrl)} height={50} width={50} />
               </div>
               <Link to={'/teamProfile/' + team2Score.id}>
                 <h1>{team2Score.name}</h1>
