@@ -79,6 +79,7 @@ const EventProfile = () => {
   const [groups, setGroups] = useState([]);
   const [filterTeamList, setFilterTeamList] = useState([]);
   const [groundList, setGrounds] = useState([]);
+  const [isBracketLoading, setIsBracketLoading] = useState(true);
 
   const param = useParams();
   const history = useHistory();
@@ -124,6 +125,7 @@ const EventProfile = () => {
   };
 
   const getAllMatchesByEventId = () => {
+    setIsBracketLoading(true);
     matchService.getAllMatchesByEventId(param.eventId).then((res) => {
       if (res) {
         let noOfTeams = 0;
@@ -132,6 +134,7 @@ const EventProfile = () => {
         }
         setBracketsData({ matches: res.eventMatches, winner: res.winner, noOfTeams: noOfTeams });
       }
+      setIsBracketLoading(false);
     });
   };
 
@@ -237,6 +240,13 @@ const EventProfile = () => {
       getAllTeamsByEventId(param.eventId, matchFormik.values.group);
     }
   }, [matchFormik.values.group]);
+
+  const handleBracketUpdate = (e) => {
+    console.log('handleBracketUpdate', e);
+    if (e) {
+      getAllMatchesByEventId(param.eventId);
+    }
+  };
 
   const { TabPane } = Tabs;
   const { Meta } = Card;
@@ -406,7 +416,12 @@ const EventProfile = () => {
                 }
                 key="6"
               >
-                <ViewBracket2 formikData={bracketsData} event={stats.event} loading={false}></ViewBracket2>
+                <ViewBracket2
+                  formikData={bracketsData}
+                  event={stats.event}
+                  handleBracketUpdate={handleBracketUpdate}
+                  loading={isBracketLoading}
+                ></ViewBracket2>
               </TabPane>
             ) : (
               <TabPane

@@ -6,7 +6,6 @@ import TeamService from '../../services/team/TeamService';
 import EventService from '../../services/event/EventService';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import ViewBracket from './viewBracket';
 import ViewBracket2 from './viewBracket2';
 import MatchService from '../../services/match/matchService';
 const success = Modal.success;
@@ -117,6 +116,7 @@ const Bracket = () => {
     EventService.createEventTeams(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setViewBracket(res.success ? true : false);
+      getAllTeams();
     });
   };
 
@@ -142,7 +142,7 @@ const Bracket = () => {
       <Card>
         <PageHeader style={pageHeader} onBack={history.goBack} title={param.event} />
         <Tabs tabPosition={'top'}>
-        <TabPane tab="Bracket" key="1">
+          <TabPane tab="Bracket" key="1">
             <ViewBracket2 formikData={bracketFormik.values} event={param.event} loading={loading} handleBracketUpdate={handleBracketUpdate} />
           </TabPane>
           <TabPane tab="Edit Bracket Teams" key="2">
@@ -152,7 +152,6 @@ const Bracket = () => {
                   <Descriptions.Item label="1">Enter in order they will play (1 vs 2, 3 vs 4, 5 vs 6, etc)</Descriptions.Item>
                   <Descriptions.Item label="2">This Generator is only applicable of Knock-out bases</Descriptions.Item>
                   <Descriptions.Item label="3">No of Team must be in series(4,8,16,32,64,128 .... etc)</Descriptions.Item>
-                  <Descriptions.Item label="4">Selected Teams must be equal to the no of teams</Descriptions.Item>
                   <Descriptions.Item label="4">Tournament Matches will be created automatically</Descriptions.Item>
                   <Descriptions.Item label="5">Once Team has been selected will not be edited make sure before generate</Descriptions.Item>
                 </Descriptions>
@@ -178,7 +177,6 @@ const Bracket = () => {
               </div>
             </div>
           </TabPane>
-          
         </Tabs>
       </Card>
     </Skeleton>

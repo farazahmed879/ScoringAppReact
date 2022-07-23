@@ -52,6 +52,8 @@ const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate =
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [editMatch, setEditMatch] = useState({});
   const [finalStage, setFinalStage] = useState(0);
+
+  const [isEditDataLoading, setIsEditDataLoading] = useState(false);
   //const [bracketUpdated, setBracketUpdated] = useState(false);
   const param = useParams();
   const arr = [4, 8, 16, 32, 64, 128];
@@ -357,6 +359,7 @@ const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate =
   });
 
   const handleEditMatch = (id) => {
+    setIsEditDataLoading(true);
     setIsOpenModal(true);
     matchService.EditEventMatch(id).then((res) => {
       if (res) {
@@ -369,6 +372,7 @@ const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate =
           ...matchFormik.values,
           ...res.result,
         });
+        setIsEditDataLoading(false);
       }
     });
   };
@@ -465,6 +469,7 @@ const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate =
             teamList={teamList}
             playerList={playerList}
             groundList={groundList}
+            isEditDataLoading={isEditDataLoading}
           ></CreateOrUpdateKnockOutMatch>
         )}
       </Card>

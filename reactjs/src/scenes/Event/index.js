@@ -121,7 +121,6 @@ const Event = () => {
         blob: data.thumbUrl,
       })),
     };
-    debugger;
     if (profile && profile[0]) {
       setPicture(false);
       eventObject['profile'] = { name: profile[0].name, blob: profile[0].thumbUrl, url: profile[0].url };
