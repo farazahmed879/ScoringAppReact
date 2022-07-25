@@ -23,6 +23,8 @@ import matchTypeConst from '../../lib/matchTypeConst';
 import getImage from '../../lib/getImage';
 import ViewGallery from '../../components/ViewGallery/ViewGallery';
 import GalleryService from '../../services/gallery/GalleryService';
+import { handleSubmitMatch } from '../Matches/handleSubmitMatch';
+import tournamentTypeConst from '../../lib/tournamentTypeConst';
 
 const gridStyle = {
   width: '20%',
@@ -36,8 +38,6 @@ const filterButon = {
   right: '32px',
   bottom: '102px',
   Zindex: '2147483640',
-  display: 'flex',
-  flexDirection: 'column',
   cursor: 'pointer',
 };
 
@@ -163,41 +163,56 @@ const EventProfile = () => {
     setIsOpenMatchModal(e);
   };
 
-  const handleSubmit = (e) => {
-    if (!matchFormik.isValid) return;
-    let req = {
-      id: matchFormik.values.id,
-      groundId: matchFormik.values.groundId,
-      matchOvers: +matchFormik.values.matchOvers,
-      matchDescription: matchFormik.values.matchDescription,
-      season: +matchFormik.values.season,
-      eventId: +param.eventId,
-      tossWinningTeam: matchFormik.values.tossWinningTeam,
-      team1Id: matchFormik.values.team1Id,
-      team2Id: matchFormik.values.team2Id,
-      matchTypeId: matchTypeConst.tournament,
-      eventType: eventTypeConst.tournament,
-      eventStage: matchFormik.values.eventStage,
-      dateOfMatch: moment(matchFormik.values.dateOfMatch).valueOf(),
-      playerOTM: matchFormik.values.playerOTM,
-    };
-
-    console.log('Match Object', req);
-    matchService.createOrUpdate(req).then((res) => {
-      res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
+  const handleSubmit = () => {
+    let match = matchFormik;
+    match.values.matchTypeId = matchTypeConst.tournament;
+    match.values.eventId = param.eventId;
+    const response = handleSubmitMatch(match);
+    debugger
+    if (response) {
       setIsOpenMatchModal(false);
       getMatchesViewByEventId(param.eventId);
-    });
-  };
+    }
+  }
+
+  // const handleSubmit = (e) => {
+  //   if (!matchFormik.isValid) return;
+  //   let req = {
+  //     id: matchFormik.values.id,
+  //     groundId: matchFormik.values.groundId,
+  //     matchOvers: +matchFormik.values.matchOvers,
+  //     matchDescription: matchFormik.values.matchDescription,
+  //     season: +matchFormik.values.season,
+  //     eventId: +param.eventId,
+  //     tossWinningTeam: matchFormik.values.tossWinningTeam,
+  //     team1Id: matchFormik.values.team1Id,
+  //     team2Id: matchFormik.values.team2Id,
+  //     matchTypeId: matchTypeConst.tournament,
+  //     eventType: eventTypeConst.tournament,
+  //     eventStage: matchFormik.values.eventStage,
+  //     dateOfMatch: moment(matchFormik.values.dateOfMatch).valueOf(),
+  //     playerOTM: matchFormik.values.playerOTM,
+  //   };
+
+  //   console.log('Match Object', req);
+  //   matchService.createOrUpdate(req).then((res) => {
+  //     res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
+  //     setIsOpenMatchModal(false);
+  //     getMatchesViewByEventId(param.eventId);
+  //   });
+  // };
 
   const handleEditMatch = (id) => {
     setIsOpenMatchModal(true);
     matchService.EditEventMatch(id).then((res) => {
       if (res) {
+        let match = res;
+        match.matchTypeId = matchTypeConst.tournament;
+        match.eventId = param.eventId;
         setEditMatch(res);
         matchFormik.setValues({
           ...matchFormik.values,
-          ...res,
+          ...match,
         });
       }
     });
@@ -356,11 +371,12 @@ const EventProfile = () => {
               key="2"
             >
               <ViewMatchBox data={matchList}></ViewMatchBox>
-              {stats.type == 2 ? (
+              {stats.type == tournamentTypeConst.leagueBased ? (
                 <Tooltip title={'Add Match'}>
-                  <Button type="primary" size="large" shape="circle" style={filterButon} onClick={handleAddMatch}>
-                    <Icon style={{ marginLeft: '8px', marginTop: '8px' }} type="plus" />
+                  <Button type="primary" size="large" shape="circle" icon="plus" style={filterButon} onClick={handleAddMatch}>
+                    {/* <Icon style={{ marginLeft: '8px', marginTop: '8px' }} type="plus" /> */}
                   </Button>
+                  {/* <Button type="primary" shape="circle" icon="download" size={size} /> */}
                 </Tooltip>
               ) : null}
               <CreateOrUpdateLeagueBasedMatch

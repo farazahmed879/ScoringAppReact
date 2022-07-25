@@ -391,8 +391,10 @@ const Matches = () => {
       key: 'type',
       dataIndex: 'matchType',
       render: (item) => {
-        // return item && item.dateOfMatch ? moment(item.dateOfMatch).format('DD MMM YYYY') : 'N/A';
-        return item ? matchTypes.filter((i) => i.id == item)[0].name : 'N/A';
+        if (item) {
+          var matchType = matchTypes.filter((i) => i.id == item)[0];
+          return matchType ? matchType.name : 'N/A'
+        }
       },
     },
     {
@@ -529,8 +531,8 @@ const Matches = () => {
                       matchFormik.values.id
                         ? eventList
                         : eventList.filter(
-                            (i) => i.eventType == matchFormik.values.matchTypeId && i.tournamentType == tournamentTypeConst.leagueBased
-                          )
+                          (i) => i.eventType == matchFormik.values.matchTypeId && i.tournamentType == tournamentTypeConst.leagueBased
+                        )
                     }
                     value={matchFormik.values.eventId}
                     stateKey="eventId"

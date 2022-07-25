@@ -46,6 +46,10 @@ class UserService {
     let result = await http.post(`/api/services/app/User/UserDetails?contact=${contact}`);
     return result.data;
   }
+  public async getUserByContact(contact: number) {
+    let result = await http.get(`/api/services/app/User/GetUserByContact?contact=${contact}`);
+    return result.data;
+  }
 }
 
 export default new UserService();

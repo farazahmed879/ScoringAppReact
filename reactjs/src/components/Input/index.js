@@ -20,7 +20,8 @@ const CustomInput = ({
   type = 'text',
   errorMessage = '',
   width = '100%',
-  disabled = false
+  disabled = false,
+  onBlur,
 }) => {
   return (
     <div style={{ width: width }}>
@@ -62,6 +63,7 @@ const CustomInput = ({
           value={value || undefined}
           name={stateKey}
           readOnly={disabled}
+          onBlur={onBlur}
         ></Input>
       )}
     </div>

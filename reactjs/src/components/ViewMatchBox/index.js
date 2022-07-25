@@ -3,6 +3,7 @@ import { Tooltip, Card, Empty, Tag, Skeleton } from 'antd';
 import { truncateText } from '../../helper/helper';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
+import CustomDropdown from '../CustomDropdown';
 const ViewMatchBox = ({ data = [] }) => {
   return (
     <>
@@ -13,6 +14,7 @@ const ViewMatchBox = ({ data = [] }) => {
               <Link to={'/summary/' + e.id + '/team1/' + e.team1Id + '/team2/' + e.team2Id} key={index2}>
                 <Card.Grid key={index2} style={{ padding: 0 }}>
                   <Card title={e.tournament} key={index2} hoverable={false}>
+                    <CustomDropdown />
                     <div style={{ margin: '10px' }}>
                       <Tag color="red">
                         {e.ground || 'N/A'} : {moment(e.date).format('MM/DD/YYYY') || 'N/A'}

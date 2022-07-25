@@ -15,6 +15,8 @@ import * as Yup from 'yup';
 import AppConsts from '../../lib/appconst';
 import { matches } from 'lodash';
 import cup from '../../images/PNG Files/cup.png';
+import { handleSubmitMatch } from '../Matches/handleSubmitMatch';
+import matchTypeConst from '../../lib/matchTypeConst';
 
 const hr1 = {
   width: '100%',
@@ -39,7 +41,7 @@ const column = {
 const success = Modal.success;
 const error = Modal.error;
 
-const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate = (e) => {} }) => {
+const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate = (e) => { } }) => {
   console.log('viewBracketsFormik', formikData);
   const [column1Teams, setColumn1Teams] = useState([]);
   const [column2Teams, setColumn2Teams] = useState([]);
@@ -273,7 +275,7 @@ const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate =
                   </Button>
                 </Link>
                 <hr style={{ width: '100%', marginTop: '15px', marginLeft: '0', marginRight: '0' }} />
-                {}
+                { }
               </div>
             </Tooltip>
           </Popover>
@@ -319,33 +321,42 @@ const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate =
     playerOTM: '',
   };
 
-  const handleSubmit = (e) => {
-    if (!matchFormik.isValid) return;
-    let req = {
-      id: matchFormik.values.id,
-      groundId: matchFormik.values.groundId,
-      matchOvers: matchFormik.values.matchOvers,
-      matchDescription: matchFormik.values.matchDescription,
-      season: matchFormik.values.season,
-      eventId: matchFormik.values.eventId,
-      tossWinningTeam: matchFormik.values.tossWinningTeam,
-      team1Id: matchFormik.values.team1Id,
-      team2Id: matchFormik.values.team2Id,
-      matchTypeId: matchFormik.values.matchTypeId,
-      eventType: matchFormik.values.eventType,
-      eventStage: matchFormik.values.eventStage,
-      dateOfMatch: moment(matchFormik.values.dateOfMatch).valueOf(),
-      playerOTM: matchFormik.values.playerOTM,
-    };
 
-    console.log('Match Object', req);
-    matchService.createOrUpdate(req).then((res) => {
-      res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
-      if (res.success) handleBracketUpdate(true);
-      setIsOpenModal(false);
-      //  createBadge()
-    });
-  };
+  const handleSubmit = () => {
+    debugger
+    const response = handleSubmitMatch(matchFormik);
+    if (response) handleBracketUpdate(true);
+    setIsOpenModal(false);
+  }
+
+
+  // const handleSubmit = (e) => {
+  //   if (!matchFormik.isValid) return;
+  //   let req = {
+  //     id: matchFormik.values.id,
+  //     groundId: matchFormik.values.groundId,
+  //     matchOvers: matchFormik.values.matchOvers,
+  //     matchDescription: matchFormik.values.matchDescription,
+  //     season: matchFormik.values.season,
+  //     eventId: matchFormik.values.eventId,
+  //     tossWinningTeam: matchFormik.values.tossWinningTeam,
+  //     team1Id: matchFormik.values.team1Id,
+  //     team2Id: matchFormik.values.team2Id,
+  //     matchTypeId: matchFormik.values.matchTypeId,
+  //     eventType: matchFormik.values.eventType,
+  //     eventStage: matchFormik.values.eventStage,
+  //     dateOfMatch: moment(matchFormik.values.dateOfMatch).valueOf(),
+  //     playerOTM: matchFormik.values.playerOTM,
+  //   };
+
+  //   console.log('Match Object', req);
+  //   matchService.createOrUpdate(req).then((res) => {
+  //     res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
+  //     if (res.success) handleBracketUpdate(true);
+  //     setIsOpenModal(false);
+  //     //  createBadge()
+  //   });
+  // };
 
   const handleCancel = (e) => {
     setIsOpenModal(e);
@@ -406,7 +417,7 @@ const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate =
       getAllPlayersByMatchId(match.id);
       getAllGrounds();
     } else {
-      match.matchTypeId = AppConsts.tournament;
+      match.matchTypeId = matchTypeConst.tournament;
       match.eventId = param.eventId;
       match.eventStage = ++stage;
       match.event = event;

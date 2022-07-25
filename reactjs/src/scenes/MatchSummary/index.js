@@ -10,6 +10,7 @@ import moment from 'moment';
 import GalleryService from '../../services/gallery/GalleryService';
 import ViewGallery from '../../components/ViewGallery/ViewGallery';
 import getImage from '../../lib/getImage';
+import AssignAdmin from '../../components/AssignAdmin';
 const MatchSummary = () => {
   const [firstInningBatsman, setFirstInningBatsman] = useState([]);
   const [secondInningBatsman, setSecondInningBatsman] = useState([]);
@@ -118,7 +119,11 @@ const MatchSummary = () => {
       />
       <Card>
         <Skeleton loading={loading}>
-          <h1>{moment(matchDetails.date).format('DD MMM YYYY')}</h1>
+          <Row style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div><h1>{moment(matchDetails.date).format('DD MMM YYYY')}</h1></div>
+            <div> <AssignAdmin entityId={param.matchId} title={"Assign Match"} entityName="matchId" /></div>
+          </Row>
+
           <Row style={{ margin: '100px', textAlign: 'center' }}>
             <Col span={6}>
               <div>

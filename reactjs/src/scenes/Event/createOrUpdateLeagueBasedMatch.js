@@ -99,6 +99,7 @@ const CreateOrUpdateLeagueBasedMatch = ({
               value={matchFormik.values.dateOfMatch}
               stateKey="dateOfMatch"
               placeholder="Select Date"
+              errorMessage={matchFormik.errors.dateOfMatch}
             />
           </Col>
         </Row>

@@ -18,6 +18,7 @@ import CustomInput from '../../components/Input';
 import { preloadAll } from 'react-loadable';
 import ViewGallery from '../../components/ViewGallery/ViewGallery';
 import GalleryService from '../../services/gallery/GalleryService';
+import matchTypeConst from '../../lib/matchTypeConst';
 
 const gridStyle = {
   width: '20%',
@@ -330,7 +331,7 @@ const TeamProfile = () => {
             value={statsFilters.matchType}
             stateKey="matchType"
           />
-          {statsFilters.matchType && statsFilters.matchType != 1 ? (
+          {statsFilters.matchType && statsFilters.matchType != matchTypeConst.friendly ? (
             <CustomInput
               title="Event"
               type="select"
