@@ -9,9 +9,9 @@ const ViewGallery = ({ data = [] }) => {
     return (
         <>
             <Card>
-                {data.map((e, index2) => (
-                    <Card.Grid style={{ width: '20%', padding: '10px' }}>
-                        <Card cover={<img alt="example" src={getImage(e.url)} />} bodyStyle={{ padding: 0 }}>
+                {data.map((e, index) => (
+                    <Card.Grid key={index} style={{ width: '20%', padding: '10px' }}>
+                        <Card key={index} cover={<img alt="example" src={getImage(e.url)} />} bodyStyle={{ padding: 0 }}>
                         </Card>
                     </Card.Grid>
                 ))}
