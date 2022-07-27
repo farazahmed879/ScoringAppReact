@@ -212,8 +212,8 @@ const TeamProfile = () => {
               )}
             </Skeleton>
             <Tooltip title={'Filter'}>
-              <Button type="primary" size="large" shape="circle" style={filterButon} onClick={() => handleCancelStatsFilter()}>
-                <Icon style={{ marginLeft: '8px', marginTop: '8px' }} type="filter" />
+              <Button type="primary" size="large" shape="circle" style={filterButon} className="filterButton" onClick={() => handleCancelStatsFilter()}>
+                <Icon className='icon-style' type="filter" />
               </Button>
             </Tooltip>
           </TabPane>
