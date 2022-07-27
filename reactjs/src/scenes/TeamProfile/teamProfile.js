@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams, useHistory } from 'react-router-dom';
-import { Card, Tabs, Icon, Empty, Tooltip, Tag, Row, Skeleton, Form, Button, Radio, PageHeader } from 'antd';
+import { Card, Tabs, Icon, Empty, Tooltip, Tag, Row, Skeleton, Form, Button, Radio, PageHeader, Menu } from 'antd';
 import { truncateText } from '../../helper/helper';
 import playerService from '../../services/player/playerService';
 import matchService from '../../services/match/matchService';
@@ -19,6 +19,9 @@ import { preloadAll } from 'react-loadable';
 import ViewGallery from '../../components/ViewGallery/ViewGallery';
 import GalleryService from '../../services/gallery/GalleryService';
 import matchTypeConst from '../../lib/matchTypeConst';
+import ViewImage from '../../components/ViewImage';
+import { getBase64 } from '../../helper/getBase64';
+import './style.css';
 
 const gridStyle = {
   width: '20%',
@@ -48,6 +51,8 @@ const TeamProfile = () => {
   const [eventFilter, setEventFilter] = useState('');
   const param = useParams();
   const history = useHistory();
+  const [preview, setPreview] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
   const [statsFilters, setStatsFilters] = useState({
     teamId: param.teamId,
     season: null,
@@ -69,6 +74,16 @@ const TeamProfile = () => {
     getAllEventsByTeamId(param.teamId);
   }, [eventFilter]);
 
+  const handlePreviewCancel = () => {
+    setPreview(!preview);
+  };
+
+  const viewImageModal = (file) => {
+    if (Object.keys(file).length) {
+      setPreviewImage(file.profileUrl);
+    }
+    setPreview(true);
+  };
 
   const getAllPlayersByTeamId = (id) => {
     playerService.getAllByTeamId(id).then((res) => {
@@ -103,7 +118,6 @@ const TeamProfile = () => {
       if (res.success) {
         setGAllery(res.result);
       }
-      
     });
   };
 
@@ -147,11 +161,15 @@ const TeamProfile = () => {
           cover={<img alt="example" src={getImage(stats.profileUrl)} height={500} width={150} />}
         ></Card>
         <Row style={{ marginLeft: '20px', marginTop: '50px', display: 'flex' }}>
-          <Card
-            hoverable
-            style={{ width: '150px', height: '150px' }}
-            cover={<img alt="example" src={getImage(stats.profileUrl)} height={150} width={150} />}
-          ></Card>
+          <div>
+            <div className="img-wrapper">
+              <img className="blur" alt="example" src={getImage(stats.profileUrl)} height={150} width={150} />
+              <div className="content fade">
+                <Icon type="eye" onClick={() => viewImageModal(stats)} />
+                {/* <Menuitem>onClick={(e) => handlePreviewCancel(true)}</Menuitem> */}
+              </div>
+            </div>
+          </div>
           <div style={{ marginLeft: '10px', marginTop: '5px' }}>
             <h1 style={{ color: 'white', fontSize: '33px', marginBottom: '0' }}>Name: {stats.name}</h1>
             <h1 style={{ color: 'white', marginBottom: '0' }}>Location: {stats.area || 'N/A'}</h1>
@@ -360,6 +378,7 @@ const TeamProfile = () => {
           </Form.Item>
         </Form>
       </CustomModal>
+      <ViewImage preview={preview} previewImage={previewImage} handlePreviewCancel={handlePreviewCancel} />
     </Card>
   );
 };

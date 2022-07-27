@@ -9,6 +9,7 @@ import groundService from '../../services/ground/GroundService';
 import CustomTable from '../../components/Table';
 import { getBase64 } from '../../helper/getBase64';
 import { Link } from 'react-router-dom';
+import ViewImage from '../../components/ViewImage';
 const baseUrl = 'http://localhost:21021';
 
 const groundValidation = Yup.object().shape({
@@ -280,7 +281,7 @@ const Ground = () => {
       >
         <Skeleton loading={isEditDataLoading}>
           <Form>
-            <Row>
+            <Row className="form-container">
               <Col span={24}>
                 <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
                   <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
@@ -345,10 +346,7 @@ const Ground = () => {
           </Form>
         </Skeleton>
       </CustomModal>
-
-      <Modal visible={preview} footer={null} onCancel={handlePreviewCancel}>
-        <img alt="example" style={{ width: '100%' }} src={previewImage} />
-      </Modal>
+      <ViewImage previewImage={previewImage} preview={preview} handlePreviewCancel={handlePreviewCancel} />
     </Card>
   );
 };

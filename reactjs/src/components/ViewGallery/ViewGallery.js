@@ -6,17 +6,16 @@ import { truncateText } from '../../helper/helper';
 import getImage from '../../lib/getImage';
 
 const ViewGallery = ({ data = [] }) => {
-    return (
-        <>
-            <Card>
-                {data.map((e, index2) => (
-                    <Card.Grid style={{ width: '20%', padding: '10px' }}>
-                        <Card cover={<img alt="example" src={getImage(e.url)} />} bodyStyle={{ padding: 0 }}>
-                        </Card>
-                    </Card.Grid>
-                ))}
-            </Card>
-        </>
-    )
-}
+  return (
+    <>
+      <Card>
+        {data.map((e, index2) => (
+          <Card.Grid style={{ width: '20%', padding: '10px' }}>
+            <Card cover={<img alt="example" src={getImage(e.url)} />} bodyStyle={{ padding: 0 }}></Card>
+          </Card.Grid>
+        ))}
+      </Card>
+    </>
+  );
+};
 export default ViewGallery;

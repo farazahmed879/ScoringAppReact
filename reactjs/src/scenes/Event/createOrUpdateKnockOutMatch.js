@@ -14,7 +14,7 @@ const CreateOrUpdateKnockOutMatch = ({
   playerList = [],
   groundList = [],
   handleSubmit = (e) => {},
-  isEditDataLoading
+  isEditDataLoading,
 }) => {
   console.log('teamList', teamList);
   console.log('playerList', playerList);
@@ -49,7 +49,7 @@ const CreateOrUpdateKnockOutMatch = ({
     >
       <Skeleton loading={isEditDataLoading}>
         <Form className="form" onSubmit={matchFormik.handleSubmit}>
-          <Row gutter={16}>
+          <Row gutter={16} className="form-container">
             <Col span={8}>
               <CustomInput
                 title="Match Type"
@@ -92,7 +92,7 @@ const CreateOrUpdateKnockOutMatch = ({
             </Col>
           </Row>
           <Divider></Divider>
-          <Row gutter={16}>
+          <Row gutter={16} className="form-container">
             <Col span={11}>
               <CustomInput
                 title="Team 1"
@@ -123,7 +123,7 @@ const CreateOrUpdateKnockOutMatch = ({
               />
             </Col>
           </Row>
-          <Row gutter={16}>
+          <Row gutter={16} className="form-container">
             <Col span={12}>
               <CustomInput
                 title="Ground"
@@ -147,7 +147,7 @@ const CreateOrUpdateKnockOutMatch = ({
             </Col>
           </Row>
 
-          <Row gutter={16}>
+          <Row gutter={16} className="form-container">
             <Col span={12}>
               <CustomInput
                 title="Season"
@@ -169,7 +169,7 @@ const CreateOrUpdateKnockOutMatch = ({
               />
             </Col>
           </Row>
-          <Row span={16}>
+          <Row span={16} className="form-container">
             <Col gutter={8}>
               {matchFormik.values.team1Id && matchFormik.values.team2Id ? (
                 <CustomInput
@@ -197,7 +197,7 @@ const CreateOrUpdateKnockOutMatch = ({
               </Col>
             ) : null}
           </Row>
-          <Row span={16}>
+          <Row span={16} className="form-container">
             <CustomInput
               title="Description"
               type="text"
