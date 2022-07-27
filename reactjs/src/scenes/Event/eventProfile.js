@@ -156,6 +156,7 @@ const EventProfile = () => {
 
   //Add-league-based
   const handleAddMatch = () => {
+    console.log("SHort Term Memory Lose");
     setIsOpenMatchModal(true);
   };
 
@@ -370,7 +371,7 @@ const EventProfile = () => {
               }
               key="2"
             >
-              <ViewMatchBox data={matchList}></ViewMatchBox>
+              <ViewMatchBox data={matchList} editMatch={handleAddMatch}></ViewMatchBox>
               {stats.type == tournamentTypeConst.leagueBased ? (
                 <Tooltip title={'Add Match'}>
                   <Button type="primary" size="large" shape="circle" icon="plus" style={filterButon} onClick={handleAddMatch}>

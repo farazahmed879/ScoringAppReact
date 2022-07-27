@@ -1,30 +1,28 @@
 import React from 'react';
 import { Menu, Dropdown, Icon } from 'antd';
+import { Link } from 'react-router-dom';
 
-const items = (
-    <Menu>
-        <Menu.Item>
-            <a target="_blank" rel="noopener noreferrer" href="http://www.alipay.com/">
-                1st menu item
-            </a>
-        </Menu.Item>
-        <Menu.Item>
-            <a target="_blank" rel="noopener noreferrer" href="http://www.taobao.com/">
-                2nd menu item
-            </a>
-        </Menu.Item>
-        <Menu.Item>
-            <a target="_blank" rel="noopener noreferrer" href="http://www.tmall.com/">
-                3rd menu item
-            </a>
-        </Menu.Item>
-    </Menu>
-);
+const CustomDropdown = ({ obj,editMatch }) => {
 
-const CustomDropdown = () => {
-    return <Dropdown overlay={items}>
+    const menuItems = (item) => {
+        return <Menu>
+            <Menu.Item>
+                <div onClick={editMatch}>Edit</div>
+            </Menu.Item>
+            <Menu.Item>
+                <Link to={'/scoreCard/team1/' + item.team1Id + '/team2/' + item.team2Id + '/match/' + item.id}>{'Add Score'}</Link>
+            </Menu.Item>
+            <Menu.Item>
+                <a target="_blank" rel="noopener noreferrer" href="http://www.tmall.com/">
+                    Delete
+                </a>
+            </Menu.Item>
+        </Menu>
+    }
+
+    return <Dropdown overlay={menuItems(obj)}>
         <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-            Hover me <Icon type="down" />
+            <Icon type="dash" />
         </a>
     </Dropdown>
 }
