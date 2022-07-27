@@ -22,7 +22,7 @@ const resetButton = {
   position: 'fixed',
   right: '32px',
   bottom: '50px',
-  Zindex: '2147483640',
+  Zindex: '100',
   display: 'flex',
   flexDirection: 'column',
   cursor: 'pointer',
@@ -513,17 +513,23 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
           </Radio.Group>
         </div>
       </Row>
-      <CustomTable loading={loading} columns={columns} data={leaderStats} paggination={false}></CustomTable>;
+      <div>
+        
+        <div>
+          <CustomTable loading={loading} columns={columns} data={leaderStats} paggination={false}></CustomTable>;
+        </div>
+      </div>
       <Tooltip title={'Filter'}>
-        <Button type="primary" size="large" shape="circle" style={filterButon} onClick={() => filterModal()}>
-          <Icon style={{ marginLeft: '10px', marginTop: '10px' }} type="filter" />
-        </Button>
-      </Tooltip>
-      <Tooltip title={'Reset'}>
-        <Button type="primary" size="large" shape="circle" style={resetButton} onClick={() => reset()}>
-          <Icon style={{ marginLeft: '10px', marginTop: '10px' }} type="sync" />
-        </Button>
-      </Tooltip>
+          <Button type="primary" size="large" shape="circle" style={filterButon} className="filterButton" onClick={() => filterModal()}>
+            <Icon className="icon-style" type="filter" />
+          </Button>
+        </Tooltip>
+        <Tooltip title={'Reset'}>
+          <Button type="primary" size="large" shape="circle" style={resetButton} className="filterButton" onClick={() => reset()}>
+            <Icon className="icon-style" type="sync" />
+          </Button>
+        </Tooltip>
+
       <CustomModal
         title="Leaderboard filters"
         isModalVisible={isFilterModal}

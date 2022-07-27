@@ -40,3 +40,17 @@
 .blocked {
   pointer-events: none;
 }
+
+.filterButton{
+  transition: transform 0.5s;
+}
+
+.filterButton:hover{
+  transform: scale(1.3) rotate(360deg);
+}
+
+.icon-style{
+  margin-left: 11px;
+  margin-top: 11px;
+  transform: scale(1.1);
+}
