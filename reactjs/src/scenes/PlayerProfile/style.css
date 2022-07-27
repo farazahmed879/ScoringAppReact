@@ -10,3 +10,13 @@
 .ant-collapse-content > .ant-collapse-content-box {
      padding: 5px; 
 }
+
+.filterButton:hover{
+  transform: scale(1.3) rotate(360deg);
+}
+
+.icon-style{
+  margin-left: 11px;
+  margin-top: 11px;
+  transform: scale(1.1);
+}

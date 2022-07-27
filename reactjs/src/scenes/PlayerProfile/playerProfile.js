@@ -34,6 +34,7 @@ const gridStyle = {
 
 const filterButon = {
   position: 'fixed',
+  transition:'transform 0.5s',
   right: '32px',
   bottom: '102px',
   Zindex: '2147483640',
@@ -122,6 +123,7 @@ const PlayerProfile = () => {
   const handleChange = (value, key) => {
     setFilters({ ...filters, [key]: value });
   };
+
   const handleSubmit = () => {
     setStatsLoading(true);
     playerStatistics(filters);
@@ -287,8 +289,8 @@ const PlayerProfile = () => {
               )}
             </Skeleton>
             <Tooltip title={'Filter'}>
-              <Button type="primary" size="large" shape="circle" style={filterButon} onClick={() => filterModal()}>
-                <Icon style={{ marginLeft: '8px', marginTop: '8px' }} type="filter" />
+              <Button type="primary" size="large" shape="circle" style={filterButon} className="filterButton" onClick={() => filterModal()}>
+                <Icon className='icon-style' type="filter" />
               </Button>
             </Tooltip>
           </TabPane>
