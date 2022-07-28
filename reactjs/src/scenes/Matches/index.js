@@ -20,6 +20,7 @@ import { getBase64 } from '../../helper/getBase64';
 import matchTypeConst from '../../lib/matchTypeConst';
 import AppConsts from '../../lib/appconst';
 import tournamentTypeConst from '../../lib/tournamentTypeConst';
+import ViewImage from '../../components/ViewImage';
 
 const baseUrl = 'http://localhost:21021';
 const matchValidation = Yup.object().shape({
@@ -393,7 +394,7 @@ const Matches = () => {
       render: (item) => {
         if (item) {
           var matchType = matchTypes.filter((i) => i.id == item)[0];
-          return matchType ? matchType.name : 'N/A'
+          return matchType ? matchType.name : 'N/A';
         }
       },
     },
@@ -531,8 +532,8 @@ const Matches = () => {
                       matchFormik.values.id
                         ? eventList
                         : eventList.filter(
-                          (i) => i.eventType == matchFormik.values.matchTypeId && i.tournamentType == tournamentTypeConst.leagueBased
-                        )
+                            (i) => i.eventType == matchFormik.values.matchTypeId && i.tournamentType == tournamentTypeConst.leagueBased
+                          )
                     }
                     value={matchFormik.values.eventId}
                     stateKey="eventId"
@@ -693,10 +694,7 @@ const Matches = () => {
           </Form>
         </Skeleton>
       </CustomModal>
-
-      <Modal visible={preview} footer={null} onCancel={handlePreviewCancel}>
-        <img alt="example" style={{ width: '100%' }} src={previewImage} />
-      </Modal>
+      <ViewImage preview={preview} previewImage={previewImage} handlePreviewCancel={handlePreviewCancel} />
     </Card>
   );
 };

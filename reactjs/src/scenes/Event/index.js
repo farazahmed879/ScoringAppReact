@@ -14,6 +14,7 @@ import CustomTable from '../../components/Table';
 import { getBase64 } from '../../helper/getBase64';
 import './style.css';
 import './add-team.css';
+import ViewImage from '../../components/ViewImage';
 const baseUrl = 'http://localhost:21021';
 const success = Modal.success;
 const error = Modal.error;
@@ -491,9 +492,7 @@ const Event = () => {
           </Form>
         </Skeleton>
       </CustomModal>
-      <Modal visible={preview} footer={null} onCancel={handlePreviewCancel}>
-        <img alt="example" style={{ width: '100%' }} src={previewImage} />
-      </Modal>
+      <ViewImage previewImage={previewImage} preview={preview} handlePreviewCancel={handlePreviewCancel} />
     </Card>
   );
 };

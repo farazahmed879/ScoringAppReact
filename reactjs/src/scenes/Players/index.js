@@ -15,6 +15,7 @@ import FilterPanel from './filter-panel';
 import PlayerStatsDrawer from './player-stats-drawer';
 import CustomTable from '../../components/Table';
 import { getBase64 } from '../../helper/getBase64';
+import ViewImage from '../../components/ViewImage';
 
 // import './style.css';
 
@@ -29,7 +30,7 @@ const playerInitial = {
   cnic: '',
   battingStyleId: 0,
   bowlingStyleId: 0,
-  playingRoleId: 0,
+  playerRoleId: 0,
   teamIds: [],
   dob: null,
   fileName: '',
@@ -421,7 +422,7 @@ const Player = () => {
       >
         <Skeleton loading={isEditDataLoading}>
           <Form>
-            <Row gutter={16}>
+            <Row gutter={16} className="form-container">
               <Col span={24}>
                 <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
                   <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
@@ -435,7 +436,6 @@ const Player = () => {
                     disabled={!!Object.keys(profile).length}
                     onChange={(e) => handleProfileUpload(e)}
                     beforeUpload={false}
-                    onPreview={handlePreview}
                   >
                     Profile
                   </Upload>
@@ -463,15 +463,15 @@ const Player = () => {
                 />
               </Col>
             </Row>
-            <Row gutter={16}>
+            <Row gutter={16} className="form-container">
               <Col span={8}>
                 <CustomInput
                   title="Player Role"
                   type="select"
                   options={playingRoleOptions}
                   handleChange={handleChange}
-                  value={playerFormik.values.playingRoleId}
-                  stateKey="playingRoleId"
+                  value={playerFormik.values.playerRoleId}
+                  stateKey="playerRoleId"
                   placeholder=""
                 />
               </Col>
@@ -498,7 +498,7 @@ const Player = () => {
                 />
               </Col>
             </Row>
-            <Row gutter={16}>
+            <Row gutter={16} className="form-container">
               <Col span={8}>
                 <CustomInput
                   title="Contact"
@@ -524,7 +524,7 @@ const Player = () => {
                 />
               </Col>
             </Row>
-            <Row gutter={16}>
+            <Row gutter={16} className="form-container">
               <Col span={24}>
                 <CustomInput
                   title="Address"
@@ -576,9 +576,12 @@ const Player = () => {
         </Skeleton>
       </CustomModal>
       <PlayerStatsDrawer visible={visible} onClose={onClose} stats={playerStats} />
-      <Modal visible={preview} footer={null} onCancel={handlePreviewCancel}>
+
+      {/* <Modal visible={preview} footer={null} onCancel={handlePreviewCancel}>
         <img alt="example" style={{ width: '100%' }} src={previewImage} />
-      </Modal>
+      </Modal> */}
+
+      <ViewImage preview={preview} handlePreviewCancel={handlePreviewCancel} previewImage={previewImage} />
     </Card>
   );
 };

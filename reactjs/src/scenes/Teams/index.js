@@ -15,6 +15,7 @@ import { env } from 'process';
 import { elementType } from 'prop-types';
 import { getBase64 } from '../../helper/getBase64';
 import { truncateText } from '../../helper/helper';
+import ViewImage from '../../components/ViewImage';
 const baseUrl = 'http://localhost:21021';
 const Team = () => {
   const success = Modal.success;
@@ -206,7 +207,7 @@ const Team = () => {
     });
   };
 
-  const resetForm = () => { };
+  const resetForm = () => {};
 
   const addTeam = () => {
     resetForm();
@@ -430,10 +431,7 @@ const Team = () => {
           </Form>
         </Skeleton>
       </CustomModal>
-
-      <Modal visible={preview} footer={null} onCancel={handlePreviewCancel}>
-        <img alt="example" style={{ width: '100%' }} src={previewImage} />
-      </Modal>
+      <ViewImage preview={preview} previewImage={previewImage} handlePreviewCancel={handlePreviewCancel} />
     </Card>
   );
 };
