@@ -14,6 +14,8 @@ import { battingStyleOptions, bowlingStyleOptions, matchTypes, playingRoleOption
 import CustomInput from '../../components/Input';
 import ViewGallery from '../../components/ViewGallery/ViewGallery';
 import GalleryService from '../../services/gallery/GalleryService';
+import ImageCard from '../../components/ImageCard';
+import ViewImage from '../../components/ViewImage';
 const { TabPane } = Tabs;
 const { Panel } = Collapse;
 
@@ -59,6 +61,8 @@ const PlayerProfile = () => {
   const [matchResultFilter, setMatchResultFilter] = useState(1);
   const param = useParams();
   const history = useHistory();
+  const [preview, setPreview] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
   const [filters, setFilters] = useState({
     playerId: param.playerId,
     teamId: null,
@@ -127,6 +131,15 @@ const PlayerProfile = () => {
     playerStatistics(filters);
     filterModal();
   };
+  const handlePreviewCancel = () => {
+    setPreview(!preview);
+  };
+  const viewImageModal = (file) => {
+    if (Object.keys(file).length) {
+      setPreviewImage(file.profileUrl);
+    }
+    setPreview(true);
+  };
 
   useEffect(() => {
     getMatchesByPlayerId(param.playerId);
@@ -152,11 +165,12 @@ const PlayerProfile = () => {
           cover={<img alt="example" src={getImage(stats.profileUrl)} height={500} width={150} />}
         ></Card>
         <Row style={{ marginLeft: '20px', marginTop: '50px', display: 'flex' }}>
-          <Card
+          {/* <Card
             hoverable
             style={{ width: '150px', height: '150px' }}
             cover={<img alt="example" src={getImage(stats.profileUrl)} height={150} width={150} />}
-          ></Card>
+          ></Card> */}
+          <ImageCard data={stats} viewImageModal={viewImageModal} />
           <div style={{ marginLeft: '10px', marginTop: '5px' }}>
             <h2 style={{ color: 'white', marginBottom: '0' }}>{stats.playerName || 'N/A'}</h2>
             <h4 style={{ color: 'white', marginBottom: '0' }}>{stats.dob || 'N/A'}</h4>
@@ -381,6 +395,7 @@ const PlayerProfile = () => {
           </Form.Item>
         </Form>
       </CustomModal>
+      <ViewImage preview={preview} previewImage={previewImage} handlePreviewCancel={handlePreviewCancel} />
     </Card>
   );
 };

@@ -21,7 +21,7 @@ import GalleryService from '../../services/gallery/GalleryService';
 import matchTypeConst from '../../lib/matchTypeConst';
 import ViewImage from '../../components/ViewImage';
 import { getBase64 } from '../../helper/getBase64';
-import './style.css';
+import ImageCard from '../../components/ImageCard';
 
 const gridStyle = {
   width: '20%',
@@ -161,15 +161,15 @@ const TeamProfile = () => {
           cover={<img alt="example" src={getImage(stats.profileUrl)} height={500} width={150} />}
         ></Card>
         <Row style={{ marginLeft: '20px', marginTop: '50px', display: 'flex' }}>
-          <div>
+          {/* <div>
             <div className="img-wrapper">
               <img className="blur" alt="example" src={getImage(stats.profileUrl)} height={150} width={150} />
               <div className="content fade">
                 <Icon type="eye" onClick={() => viewImageModal(stats)} />
-                {/* <Menuitem>onClick={(e) => handlePreviewCancel(true)}</Menuitem> */}
               </div>
             </div>
-          </div>
+          </div> */}
+          <ImageCard data={stats} viewImageModal={viewImageModal} />
           <div style={{ marginLeft: '10px', marginTop: '5px' }}>
             <h1 style={{ color: 'white', fontSize: '33px', marginBottom: '0' }}>Name: {stats.name}</h1>
             <h1 style={{ color: 'white', marginBottom: '0' }}>Location: {stats.area || 'N/A'}</h1>

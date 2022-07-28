@@ -92,7 +92,7 @@ const Ground = () => {
     setIsEditDataLoading(true);
     setIsOpenModal(true);
     setModalMode('Edit Ground');
-    groundService.getById(item.id).then((res) => {
+    groundService.getById(item.id).then((res ) => {
       if (res) {
         if (!res.success) {
           error({ title: res.successMessage });

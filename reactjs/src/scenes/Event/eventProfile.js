@@ -25,6 +25,8 @@ import ViewGallery from '../../components/ViewGallery/ViewGallery';
 import GalleryService from '../../services/gallery/GalleryService';
 import { handleSubmitMatch } from '../Matches/handleSubmitMatch';
 import tournamentTypeConst from '../../lib/tournamentTypeConst';
+import ImageCard from '../../components/ImageCard';
+import ViewImage from '../../components/ViewImage';
 
 const gridStyle = {
   width: '20%',
@@ -80,6 +82,8 @@ const EventProfile = () => {
   const [filterTeamList, setFilterTeamList] = useState([]);
   const [groundList, setGrounds] = useState([]);
   const [isBracketLoading, setIsBracketLoading] = useState(true);
+  const [previewImage, setPreviewImage] = useState('');
+  const [preview, setPreview] = useState(false);
 
   const param = useParams();
   const history = useHistory();
@@ -122,6 +126,9 @@ const EventProfile = () => {
       console.log('Grounds', res);
       setGrounds(res);
     });
+  };
+  const handlePreviewCancel = () => {
+    setPreview(!preview);
   };
 
   const getAllMatchesByEventId = () => {
@@ -168,12 +175,12 @@ const EventProfile = () => {
     match.values.matchTypeId = matchTypeConst.tournament;
     match.values.eventId = param.eventId;
     const response = handleSubmitMatch(match);
-    debugger
+    debugger;
     if (response) {
       setIsOpenMatchModal(false);
       getMatchesViewByEventId(param.eventId);
     }
-  }
+  };
 
   // const handleSubmit = (e) => {
   //   if (!matchFormik.isValid) return;
@@ -262,6 +269,12 @@ const EventProfile = () => {
       getAllMatchesByEventId(param.eventId);
     }
   };
+  const viewImageModal = (file) => {
+    if (Object.keys(file).length) {
+      setPreviewImage(file.profileUrl);
+    }
+    setPreview(true);
+  };
 
   const { TabPane } = Tabs;
   const { Meta } = Card;
@@ -283,11 +296,12 @@ const EventProfile = () => {
             cover={<img alt="example" src={getImage(stats.profileUrl)} height={500} width={150} />}
           ></Card>
           <Row style={{ marginLeft: '20px', marginTop: '50px', display: 'flex' }}>
-            <Card
+            {/* <Card
               hoverable
               style={{ width: '150px', height: '150px' }}
               cover={<img alt="example" src={getImage(stats.profileUrl)} height={150} width={150} />}
-            ></Card>
+            ></Card> */}
+            <ImageCard data={stats} viewImageModal={viewImageModal} />
             <Skeleton loading={statsLoading}>
               <div style={{ marginLeft: '10px', marginTop: '5px' }}>
                 <h1 style={{ color: 'white', fontSize: '33px', marginBottom: '0' }}>Name: {stats.event}</h1>
@@ -459,12 +473,13 @@ const EventProfile = () => {
                   Gallery
                 </span>
               }
-              key="6"
+              key="8"
             >
               <ViewGallery data={gallery}></ViewGallery>
             </TabPane>
           </Tabs>
         </div>
+        <ViewImage preview={preview} previewImage={previewImage} handlePreviewCancel={handlePreviewCancel} />
       </Card>
     </>
   );
