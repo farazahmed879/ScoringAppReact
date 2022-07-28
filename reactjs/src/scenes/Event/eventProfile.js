@@ -27,6 +27,7 @@ import { handleSubmitMatch } from '../Matches/handleSubmitMatch';
 import tournamentTypeConst from '../../lib/tournamentTypeConst';
 import ImageCard from '../../components/ImageCard';
 import ViewImage from '../../components/ViewImage';
+import ProfileHeader from '../../components/ProfileHeader';
 
 const gridStyle = {
   width: '20%',
@@ -163,7 +164,7 @@ const EventProfile = () => {
 
   //Add-league-based
   const handleAddMatch = () => {
-    console.log("SHort Term Memory Lose");
+    console.log('SHort Term Memory Lose');
     setIsOpenMatchModal(true);
   };
 
@@ -288,198 +289,180 @@ const EventProfile = () => {
             border: '1px solid rgb(235, 237, 240)',
           }}
           onBack={history.goBack}
-          title={stats.event}
+          title={stats.name}
         />
-        <div>
-          <Card
-            hoverable
-            style={{ width: '100%', height: '200%', marginBottom: '-220px' }}
-            cover={<img alt="example" src={getImage(stats.profileUrl)} height={500} width={150} />}
-          ></Card>
-          <Row style={{ marginLeft: '20px', marginTop: '50px', display: 'flex' }}>
-            {/* <Card
-              hoverable
-              style={{ width: '150px', height: '150px' }}
-              cover={<img alt="example" src={getImage(stats.profileUrl)} height={150} width={150} />}
-            ></Card> */}
-            <ImageCard data={stats} viewImageModal={viewImageModal} />
-            <Skeleton loading={statsLoading}>
-              <div style={{ marginLeft: '10px', marginTop: '5px' }}>
-                <h1 style={{ color: 'white', fontSize: '33px', marginBottom: '0' }}>Name: {stats.event}</h1>
-                <h1 style={{ color: 'white', marginBottom: '0' }}>Organizor: {stats.organizor || 'N/A'}</h1>
-                <h1 style={{ color: 'white', marginBottom: '0' }}>
-                  {moment(stats.startDate).format('MM/DD/YYYY') || 'N/A'} to {moment(stats.endDate).format('MM/DD/YYYY') || 'N/A'}
-                </h1>
-                <h1 style={{ color: 'white', marginTop: '-5px' }}>{stats.type == 1 ? 'Knock-out' : stats.type == 2 ? 'League Based' : ''}</h1>
-              </div>
+        <ProfileHeader data={stats} viewImageModal={viewImageModal} loading={statsLoading}>
+          <h1 style={{ color: 'white', marginBottom: '0' }}>Organizor: {stats.organizor || 'N/A'}</h1>
+          <h1 style={{ color: 'white', marginBottom: '0' }}>
+            {moment(stats.startDate).format('MM/DD/YYYY') || 'N/A'} to {moment(stats.endDate).format('MM/DD/YYYY') || 'N/A'}
+          </h1>
+          <h1 style={{ color: 'white', marginTop: '-5px' }}>{stats.type == 1 ? 'Knock-out' : stats.type == 2 ? 'League Based' : ''}</h1>
+        </ProfileHeader>
+
+        <Tabs defaultActiveKey="1" style={{ marginTop: '50px' }}>
+          <TabPane
+            tab={
+              <span>
+                <Icon type="apple" />
+                Stats
+              </span>
+            }
+            key="1"
+          >
+            <Skeleton loading={statsLoading} active avatar>
+              {Object.keys(stats).length ? (
+                <div>
+                  <Card>
+                    <Card.Grid style={gridStyle}>
+                      <h2>Matches</h2>
+                      <h4>{stats.matches || 'N/A'}</h4>
+                    </Card.Grid>
+                    <Card.Grid style={gridStyle}>
+                      <h2>Best Batsman</h2>
+                      <h4>{stats.batsman || 'N/A'}</h4>
+                    </Card.Grid>
+                    <Card.Grid style={gridStyle}>
+                      <h2>Best Bowler</h2>
+                      <h4>{stats.bowler || 'N/A'}</h4>
+                    </Card.Grid>
+                    <Card.Grid style={gridStyle}>
+                      <h2>Best Player</h2>
+                      <h4>{stats.pot || 'N/A'}</h4>
+                    </Card.Grid>
+                    <Card.Grid style={gridStyle}>
+                      <h2>Sixes</h2>
+                      <h4>{stats.six || 'N/A'}</h4>
+                    </Card.Grid>
+                    <Card.Grid style={gridStyle}>
+                      <h2>Fours</h2>
+                      <h4>{stats.fours || 'N/A'}</h4>
+                    </Card.Grid>
+                    <Card.Grid style={gridStyle}>
+                      <h2>Wickets</h2>
+                      <h4>{stats.wickets || 'N/A'}</h4>
+                    </Card.Grid>
+                    <Card.Grid style={gridStyle}>
+                      <h2>Catches</h2>
+                      <h4>{stats.catches || 'N/A'}</h4>
+                    </Card.Grid>
+                    <Card.Grid style={gridStyle}>
+                      <h2>Stumps</h2>
+                      <h4>{stats.stumps || 'N/A'}</h4>
+                    </Card.Grid>
+                    <Card.Grid style={gridStyle}>
+                      <h2>Run-out</h2>
+                      <h4>{stats.runouts || 'N/A'}</h4>
+                    </Card.Grid>
+                  </Card>
+                </div>
+              ) : (
+                <Empty />
+              )}
             </Skeleton>
-          </Row>
-
-          <Tabs defaultActiveKey="1" style={{ marginTop: '50px' }}>
-            <TabPane
-              tab={
-                <span>
-                  <Icon type="apple" />
-                  Stats
-                </span>
-              }
-              key="1"
-            >
-              <Skeleton loading={statsLoading} active avatar>
-                {Object.keys(stats).length ? (
-                  <div>
-                    <Card>
-                      <Card.Grid style={gridStyle}>
-                        <h2>Matches</h2>
-                        <h4>{stats.matches || 'N/A'}</h4>
-                      </Card.Grid>
-                      <Card.Grid style={gridStyle}>
-                        <h2>Best Batsman</h2>
-                        <h4>{stats.batsman || 'N/A'}</h4>
-                      </Card.Grid>
-                      <Card.Grid style={gridStyle}>
-                        <h2>Best Bowler</h2>
-                        <h4>{stats.bowler || 'N/A'}</h4>
-                      </Card.Grid>
-                      <Card.Grid style={gridStyle}>
-                        <h2>Best Player</h2>
-                        <h4>{stats.pot || 'N/A'}</h4>
-                      </Card.Grid>
-                      <Card.Grid style={gridStyle}>
-                        <h2>Sixes</h2>
-                        <h4>{stats.six || 'N/A'}</h4>
-                      </Card.Grid>
-                      <Card.Grid style={gridStyle}>
-                        <h2>Fours</h2>
-                        <h4>{stats.fours || 'N/A'}</h4>
-                      </Card.Grid>
-                      <Card.Grid style={gridStyle}>
-                        <h2>Wickets</h2>
-                        <h4>{stats.wickets || 'N/A'}</h4>
-                      </Card.Grid>
-                      <Card.Grid style={gridStyle}>
-                        <h2>Catches</h2>
-                        <h4>{stats.catches || 'N/A'}</h4>
-                      </Card.Grid>
-                      <Card.Grid style={gridStyle}>
-                        <h2>Stumps</h2>
-                        <h4>{stats.stumps || 'N/A'}</h4>
-                      </Card.Grid>
-                      <Card.Grid style={gridStyle}>
-                        <h2>Run-out</h2>
-                        <h4>{stats.runouts || 'N/A'}</h4>
-                      </Card.Grid>
-                    </Card>
-                  </div>
-                ) : (
-                  <Empty />
-                )}
-              </Skeleton>
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <Icon type="apple" />
-                  Matches
-                </span>
-              }
-              key="2"
-            >
-              <ViewMatchBox data={matchList} editMatch={handleAddMatch}></ViewMatchBox>
-              {stats.type == tournamentTypeConst.leagueBased ? (
-                <Tooltip title={'Add Match'}>
-                  <Button type="primary" size="large" shape="circle" icon="plus" style={filterButon} onClick={handleAddMatch}>
-                    {/* <Icon style={{ marginLeft: '8px', marginTop: '8px' }} type="plus" /> */}
+          </TabPane>
+          <TabPane
+            tab={
+              <span>
+                <Icon type="apple" />
+                Matches
+              </span>
+            }
+            key="2"
+          >
+            <ViewMatchBox data={matchList} editMatch={handleAddMatch}></ViewMatchBox>
+            {stats.type == tournamentTypeConst.leagueBased ? (
+              <Tooltip title={'Add Match'}>
+                <Button type="primary" size="large" shape="circle" icon="plus" style={filterButon} onClick={handleAddMatch}>
+                  {/* <Icon style={{ marginLeft: '8px', marginTop: '8px' }} type="plus" /> */}
+                </Button>
+                {/* <Button type="primary" shape="circle" icon="download" size={size} /> */}
+              </Tooltip>
+            ) : null}
+            <CreateOrUpdateLeagueBasedMatch
+              isOpenModal={isOpenMatchModal}
+              editMatch={editMatch}
+              matchFormik={matchFormik}
+              handleCancel={handleCancel}
+              stats={stats}
+              groups={groups}
+              teamList={filterTeamList}
+              groundList={groundList}
+            ></CreateOrUpdateLeagueBasedMatch>
+          </TabPane>
+          <TabPane
+            tab={
+              <span>
+                <Icon type="apple" />
+                Teams
+              </span>
+            }
+            key="3"
+          >
+            <TeamViewBox data={teamList}></TeamViewBox>
+            {stats.type == 2 ? (
+              <Tooltip title={'Add Team'}>
+                <Link to={`/eventTeams/${stats.event}/${param.eventId}/groups/${stats.groups}`}>
+                  <Button type="primary" size="large" shape="circle" style={filterButon}>
+                    <Icon style={{ marginLeft: '8px', marginTop: '8px' }} type="plus" />
                   </Button>
-                  {/* <Button type="primary" shape="circle" icon="download" size={size} /> */}
-                </Tooltip>
-              ) : null}
-              <CreateOrUpdateLeagueBasedMatch
-                isOpenModal={isOpenMatchModal}
-                editMatch={editMatch}
-                matchFormik={matchFormik}
-                handleCancel={handleCancel}
-                stats={stats}
-                groups={groups}
-                teamList={filterTeamList}
-                groundList={groundList}
-              ></CreateOrUpdateLeagueBasedMatch>
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <Icon type="apple" />
-                  Teams
-                </span>
-              }
-              key="3"
-            >
-              <TeamViewBox data={teamList}></TeamViewBox>
-              {stats.type == 2 ? (
-                <Tooltip title={'Add Team'}>
-                  <Link to={`/eventTeams/${stats.event}/${param.eventId}/groups/${stats.groups}`}>
-                    <Button type="primary" size="large" shape="circle" style={filterButon}>
-                      <Icon style={{ marginLeft: '8px', marginTop: '8px' }} type="plus" />
-                    </Button>
-                  </Link>
-                </Tooltip>
-              ) : null}
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <Icon type="apple" />
-                  Leader Board
-                </span>
-              }
-              key="5"
-            >
-              <LeaderBoard eventId={param.eventId}></LeaderBoard>
-            </TabPane>
+                </Link>
+              </Tooltip>
+            ) : null}
+          </TabPane>
+          <TabPane
+            tab={
+              <span>
+                <Icon type="apple" />
+                Leader Board
+              </span>
+            }
+            key="5"
+          >
+            <LeaderBoard eventId={param.eventId}></LeaderBoard>
+          </TabPane>
 
-            {stats.type == 1 ? (
-              <TabPane
-                tab={
-                  <span>
-                    <Icon type="apple" />
-                    Brackets
-                  </span>
-                }
-                key="6"
-              >
-                <ViewBracket2
-                  formikData={bracketsData}
-                  event={stats.event}
-                  handleBracketUpdate={handleBracketUpdate}
-                  loading={isBracketLoading}
-                ></ViewBracket2>
-              </TabPane>
-            ) : (
-              <TabPane
-                tab={
-                  <span>
-                    <Icon type="apple" />
-                    Points Table
-                  </span>
-                }
-                key="7"
-              >
-                <PointsTable data={pointsTable}></PointsTable>
-              </TabPane>
-            )}
+          {stats.type == 1 ? (
             <TabPane
               tab={
                 <span>
                   <Icon type="apple" />
-                  Gallery
+                  Brackets
                 </span>
               }
-              key="8"
+              key="6"
             >
-              <ViewGallery data={gallery}></ViewGallery>
+              <ViewBracket2
+                formikData={bracketsData}
+                event={stats.event}
+                handleBracketUpdate={handleBracketUpdate}
+                loading={isBracketLoading}
+              ></ViewBracket2>
             </TabPane>
-          </Tabs>
-        </div>
+          ) : (
+            <TabPane
+              tab={
+                <span>
+                  <Icon type="apple" />
+                  Points Table
+                </span>
+              }
+              key="7"
+            >
+              <PointsTable data={pointsTable}></PointsTable>
+            </TabPane>
+          )}
+          <TabPane
+            tab={
+              <span>
+                <Icon type="apple" />
+                Gallery
+              </span>
+            }
+            key="8"
+          >
+            <ViewGallery data={gallery}></ViewGallery>
+          </TabPane>
+        </Tabs>
         <ViewImage preview={preview} previewImage={previewImage} handlePreviewCancel={handlePreviewCancel} />
       </Card>
     </>

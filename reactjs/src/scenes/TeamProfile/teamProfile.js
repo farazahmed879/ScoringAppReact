@@ -22,6 +22,7 @@ import matchTypeConst from '../../lib/matchTypeConst';
 import ViewImage from '../../components/ViewImage';
 import { getBase64 } from '../../helper/getBase64';
 import ImageCard from '../../components/ImageCard';
+import ProfileHeader from '../../components/ProfileHeader';
 
 const gridStyle = {
   width: '20%',
@@ -154,185 +155,165 @@ const TeamProfile = () => {
         onBack={history.goBack}
         title={stats.name}
       />
-      <div>
-        <Card
-          hoverable
-          style={{ width: '100%', height: '200%', marginBottom: '-220px' }}
-          cover={<img alt="example" src={getImage(stats.profileUrl)} height={500} width={150} />}
-        ></Card>
-        <Row style={{ marginLeft: '20px', marginTop: '50px', display: 'flex' }}>
-          {/* <div>
-            <div className="img-wrapper">
-              <img className="blur" alt="example" src={getImage(stats.profileUrl)} height={150} width={150} />
-              <div className="content fade">
-                <Icon type="eye" onClick={() => viewImageModal(stats)} />
+      <ProfileHeader data={stats} viewImageModal={viewImageModal} loading={statsLoading}>
+        <h1 style={{ color: 'white', marginBottom: '0' }}>Location: {stats.area || 'N/A'}</h1>
+        <h1 style={{ color: 'white', marginBottom: '0' }}>{stats.type || 'N/A'}</h1>
+      </ProfileHeader>
+      <Tabs defaultActiveKey="1" style={{ marginTop: '50px' }}>
+        <TabPane
+          tab={
+            <span>
+              <Icon type="apple" />
+              Stats
+            </span>
+          }
+          key="1"
+        >
+          <Skeleton loading={statsLoading} active avatar>
+            {Object.keys(stats).length ? (
+              <div>
+                <Card>
+                  <Card.Grid style={gridStyle}>
+                    <h2>Matches</h2>
+                    <h4>{stats.matches || 'N/A'}</h4>
+                  </Card.Grid>
+                  <Card.Grid style={gridStyle}>
+                    <h2>Won</h2>
+                    <h4>{stats.won || 'N/A'}</h4>
+                  </Card.Grid>
+                  <Card.Grid style={gridStyle}>
+                    <h2>Lost</h2>
+                    <h4>{stats.lost || 'N/A'}</h4>
+                  </Card.Grid>
+                  <Card.Grid style={gridStyle}>
+                    <h2>Tie</h2>
+                    <h4>{stats.tie || 'N/A'}</h4>
+                  </Card.Grid>
+                  <Card.Grid style={gridStyle}>
+                    <h2>No Result</h2>
+                    <h4>{stats.noResult || 'N/A'}</h4>
+                  </Card.Grid>
+                  <Card.Grid style={gridStyle}>
+                    <h2>Toss Won</h2>
+                    <h4>{stats.tossWon || 'N/A'}</h4>
+                  </Card.Grid>
+                  <Card.Grid style={gridStyle}>
+                    <h2>Bat First</h2>
+                    <h4>{stats.batFirst || 'N/A'}</h4>
+                  </Card.Grid>
+                  <Card.Grid style={gridStyle}>
+                    <h2>Field First</h2>
+                    <h4>{stats.fieldFirst || 'N/A'}</h4>
+                  </Card.Grid>
+                </Card>
               </div>
-            </div>
-          </div> */}
-          <ImageCard data={stats} viewImageModal={viewImageModal} />
-          <div style={{ marginLeft: '10px', marginTop: '5px' }}>
-            <h1 style={{ color: 'white', fontSize: '33px', marginBottom: '0' }}>Name: {stats.name}</h1>
-            <h1 style={{ color: 'white', marginBottom: '0' }}>Location: {stats.area || 'N/A'}</h1>
-            <h1 style={{ color: 'white', marginBottom: '0' }}>{stats.type || 'N/A'}</h1>
+            ) : (
+              <Empty />
+            )}
+          </Skeleton>
+          <Tooltip title={'Filter'}>
+            <Button type="primary" size="large" shape="circle" style={filterButon} className="filterButton" onClick={() => handleCancelStatsFilter()}>
+              <Icon className="icon-style" type="filter" />
+            </Button>
+          </Tooltip>
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <Icon type="apple" />
+              Players
+            </span>
+          }
+          key="2"
+        >
+          <PlayerViewBox data={players}></PlayerViewBox>
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <Icon type="apple" />
+              Matches
+            </span>
+          }
+          key="3"
+        >
+          <div style={{ textAlign: 'center' }}>
+            <Radio.Group
+              onChange={(e) => handleRadio(e)}
+              defaultValue="1"
+              buttonStyle="solid"
+              style={{ display: 'flex', justifyContent: 'center', margin: '20px' }}
+            >
+              <Radio.Button value="1">All</Radio.Button>
+              <Radio.Button value="2">Won</Radio.Button>
+              <Radio.Button value="3">Lost</Radio.Button>
+              <Radio.Button value="4">Tie</Radio.Button>
+            </Radio.Group>
           </div>
-        </Row>
-
-        <Tabs defaultActiveKey="1" style={{ marginTop: '50px' }}>
-          <TabPane
-            tab={
-              <span>
-                <Icon type="apple" />
-                Stats
-              </span>
-            }
-            key="1"
-          >
-            <Skeleton loading={statsLoading} active avatar>
-              {Object.keys(stats).length ? (
-                <div>
-                  <Card>
-                    <Card.Grid style={gridStyle}>
-                      <h2>Matches</h2>
-                      <h4>{stats.matches || 'N/A'}</h4>
-                    </Card.Grid>
-                    <Card.Grid style={gridStyle}>
-                      <h2>Won</h2>
-                      <h4>{stats.won || 'N/A'}</h4>
-                    </Card.Grid>
-                    <Card.Grid style={gridStyle}>
-                      <h2>Lost</h2>
-                      <h4>{stats.lost || 'N/A'}</h4>
-                    </Card.Grid>
-                    <Card.Grid style={gridStyle}>
-                      <h2>Tie</h2>
-                      <h4>{stats.tie || 'N/A'}</h4>
-                    </Card.Grid>
-                    <Card.Grid style={gridStyle}>
-                      <h2>No Result</h2>
-                      <h4>{stats.noResult || 'N/A'}</h4>
-                    </Card.Grid>
-                    <Card.Grid style={gridStyle}>
-                      <h2>Toss Won</h2>
-                      <h4>{stats.tossWon || 'N/A'}</h4>
-                    </Card.Grid>
-                    <Card.Grid style={gridStyle}>
-                      <h2>Bat First</h2>
-                      <h4>{stats.batFirst || 'N/A'}</h4>
-                    </Card.Grid>
-                    <Card.Grid style={gridStyle}>
-                      <h2>Field First</h2>
-                      <h4>{stats.fieldFirst || 'N/A'}</h4>
-                    </Card.Grid>
-                  </Card>
-                </div>
+          <ViewMatchBox data={matchList}></ViewMatchBox>
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <Icon type="apple" />
+              Events
+            </span>
+          }
+          key="4"
+        >
+          <div style={{ textAlign: 'center' }}>
+            <Radio.Group
+              onChange={(e) => handleEventFilter(e)}
+              defaultValue=""
+              buttonStyle="solid"
+              style={{ display: 'flex', justifyContent: 'center', margin: '20px' }}
+            >
+              <Radio.Button value="">All</Radio.Button>
+              <Radio.Button value="1">Tournament</Radio.Button>
+              <Radio.Button value="2">Series</Radio.Button>
+            </Radio.Group>
+          </div>
+          <Card>
+            <div style={{ display: 'flex', margin: '10px' }}>
+              {Object.keys(eventList).length ? (
+                eventList.map((e, index) => (
+                  <Tooltip title={e.name} key={index}>
+                    <Link to={'/eventProfile/' + e.id}>
+                      <Card hoverable style={{ width: 200, margin: '10px' }} cover={<img alt="example" src={AppConsts.dummyImage} />}>
+                        <Meta title={e.name} description={e.startDate + ' To ' + e.endDate} />
+                      </Card>
+                    </Link>
+                  </Tooltip>
+                ))
               ) : (
                 <Empty />
               )}
-            </Skeleton>
-            <Tooltip title={'Filter'}>
-              <Button type="primary" size="large" shape="circle" style={filterButon} className="filterButton" onClick={() => handleCancelStatsFilter()}>
-                <Icon className='icon-style' type="filter" />
-              </Button>
-            </Tooltip>
-          </TabPane>
-          <TabPane
-            tab={
-              <span>
-                <Icon type="apple" />
-                Players
-              </span>
-            }
-            key="2"
-          >
-            <PlayerViewBox data={players}></PlayerViewBox>
-          </TabPane>
-          <TabPane
-            tab={
-              <span>
-                <Icon type="apple" />
-                Matches
-              </span>
-            }
-            key="3"
-          >
-            <div style={{ textAlign: 'center' }}>
-              <Radio.Group
-                onChange={(e) => handleRadio(e)}
-                defaultValue="1"
-                buttonStyle="solid"
-                style={{ display: 'flex', justifyContent: 'center', margin: '20px' }}
-              >
-                <Radio.Button value="1">All</Radio.Button>
-                <Radio.Button value="2">Won</Radio.Button>
-                <Radio.Button value="3">Lost</Radio.Button>
-                <Radio.Button value="4">Tie</Radio.Button>
-              </Radio.Group>
             </div>
-            <ViewMatchBox data={matchList}></ViewMatchBox>
-          </TabPane>
-          <TabPane
-            tab={
-              <span>
-                <Icon type="apple" />
-                Events
-              </span>
-            }
-            key="4"
-          >
-            <div style={{ textAlign: 'center' }}>
-              <Radio.Group
-                onChange={(e) => handleEventFilter(e)}
-                defaultValue=""
-                buttonStyle="solid"
-                style={{ display: 'flex', justifyContent: 'center', margin: '20px' }}
-              >
-                <Radio.Button value="">All</Radio.Button>
-                <Radio.Button value="1">Tournament</Radio.Button>
-                <Radio.Button value="2">Series</Radio.Button>
-              </Radio.Group>
-            </div>
-            <Card>
-              <div style={{ display: 'flex', margin: '10px' }}>
-                {Object.keys(eventList).length ? (
-                  eventList.map((e, index) => (
-                    <Tooltip title={e.name} key={index}>
-                      <Link to={'/eventProfile/' + e.id}>
-                        <Card hoverable style={{ width: 200, margin: '10px' }} cover={<img alt="example" src={AppConsts.dummyImage} />}>
-                          <Meta title={e.name} description={e.startDate + ' To ' + e.endDate} />
-                        </Card>
-                      </Link>
-                    </Tooltip>
-                  ))
-                ) : (
-                  <Empty />
-                )}
-              </div>
-            </Card>
-          </TabPane>
-          <TabPane
-            tab={
-              <span>
-                <Icon type="apple" />
-                Leader Board
-              </span>
-            }
-            key="5"
-          >
-            <LeaderBoard teamId={param.teamId}></LeaderBoard>
-          </TabPane>
-          <TabPane
-            tab={
-              <span>
-                <Icon type="apple" />
-                Gallery
-              </span>
-            }
-            key="6"
-          >
-            <ViewGallery data={gallery}></ViewGallery>
-          </TabPane>
-        </Tabs>
-      </div>
+          </Card>
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <Icon type="apple" />
+              Leader Board
+            </span>
+          }
+          key="5"
+        >
+          <LeaderBoard teamId={param.teamId}></LeaderBoard>
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <Icon type="apple" />
+              Gallery
+            </span>
+          }
+          key="6"
+        >
+          <ViewGallery data={gallery}></ViewGallery>
+        </TabPane>
+      </Tabs>
       <CustomModal
         title="Stats Filter"
         isModalVisible={isStatsFilterModal}

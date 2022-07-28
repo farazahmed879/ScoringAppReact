@@ -114,6 +114,8 @@ const Event = () => {
       eventType: eventFormik.values.eventType,
       tournamentType: eventFormik.values.tournamentType,
       numberOfGroup: eventFormik.values.numberOfGroup,
+      organizor: eventFormik.values.organizor,
+      organizorContact: eventFormik.values.organizorContact,
       profile: eventFormik.values.profile,
       profileUrl: eventFormik.values.profileUrl,
       gallery: gallery.map((data) => ({
