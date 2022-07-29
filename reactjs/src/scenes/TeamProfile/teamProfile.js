@@ -23,6 +23,7 @@ import ViewImage from '../../components/ViewImage';
 import { getBase64 } from '../../helper/getBase64';
 import ImageCard from '../../components/ImageCard';
 import ProfileHeader from '../../components/ProfileHeader';
+import EventImageViewCard from '../../components/EventImageViewCard';
 
 const gridStyle = {
   width: '20%',
@@ -273,7 +274,7 @@ const TeamProfile = () => {
               <Radio.Button value="2">Series</Radio.Button>
             </Radio.Group>
           </div>
-          <Card>
+          {/* <Card>
             <div style={{ display: 'flex', margin: '10px' }}>
               {Object.keys(eventList).length ? (
                 eventList.map((e, index) => (
@@ -289,7 +290,8 @@ const TeamProfile = () => {
                 <Empty />
               )}
             </div>
-          </Card>
+          </Card> */}
+          <EventImageViewCard eventList={eventList} />
         </TabPane>
         <TabPane
           tab={
