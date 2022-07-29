@@ -4,6 +4,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import playerService from '../../services/player/playerService';
 import TeamService from '../../services/team/TeamService';
+import AddOrEditPlayerModal from '../Players/AddOrEditPlayerModal';
 const TeamPlayers = () => {
   const success = Modal.success;
   const error = Modal.error;
@@ -11,6 +12,7 @@ const TeamPlayers = () => {
   const [teamName, setTeamName] = useState([]);
   const [playerList, setPlayerList] = useState([]);
   const [selectedPlayerList, setSelectedPlayerList] = useState([]);
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const history = useHistory();
   const [state, setState] = useState({
     mockData: [],
@@ -28,6 +30,18 @@ const TeamPlayers = () => {
       setPlayerList(res);
       getAllPlayersByTeamId(res);
     });
+  };
+
+  const floatingButton = {
+    position: 'fixed',
+    right: '32px',
+    bottom: '20%',
+    Zindex: '2147483640',
+    display: 'flex',
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: 'column',
+    cursor: 'pointer',
   };
 
   const getAllPlayersByTeamId = (allPlayers) => {
@@ -61,6 +75,14 @@ const TeamPlayers = () => {
     setState({ mockData, targetKeys });
   };
 
+  const addPlayer = () => {
+    setIsOpenModal(!isOpenModal);
+  };
+
+  const handleModalVisibleFalse =(e) => {
+    setIsOpenModal(e);
+  }
+
   const handleSubmit = (e) => {
     let req = {
       teamId: +param.teamId,
@@ -92,6 +114,7 @@ const TeamPlayers = () => {
         onBack={history.goBack}
         title={teamName + ' Players'}
       />
+      <Button style={floatingButton} class="filterButton" type="primary" shape="circle" icon="plus" onClick={addPlayer}/>
       {/* <h3>{teamName} Players</h3>{' '} */}
       <Transfer
         titles={['All Players', 'Selected Players']}
@@ -124,6 +147,7 @@ const TeamPlayers = () => {
           Submit
         </Button>
       </div>
+      <AddOrEditPlayerModal isModalVisible={isOpenModal} handleCancel={handleModalVisibleFalse}/>
     </Card>
   );
 };
