@@ -371,14 +371,6 @@ const Event = () => {
         handleTableChange={handleTableChange}
       />
       <CustomModal
-        title={Object.keys(DeleteEvent).length ? 'yes' : 'no'}
-        isModalVisible={isOpenModal}
-        handleCancel={() => {
-          setIsOpenModal(false);
-        }}
-        handleSubmit={handleSubmit}
-      ></CustomModal>
-      <CustomModal
         title={Object.keys(editEvent).length ? 'Edit Event' : 'Add Event'}
         isModalVisible={isOpenModal}
         handleCancel={() => {
