@@ -10,6 +10,7 @@ import CustomTable from '../../components/Table';
 import { getBase64 } from '../../helper/getBase64';
 import { Link } from 'react-router-dom';
 import ViewImage from '../../components/ViewImage';
+import AddOrEditGroundModal from './addOrEditGroundModal';
 const baseUrl = 'http://localhost:21021';
 
 const groundValidation = Yup.object().shape({
@@ -38,7 +39,6 @@ const Ground = () => {
   const [previewImage, setPreviewImage] = useState('');
   const [profile, setProfile] = useState([]);
   const [gallery, setGallery] = useState([]);
-  const [editGround, setEditGround] = useState({});
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
     current: 1,
@@ -98,7 +98,6 @@ const Ground = () => {
           error({ title: res.successMessage });
           return;
         }
-        setEditGround(res.result);
         groundFormik.setValues({
           ...groundFormik.values,
           ...res.result,
@@ -296,81 +295,22 @@ const Ground = () => {
         scroll={{ x: 1500 }}
         handleTableChange={handleTableChange}
       />
-      <CustomModal
-        title={Object.keys(editGround).length ? 'Edit Ground' : 'Add Ground'}
-        isModalVisible={isOpenModal}
-        handleCancel={() => {
-          setIsOpenModal(false);
-        }}
-      >
-        <Skeleton loading={isEditDataLoading}>
-          <Form>
-            <Row className="form-container">
-              <Col span={24}>
-                <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
-                  <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
-                  <Upload
-                    multiple={false}
-                    listType="picture-card"
-                    accept=".png,.jpeg,.jpg"
-                    fileList={profile}
-                    type="FormFile"
-                    stateKey="profile"
-                    disabled={!!Object.keys(profile).length}
-                    onChange={(e) => handleProfileUpload(e)}
-                    beforeUpload={false}
-                    onPreview={handlePreview}
-                  >
-                    Profile
-                  </Upload>
-                </Popover>
-              </Col>
-              <CustomInput
-                title="Ground"
-                type="text"
-                value={groundFormik.values.name}
-                stateKey="name"
-                placeholder="Ground Name"
-                handleChange={handleChange}
-                errorMessage={groundFormik.errors.name}
-              />
-              <CustomInput
-                title="Location"
-                type="text"
-                value={groundFormik.values.location}
-                stateKey="location"
-                placeholder="Location"
-                handleChange={handleChange}
-                errorMessage={groundFormik.errors.location}
-              />
-              <Col span={24}>
-                <Upload
-                  className="Gallery"
-                  beforeUpload={() => false}
-                  onPreview={handlePreview}
-                  value={groundFormik.values.gallery}
-                  fileList={gallery}
-                  multiple={true}
-                  listType="picture-card"
-                  onChange={(e) => handleUpload(e)}
-                >
-                  Gallery
-                </Upload>
-              </Col>
-            </Row>
-            <Form.Item gutter={16}>
-              <Button type="primary" htmlType="submit" onClick={handleSubmit}>
-                {/* {Object.keys(editGround).length ? 'Update' : 'Add'} */}
-                {mode == 'Create Ground' ? 'Add' : 'Update'}
-              </Button>
-              <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
-                Cancel
-              </Button>
-            </Form.Item>
-          </Form>
-        </Skeleton>
-      </CustomModal>
       <ViewImage previewImage={previewImage} preview={preview} handlePreviewCancel={handlePreviewCancel} />
+      <AddOrEditGroundModal
+        isOpenModal={isOpenModal}
+        isEditDataLoading={isEditDataLoading}
+        handleDeletePicture={handleDeletePicture}
+        handlePreview={handlePreview}
+        groundFormik={groundFormik}
+        handleCancel={() => setIsOpenModal(false)}
+        handleSubmit={handleSubmit}
+        handleUpload={handleUpload}
+        gallery={gallery}
+        handleChange={handleChange}
+        handleProfileUpload={handleProfileUpload}
+        profile={profile}
+        picture={picture}
+      />
     </Card>
   );
 };

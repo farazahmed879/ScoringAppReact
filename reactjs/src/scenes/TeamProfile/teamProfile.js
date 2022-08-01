@@ -32,7 +32,7 @@ const gridStyle = {
   cursor: 'pointer',
 };
 
-const filterButon = {
+const floatingButton = {
   position: 'fixed',
   right: '32px',
   bottom: '102px',
@@ -49,6 +49,7 @@ const TeamProfile = () => {
   const [stats, setTeamStats] = useState({});
   const [statsLoading, setStatsLoading] = useState(true);
   const [isStatsFilterModal, setIsStatsFilterModal] = useState(false);
+  const [isStatsAddModal, setIsStatsAddModal] = useState(false);
   const [matchResultFilter, setMatchResultFilter] = useState(1);
   const [eventFilter, setEventFilter] = useState('');
   const param = useParams();
@@ -125,6 +126,10 @@ const TeamProfile = () => {
 
   const handleCancelStatsFilter = () => {
     setIsStatsFilterModal(!isStatsFilterModal);
+  };
+
+  const handleAddPlayer = () => {
+    setIsStatsAddModal(!isStatsAddModal);
   };
 
   const handleSubmitStatsFilter = () => {
@@ -213,7 +218,14 @@ const TeamProfile = () => {
             )}
           </Skeleton>
           <Tooltip title={'Filter'}>
-            <Button type="primary" size="large" shape="circle" style={filterButon} className="filterButton" onClick={() => handleCancelStatsFilter()}>
+            <Button
+              type="primary"
+              size="large"
+              shape="circle"
+              style={floatingButton}
+              className="filterButton"
+              onClick={() => handleCancelStatsFilter()}
+            >
               <Icon className="icon-style" type="filter" />
             </Button>
           </Tooltip>
@@ -228,6 +240,13 @@ const TeamProfile = () => {
           key="2"
         >
           <PlayerViewBox data={players}></PlayerViewBox>
+          <Tooltip title={'Add Team Player'}>
+            <Link to={'/team-player/' + param.teamId + '/' + stats.name}>
+              <Button type="primary" size="large" shape="circle" style={floatingButton} className="filterButton" onClick={() => handleAddPlayer()}>
+                <Icon className="icon-style" type="plus" />
+              </Button>
+            </Link>
+          </Tooltip>
         </TabPane>
         <TabPane
           tab={

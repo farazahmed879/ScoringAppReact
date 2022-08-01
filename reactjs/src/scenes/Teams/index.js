@@ -16,6 +16,7 @@ import { elementType } from 'prop-types';
 import { getBase64 } from '../../helper/getBase64';
 import { truncateText } from '../../helper/helper';
 import ViewImage from '../../components/ViewImage';
+import AddOrEditTeamModal from './addOrEditTeamModal';
 const baseUrl = 'http://localhost:21021';
 const Team = () => {
   const success = Modal.success;
@@ -32,7 +33,6 @@ const Team = () => {
   const [mode, setModalMode] = useState('');
   const [isEditDataLoading, setIsEditDataLoading] = useState(false);
   const [picture, setPicture] = useState(false);
-  const [editTeam, setEditTeam] = useState({});
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState([]);
   const [gallery, setGallery] = useState([]);
@@ -94,6 +94,7 @@ const Team = () => {
   const teamValidation = Yup.object().shape({
     name: Yup.string().required('Required'),
     city: Yup.string().required('Required'),
+    contact: Yup.string().min(11, 'Contact must contain 11 numbers').max(11, 'Contact must contain 12 numbers')
   });
 
   const filterHandleSubmit = (event) => {
@@ -183,7 +184,6 @@ const Team = () => {
     setProfile([]);
     TeamService.getTeamById(item.id).then((res) => {
       if (res) {
-        setEditTeam(res);
         console.log('Team', res);
         teamFormik.setValues({
           ...teamFormik.values,
@@ -338,123 +338,22 @@ const Team = () => {
         scroll={{ x: 1500 }}
         handleTableChange={handleTableChange}
       />
-
-      <CustomModal
-        title={Object.keys(editTeam).length ? 'Edit Team' : 'Add Team'}
-        isModalVisible={isOpenModal}
-        handleCancel={() => {
-          setIsOpenModal(false);
-        }}
-        handleSubmit={teamFormHandler}
-      >
-        <Skeleton loading={isEditDataLoading}>
-          <Form className="form" onSubmit={teamFormik.handleSubmit}>
-            <Row gutter={16} className="form-container">
-              <Col span={24}>
-                <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
-                  <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
-                  <Upload
-                    multiple={false}
-                    listType="picture-card"
-                    accept=".png,.jpeg,.jpg"
-                    fileList={profile}
-                    type="FormFile"
-                    stateKey="profile"
-                    disabled={!!Object.keys(profile).length}
-                    onChange={(e) => handleProfileUpload(e)}
-                    beforeUpload={false}
-                    onPreview={handlePreview}
-                  >
-                    Profile
-                  </Upload>
-                </Popover>
-              </Col>
-              <Col span={12}>
-                <CustomInput
-                  title="Name"
-                  type="text"
-                  handleChange={handleChange}
-                  value={teamFormik.values.name}
-                  stateKey="name"
-                  placeholder=""
-                  errorMessage={teamFormik.errors.name}
-                />
-              </Col>
-              <Col span={12}>
-                <CustomInput title="Zone" type="number" handleChange={handleChange} value={teamFormik.values.zone} stateKey="zone" placeholder="" />
-              </Col>
-              <Col span={12}>
-                <CustomInput
-                  title="Contact"
-                  type="number"
-                  handleChange={handleChange}
-                  value={teamFormik.values.contact}
-                  stateKey="contact"
-                  placeholder=""
-                />
-              </Col>
-              <Col span={12}>
-                {' '}
-                <CustomInput
-                  title="Type"
-                  type="select"
-                  options={teamTypeOptions}
-                  handleChange={handleChange}
-                  value={teamFormik.values.type}
-                  stateKey="type"
-                  placeholder=""
-                />
-              </Col>
-              <Col span={12}>
-                {' '}
-                <CustomInput
-                  title="City"
-                  type="text"
-                  handleChange={handleChange}
-                  value={teamFormik.values.city}
-                  stateKey="city"
-                  placeholder=""
-                  errorMessage={teamFormik.errors.city}
-                />
-              </Col>
-              <Col span={12}>
-                <CustomInput title="Area" type="text" handleChange={handleChange} value={teamFormik.values.place} stateKey="place" placeholder="" />
-              </Col>
-              <Col span={24}>
-                <Upload
-                  beforeUpload={() => false}
-                  onPreview={handlePreview}
-                  value={teamFormik.values.gallery}
-                  fileList={gallery}
-                  multiple={true}
-                  listType="picture-card"
-                  onChange={(e) => handleUpload(e)}
-                >
-                  Gallery
-                </Upload>
-              </Col>
-              {/* <Col span={12}>
-              <CustomInput
-                title="Registered"
-                type="checkbox"
-                handleChange={handleChange}
-                value={teamFormik.values.isRegistered}
-                stateKey="isRegistered"
-                placeholder=""
-              />
-            </Col> */}
-            </Row>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" disabled={!teamFormik.isValid} onClick={teamFormik.handleSubmit}>
-                {mode == 'Create Team' ? 'Add' : 'Update'}
-              </Button>
-              <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
-                Cancel
-              </Button>
-            </Form.Item>
-          </Form>
-        </Skeleton>
-      </CustomModal>
+      <AddOrEditTeamModal
+      isOpenModal={isOpenModal} 
+      teamFormHandler={teamFormHandler} 
+      isEditDataLoading={isEditDataLoading}
+      teamFormik={teamFormik}
+      profile={profile}
+      handleDeletePicture={handleDeletePicture}
+      handleProfileUpload={handleProfileUpload}
+      handleUpload={handleUpload}
+      handlePreview={handlePreview}
+      handleChange={handleChange}
+      teamTypeOptions={teamTypeOptions}
+      galler={gallery}
+      handleCancel={() => setIsOpenModal(false)}
+      picture={picture}
+      />
       <ViewImage preview={preview} previewImage={previewImage} handlePreviewCancel={handlePreviewCancel} />
     </Card>
   );
