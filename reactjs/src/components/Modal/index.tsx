@@ -14,6 +14,7 @@ const CustomModal: React.FC<Props> = ({ children, title="Add Score" ,
 
 
     return (
+        
         <Modal footer={null} title={title} visible={isModalVisible} onOk={() => handleSubmit()} onCancel={() => handleCancel(false)}>
             {children}
         </Modal>

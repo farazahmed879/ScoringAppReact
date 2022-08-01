@@ -345,7 +345,7 @@ const Event = () => {
         handleTableChange={handleTableChange}
       />
       <CustomModal
-        title={Object.keys(editEvent).length ? 'Edit Event' : 'Add Event'}
+        title={Object.keys(eventFormik.values).length ? 'Edit Event' : 'Add Event'}
         isModalVisible={isOpenModal}
         handleCancel={() => {
           setIsOpenModal(false);

@@ -18,7 +18,7 @@ const { Content } = Layout;
 
 class AppLayout extends React.Component<any> {
   state = {
-    collapsed: false,
+    collapsed: true,
   };
 
   toggle = () => {
@@ -57,7 +57,7 @@ class AppLayout extends React.Component<any> {
                     exact
                     key={index}
                     path={route.path}
-                    render={props => <ProtectedRoute component={route.component} permission={route.permission} />}
+                    render={(props) => <ProtectedRoute component={route.component} permission={route.permission} />}
                   />
                 ))}
               {pathname !== '/' && <NotFoundRoute />}
