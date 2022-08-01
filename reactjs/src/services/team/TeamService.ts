@@ -11,7 +11,7 @@ class TeamService {
 
   public async delete(id: Number) {
     let result = await http.delete(`api/services/app/Team/Delete?id=${id}`);
-    return result.data;
+    return result.data.result;
   }
 
   public async getTeamById(id: Number): Promise<TeamDto> {

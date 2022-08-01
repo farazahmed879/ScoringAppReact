@@ -15,6 +15,7 @@ import { getBase64 } from '../../helper/getBase64';
 import './style.css';
 import './add-team.css';
 import ViewImage from '../../components/ViewImage';
+import { object } from 'prop-types';
 const baseUrl = 'http://localhost:21021';
 const success = Modal.success;
 const error = Modal.error;
@@ -40,6 +41,7 @@ const Event = () => {
   // const [visible, setIsSetDrawerVisible] = useState(false);
   const [mode, setModalMode] = useState('');
   const [isEditDataLoading, setIsEditDataLoading] = useState(false);
+  const [DeleteEvent, setDeleteEvent] = useState(false);
   const [picture, setPicture] = useState(false);
   const [preview, setPreview] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
@@ -180,6 +182,7 @@ const Event = () => {
       });
     //
   };
+  const confirm = Modal.confirm;
 
   const handleAddEvent = () => {
     setProfile([]);
@@ -190,6 +193,29 @@ const Event = () => {
 
   const handleChange = (value, key) => {
     eventFormik.setValues({ ...eventFormik.values, [key]: value });
+  };
+  const handleDeleteEvent = (item) => {
+    // setDeleteEvent(true);
+    confirm({
+      title: 'Do you Want to delete these items?',
+      onOk() {
+        eventService.delete(item.id).then((res) => {
+          if (res) {
+            if (!res.success) {
+              error({ title: res.successMessage });
+              return;
+            } else {
+              success({ title: res.successMessage });
+              getAll();
+            }
+          }
+        });
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+    console.log(picture);
   };
 
   const handleEditEvent = (item) => {
@@ -301,7 +327,7 @@ const Event = () => {
             overlay={
               <Menu>
                 <Menu.Item onClick={(e) => handleEditEvent(item)}>{L('Edit')}</Menu.Item>
-                <Menu.Item>{L('Delete')}</Menu.Item>
+                <Menu.Item onClick={(e) => handleDeleteEvent(item)}>{L('Delete')}</Menu.Item>
                 {item.eventType == 1 && item.tournamentType == 1 ? (
                   <Menu.Item>
                     <Link to={'/bracket/' + item.name + '/' + item.id}>{L('Fixture Generator')}</Link>
@@ -344,6 +370,14 @@ const Event = () => {
         scroll={{ x: 1500 }}
         handleTableChange={handleTableChange}
       />
+      <CustomModal
+        title={Object.keys(DeleteEvent).length ? 'yes' : 'no'}
+        isModalVisible={isOpenModal}
+        handleCancel={() => {
+          setIsOpenModal(false);
+        }}
+        handleSubmit={handleSubmit}
+      ></CustomModal>
       <CustomModal
         title={Object.keys(editEvent).length ? 'Edit Event' : 'Add Event'}
         isModalVisible={isOpenModal}
@@ -438,7 +472,7 @@ const Event = () => {
                   value={eventFormik.values.eventType}
                   stateKey="eventType"
                   placeholder=""
-                  errorMessage={eventFormik.errors.type}
+                  errorMessage={eventFormik.errors.eventType}
                 />
               </Col>
               {eventFormik.values.eventType == 1 ? (

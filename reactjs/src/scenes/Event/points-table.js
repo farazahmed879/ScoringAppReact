@@ -12,14 +12,18 @@ const PointsTable = ({ data = [] }) => {
 
   const isHeading = (data = []) => {
     let isMatchFound = false;
-    data && data.length > 0 && data.forEach((group, index) => {
-      group && group.length > 0 && group.pointsTables.forEach((match, index2) => {
-        if (match) isMatchFound = true;
-        return isMatchFound;
-      })
-    })
+    data &&
+      data.length > 0 &&
+      data.forEach((group, index) => {
+        group &&
+          group.length > 0 &&
+          group.pointsTables.forEach((match, index2) => {
+            if (match) isMatchFound = true;
+            return isMatchFound;
+          });
+      });
     return isMatchFound;
-  }
+  };
 
   return (
     <Card style={style}>
@@ -54,7 +58,9 @@ const PointsTable = ({ data = [] }) => {
                 <>
                   {' '}
                   <div key={index}>
-                    <Tag key={index} color="volcano">{'Group-' + ++index}</Tag>
+                    <Tag key={index} color="volcano">
+                      {'Group-' + ++index}
+                    </Tag>
                     <>
                       <hr />
                       {group.pointsTables.map((a, index) => (

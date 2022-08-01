@@ -185,6 +185,30 @@ const Player = () => {
       setPlayerStats(res);
     });
   };
+  const confirm = Modal.confirm;
+  const handleDeletePlayer = (item) => {
+    // setDeleteEvent(true);
+    confirm({
+      title: 'Do you Want to delete these items?',
+      onOk() {
+        playerService.delete(item.id).then((res) => {
+          if (res) {
+            if (!res.success) {
+              error({ title: res.successMessage });
+              return;
+            } else {
+              success({ title: res.successMessage });
+              getAll();
+            }
+          }
+        });
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+    console.log(picture);
+  };
 
   const handleChange = (value, key) => {
     playerFormik.setValues({ ...playerFormik.values, [key]: value });
@@ -374,7 +398,7 @@ const Player = () => {
             overlay={
               <Menu>
                 <Menu.Item onClick={(e) => handleEditPlayer(item)}>{L('Edit')}</Menu.Item>
-                <Menu.Item>{L('Delete')}</Menu.Item>
+                <Menu.Item onClick={(e) => handleDeletePlayer(item)}>{L('Delete')}</Menu.Item>
                 <Menu.Item onClick={(e) => viewPlayerProfile(item)}>{L('Profile')}</Menu.Item>
               </Menu>
             }

@@ -206,6 +206,30 @@ const Team = () => {
       }
     });
   };
+  const confirm = Modal.confirm;
+  const handleDeleteTeam = (item) => {
+    // setDeleteEvent(true);
+    confirm({
+      title: 'Do you Want to delete these items?',
+      onOk() {
+        TeamService.delete(item.id).then((res) => {
+          if (res) {
+            if (!res.success) {
+              error({ title: res.successMessage });
+              return;
+            } else {
+              success({ title: res.successMessage });
+              getAll();
+            }
+          }
+        });
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+    console.log(picture);
+  };
 
   const resetForm = () => {};
 
@@ -274,7 +298,7 @@ const Team = () => {
               overlay={
                 <Menu>
                   <Menu.Item onClick={() => handleEditTeam(item)}>{L('Edit')}</Menu.Item>
-                  <Menu.Item>{L('Delete')}</Menu.Item>
+                  <Menu.Item onClick={(e) => handleDeleteTeam(item)}>{L('Delete')}</Menu.Item>
                   <Menu.Item>
                     <Link to={'/team-player/' + item.id + '/' + item.name}>{L('Players')}</Link>
                   </Menu.Item>

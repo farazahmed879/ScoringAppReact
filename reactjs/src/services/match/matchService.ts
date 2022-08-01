@@ -7,8 +7,8 @@ class MatchService {
   }
 
   public async delete(matchId: Number) {
-    let result = await http.delete(`api/services/app/Match/DeleteMatchById=${matchId}`);
-    return result.data;
+    let result = await http.delete(`api/services/app/Match/Delete?MatchId=${matchId}`);
+    return result.data.result;
   }
 
   public async getMatchById(matchId: Number): Promise<any> {

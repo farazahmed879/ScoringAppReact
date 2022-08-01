@@ -305,6 +305,30 @@ const Matches = () => {
   const handleChange = (value, key) => {
     matchFormik.setValues({ ...matchFormik.values, [key]: value });
   };
+  const confirm = Modal.confirm;
+  const handleDeleteMatch = (item) => {
+    // setDeleteEvent(true);
+    confirm({
+      title: 'Do you Want to delete these items?',
+      onOk() {
+        matchService.delete(item.id).then((res) => {
+          if (res) {
+            if (!res.success) {
+              error({ title: res.successMessage });
+              return;
+            } else {
+              success({ title: res.successMessage });
+              getAll();
+            }
+          }
+        });
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+    console.log(picture);
+  };
 
   const handleEditMatch = (item) => {
     setIsEditDataLoading(true);
@@ -440,7 +464,7 @@ const Matches = () => {
             overlay={
               <Menu>
                 <Menu.Item onClick={() => handleEditMatch(item)}>{L('Edit')}</Menu.Item>
-                <Menu.Item>{L('Delete')}</Menu.Item>
+                <Menu.Item onClick={(e) => handleDeleteMatch(item)}>{L('Delete')}</Menu.Item>
                 <Menu.Item>
                   {' '}
                   <Link to={'/scoreCard/team1/' + item.team1Id + '/team2/' + item.team2Id + '/match/' + item.id}>{L('Add Score')}</Link>

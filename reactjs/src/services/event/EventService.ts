@@ -9,7 +9,7 @@ class EventService {
 
   public async delete(id: number) {
     let result = await http.delete(`api/services/app/Event/Delete?id=${id}`);
-    return result.data;
+    return result.data.result;
   }
 
   public async getById(id: number): Promise<GroundDto> {
@@ -46,7 +46,6 @@ class EventService {
     let result = await http.get(`/api/services/app/Event/GetEventStat?id=${eventId}`);
     return result.data.result;
   }
-
 
   public async getPointsTable(eventId: number) {
     let result = await http.get(`/api/services/app/Event/GetPointsTable?id=${eventId}`);

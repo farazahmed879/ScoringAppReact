@@ -8,8 +8,8 @@ class PlayerService {
   }
 
   public async delete(id: Number) {
-    let result = await http.delete(`api/services/app/Player/Delete=${id}`);
-    return result.data;
+    let result = await http.delete(`api/services/app/Player/Delete?playerid=${id}`);
+    return result.data.result;
   }
 
   public async getPlayerById(playerId: Number): Promise<PlayerDto> {

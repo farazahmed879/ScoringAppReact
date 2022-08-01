@@ -92,7 +92,7 @@ const Ground = () => {
     setIsEditDataLoading(true);
     setIsOpenModal(true);
     setModalMode('Edit Ground');
-    groundService.getById(item.id).then((res ) => {
+    groundService.getById(item.id).then((res) => {
       if (res) {
         if (!res.success) {
           error({ title: res.successMessage });
@@ -172,6 +172,30 @@ const Ground = () => {
       //setProfile([]);
     }
   }, [isOpenModal]);
+  const confirm = Modal.confirm;
+  const handleDeleteGround = (item) => {
+    // setDeleteEvent(true);
+    confirm({
+      title: 'Do you Want to delete these items?',
+      onOk() {
+        groundService.delete(item.id).then((res) => {
+          if (res) {
+            if (!res.success) {
+              error({ title: res.successMessage });
+              return;
+            } else {
+              success({ title: res.successMessage });
+              getAll();
+            }
+          }
+        });
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+    console.log(picture);
+  };
 
   useEffect(() => {
     if (profile.length > 0) {
@@ -241,7 +265,7 @@ const Ground = () => {
             overlay={
               <Menu>
                 <Menu.Item onClick={(e) => handleEditGround(item)}>{L('Edit')}</Menu.Item>
-                <Menu.Item>{L('Delete')}</Menu.Item>
+                <Menu.Item onClick={(e) => handleDeleteGround(item)}>{L('Delete')}</Menu.Item>
               </Menu>
             }
             placement="bottomLeft"

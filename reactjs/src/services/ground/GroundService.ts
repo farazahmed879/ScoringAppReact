@@ -8,9 +8,9 @@ class GroundService {
     return result.data.result;
   }
 
-  public async delete( id: Number) {
+  public async delete(id: Number) {
     let result = await http.delete(`api/services/app/Ground/Delete?id=${id}`);
-    return result.data;
+    return result.data.result;
   }
 
   public async getById(id: Number): Promise<GroundDto> {
