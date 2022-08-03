@@ -22,6 +22,7 @@ import AppConsts from '../../lib/appconst';
 import tournamentTypeConst from '../../lib/tournamentTypeConst';
 import ViewImage from '../../components/ViewImage';
 import AddOrEditMatchModal from './addOrEditMatchModal';
+import StartMatch from '../StartMatch';
 
 const baseUrl = 'http://localhost:21021';
 const matchValidation = Yup.object().shape({
@@ -278,7 +279,6 @@ const Matches = () => {
     });
   };
 
-
   useEffect(() => {
     if (profile.length > 0) {
       setPicture(false);
@@ -387,7 +387,7 @@ const Matches = () => {
       key: 'name',
       fixed: 'left',
       render: (text, item) => {
-        return item && item.ground ? item.ground : 'N/A';
+        return item && item.name ? item.name : 'N/A';
       },
     },
     {
@@ -462,6 +462,10 @@ const Matches = () => {
                 <Menu.Item>
                   {' '}
                   <Link to={'/scoreCard/team1/' + item.team1Id + '/team2/' + item.team2Id + '/match/' + item.id}>{L('Add Score')}</Link>
+                </Menu.Item>
+                <Menu.Item>
+                  {' '}
+                  <Link to={'/startMatch/team1/' + item.team1Id + '/team2/' + item.team2Id + '/match/' + item.id}>{L('Start Match')}</Link>
                 </Menu.Item>
               </Menu>
             }
