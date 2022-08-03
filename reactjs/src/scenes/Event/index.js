@@ -16,6 +16,7 @@ import './style.css';
 import './add-team.css';
 import ViewImage from '../../components/ViewImage';
 import { object } from 'prop-types';
+import CreateOrEditEventModal from './createOrEditEventModal';
 const baseUrl = 'http://localhost:21021';
 const success = Modal.success;
 const error = Modal.error;
@@ -47,7 +48,6 @@ const Event = () => {
   const [previewImage, setPreviewImage] = useState('');
   const [profile, setProfile] = useState([]);
   const [gallery, setGallery] = useState([]);
-  const [editEvent, setEditEvent] = useState({});
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({
     current: 1,
@@ -230,7 +230,6 @@ const Event = () => {
           error({ title: res.successMessage });
           return;
         }
-        setEditEvent(res.result);
         console.log('Event', res);
         eventFormik.setValues({
           ...eventFormik.values,
@@ -370,156 +369,24 @@ const Event = () => {
         scroll={{ x: 1500 }}
         handleTableChange={handleTableChange}
       />
-      <CustomModal
-        title={Object.keys(editEvent).length ? 'Edit Event' : 'Add Event'}
-        isModalVisible={isOpenModal}
+      <CreateOrEditEventModal
+        handleSubmit={handleSubmit}
+        isEditDataLoading={isEditDataLoading}
+        profile={profile}
+        handlePreview={handlePreview}
+        isOpenModal={isOpenModal}
+        eventFormik={eventFormik}
+        tournamentTypes={tournamentTypes}
+        gallery={gallery}
+        handleDeletePicture={handleDeletePicture}
+        picture={picture}
+        handleProfileUpload={handleProfileUpload}
+        handleUpload={handleUpload}
         handleCancel={() => {
           setIsOpenModal(false);
         }}
-        handleSubmit={handleSubmit}
-      >
-        <Skeleton loading={isEditDataLoading}>
-          <Form>
-            <Row gutter={16} className="form-container">
-              <Col span={24}>
-                <Popover content={!Object.keys(profile).length || <Icon type="delete" onClick={handleDeletePicture} />}>
-                  <span style={{ color: '#C9236A', fontStyle: 'italic' }}>{picture ? 'Required' : ''}</span>
-                  <Upload
-                    multiple={false}
-                    listType="picture-card"
-                    accept=".png,.jpeg,.jpg"
-                    fileList={profile}
-                    type="FormFile"
-                    stateKey="profile"
-                    disabled={!!Object.keys(profile).length}
-                    onChange={(e) => handleProfileUpload(e)}
-                    beforeUpload={false}
-                    onPreview={handlePreview}
-                  >
-                    Profile
-                  </Upload>
-                </Popover>
-              </Col>
-              <Col span={24}>
-                <CustomInput
-                  title="Name"
-                  type="text"
-                  handleChange={handleChange}
-                  value={eventFormik.values.name}
-                  stateKey="name"
-                  placeholder=""
-                  errorMessage={eventFormik.errors.name}
-                />
-              </Col>
-              <Col span={12}>
-                <CustomInput
-                  title="Organizor"
-                  type="text"
-                  handleChange={handleChange}
-                  value={eventFormik.values.organizor}
-                  stateKey="organizor"
-                  placeholder=""
-                  errorMessage={eventFormik.errors.organizor}
-                />
-              </Col>
-              <Col span={12}>
-                <CustomInput
-                  title="Organizor Contact"
-                  type="text"
-                  handleChange={handleChange}
-                  value={eventFormik.values.organizorContact}
-                  stateKey="organizorContact"
-                  placeholder=""
-                  errorMessage={eventFormik.errors.organizorContact}
-                />
-              </Col>
-              <Col span={12}>
-                <CustomInput
-                  title="Start Date"
-                  type="datePicker"
-                  handleChange={handleChange}
-                  value={moment(eventFormik.values.startDate)}
-                  stateKey="startDate"
-                  placeholder=""
-                  errorMessage={eventFormik.errors.startDate}
-                />
-              </Col>
-              <Col span={12}>
-                <CustomInput
-                  title="End Date"
-                  type="datePicker"
-                  handleChange={handleChange}
-                  value={moment(eventFormik.values.endDate)}
-                  stateKey="endDate"
-                  placeholder=""
-                  errorMessage={eventFormik.errors.endDate}
-                />
-              </Col>
-              <Col span={12}>
-                <CustomInput
-                  title="Event Type"
-                  type="select"
-                  handleChange={handleChange}
-                  options={eventTypes}
-                  value={eventFormik.values.eventType}
-                  stateKey="eventType"
-                  placeholder=""
-                  errorMessage={eventFormik.errors.eventType}
-                />
-              </Col>
-              {eventFormik.values.eventType == 1 ? (
-                <Col span={12}>
-                  <CustomInput
-                    title="Tournament Type"
-                    type="select"
-                    handleChange={handleChange}
-                    options={tournamentTypes}
-                    value={eventFormik.values.tournamentType}
-                    stateKey="tournamentType"
-                    placeholder=""
-                  />
-                </Col>
-              ) : null}
-              {eventFormik.values.eventType == 1 && eventFormik.values.tournamentType == 2 ? (
-                <Col span={12}>
-                  <CustomInput
-                    title="No of Groups"
-                    type="number"
-                    handleChange={handleChange}
-                    value={eventFormik.values.numberOfGroup}
-                    stateKey="numberOfGroup"
-                    placeholder=""
-                  />
-                </Col>
-              ) : null}
-              <Col span={24}>
-                <Upload
-                  className="Gallery"
-                  beforeUpload={() => false}
-                  onPreview={handlePreview}
-                  value={eventFormik.values.gallery}
-                  fileList={gallery}
-                  multiple={true}
-                  listType="picture-card"
-                  onChange={(e) => handleUpload(e)}
-                >
-                  Gallery
-                </Upload>
-              </Col>
-            </Row>
-
-            <Form.Item>
-              <Button type="primary" htmlType="submit" onClick={eventFormik.handleSubmit}>
-                {/* {Object.keys(editEvent).length ? 'Update' : 'Add'} */}
-                {mode == 'Create Event' ? 'Update' : 'Add'}
-              </Button>
-              <Button htmlType="button" onClick={() => setIsOpenModal(false)}>
-                Cancel
-              </Button>
-            </Form.Item>
-          </Form>
-        </Skeleton>
-      </CustomModal>
+        handleChange={handleChange}
+      />
       <ViewImage previewImage={previewImage} preview={preview} handlePreviewCancel={handlePreviewCancel} />
     </Card>
   );
