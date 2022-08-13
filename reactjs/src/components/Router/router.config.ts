@@ -194,13 +194,22 @@ export const appRouters: any = [
     component: LoadableComponent(() => import('../../scenes/PlayerProfile/playerProfile')),
   },
   {
-    path: '/startMatch/team1/:team1Id/team2/:team2Id/match/:matchId',
+    path: '/startMatch/team1/:team1Id/:team1/team2/:team2Id/:team2/match/:matchId',
     permission: '',
     title: 'Start Match',
     name: 'startMatch',
     icon: 'info-circle',
     showInMenu: false,
     component: LoadableComponent(() => import('../../scenes/StartMatch')),
+  },
+  {
+    path: '/liveScoring/team1/:team1Id/:team1/team2/:team2Id/:team2/match/:matchId',
+    permission: '',
+    title: 'Live Scoring',
+    name: 'LiveScoring',
+    icon: 'info-circle',
+    showInMenu: false,
+    component: LoadableComponent(() => import('../../scenes/LiveScoring')),
   },
   {
     path: '/groundProfile/:groundId',

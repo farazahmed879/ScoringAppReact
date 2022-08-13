@@ -465,7 +465,11 @@ const Matches = () => {
                 </Menu.Item>
                 <Menu.Item>
                   {' '}
-                  <Link to={'/startMatch/team1/' + item.team1Id + '/team2/' + item.team2Id + '/match/' + item.id}>{L('Start Match')}</Link>
+                  <Link
+                    to={'/startMatch/team1/' + item.team1Id + '/' + item.team1 + '/team2/' + item.team2Id + '/' + item.team2 + '/match/' + item.id}
+                  >
+                    {L('Start Match')}
+                  </Link>
                 </Menu.Item>
               </Menu>
             }
