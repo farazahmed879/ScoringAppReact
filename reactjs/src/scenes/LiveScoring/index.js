@@ -1,9 +1,13 @@
 import { Button, Card, Col, Divider, Dropdown, Icon, Menu, PageHeader, Radio, Row } from 'antd';
-import React from 'react';
+import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
+import { set } from 'lodash';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 const LiveScoring = () => {
   const history = useHistory();
+
+  let totalOvers = 5;
 
   const radioStyle = {
     display: 'block',
@@ -23,6 +27,83 @@ const LiveScoring = () => {
     </Menu>
   );
 
+
+  const[score , setScore] =useState(0)
+  const[plyOne,setPlyOne] =useState([]) //ply one
+  const[plyTwo,setPlyTwo] =useState([]) //ply two
+  const[bowler , setBowler] = useState([])  
+  const[currentRate , setCurrentRate] = useState(0)
+  const[requiredRate , setRequiredRate] = useState(0)
+  const[target , setTarget] = useState(200)
+  const[inning , setInning] = useState(1)
+  const[wicket , setWicket] = useState(0)
+  const[plyOneId , setPlyOneId] = useState(1)
+  const[plyTwoId , setPlyTwoId] = useState(2)
+  const[strike , setStrike] = useState(plyOneId)
+  const[remainingBalls , setRemainingBalls] = useState(totalOvers * 6)
+  const[balls , setBalls] = useState(0)
+  
+  
+  let handleOver = (ball) => {
+     
+debugger
+    let valueAfterPoint = ball.toString().split('.')[1]
+    if(valueAfterPoint === undefined ? valueAfterPoint : valueAfterPoint.toString().split('')[0] == 5){
+     
+      setBalls((Math.round(ball)))
+
+    }
+    else{
+
+      setBalls(ball + 0.1)
+    }
+    setRemainingBalls(remainingBalls - 1)
+  }
+
+  let handlePlayerSwitch = (num) => {
+
+    if(strike === plyOneId){
+
+      if(num === 3 || num === 1 || num === 5){
+
+        setStrike(plyTwoId)
+
+      }
+      setPlyOne([...plyOne, num])
+    }
+
+    else if(strike === plyTwoId){
+ 
+      if(num === 3 || num === 1 || num === 5){
+
+        setStrike(plyOneId)
+
+      }
+      setPlyTwo([...plyTwo,num])
+
+    }
+
+    }
+
+
+  
+
+  let updateScore = (btnclicked) => {
+
+
+   let runsRequired = target - score;
+   
+
+    setScore(score + btnclicked)
+    setCurrentRate(score/balls)
+    handleOver(balls)
+    setRequiredRate(runsRequired / remainingBalls)
+    setBowler([...bowler , btnclicked])
+    handlePlayerSwitch(btnclicked)
+    
+  }
+
+  
   return (
     <>
       <Card>
@@ -43,7 +124,7 @@ const LiveScoring = () => {
                   </h4>
                   <section style={{ fontSize: '30px' }}>
                     <h2>
-                      19 - 0<sub>(1.0)</sub>
+                      {score} - {wicket}<sub>({balls.toFixed(1)})</sub>
                     </h2>
                   </section>
                   <h4>
@@ -53,7 +134,7 @@ const LiveScoring = () => {
                 <Col span={12}>
                   <h4>CRR :</h4>
                   <section style={{ fontSize: '20px' }}>
-                    <h4>19.00</h4>
+                    <h4>{currentRate.toFixed(2)}</h4>
                   </section>
                 </Col>
               </Col>
@@ -63,13 +144,13 @@ const LiveScoring = () => {
             <Card style={{ height: '200px' }}>
               {' '}
               <h1>Batsman</h1>
-              <Radio.Group style={{ display: 'flex', flexDirection: 'column', paddingBottom: '10px' }}>
-                <Radio value={1}>Player 1</Radio>
-                <Radio value={2}>Player 2</Radio>
+              <Radio.Group value={strike} style={{ display: 'flex', flexDirection: 'column', paddingBottom: '10px' }}>
+                <Radio value={plyOneId} >Player 1 : {plyOne.join(' ')}</Radio>
+                <Radio value={plyTwoId}>Player 2 : {plyTwo.join(' ')}</Radio>
               </Radio.Group>
               <h1>Bowler</h1>
               <Radio radioStyle={radioStyle} value={1}>
-                Bowler 1
+                Bowler 1 : {bowler.join(' ')}
               </Radio>
             </Card>
           </Col>
@@ -85,16 +166,16 @@ const LiveScoring = () => {
                 </h1>
               </Row>
               <Row>
-                <h1> Target : 000</h1>
+                <h1> Target : {target}</h1>
               </Row>
               <Row>
-                <h1>Runs : 000</h1>
+                <h1>Runs : {score}</h1>
               </Row>
               <Row>
-                <h1>Run Rate : 000</h1>
+                <h1>Run Rate : {currentRate.toFixed(2)}</h1>
               </Row>
               <Row>
-                <h1>Current Run Rate : 000</h1>
+                <h1>Required Run Rate : {requiredRate.toFixed(2)}</h1>
               </Row>
             </Card>
           </Col>
@@ -109,16 +190,16 @@ const LiveScoring = () => {
                   justifyContent: 'space-evenly',
                 }}
               >
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }}>1</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }}>2</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }}>3</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }}>4</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }}>5</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }}>6</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }}>7</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }}>8</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }}>9</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }}>10</Button>
+                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='1' onClick={() => updateScore(1)} >1</Button>
+                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='2' onClick={() => updateScore(2)}>2</Button>
+                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='3' onClick={() => updateScore(3)}>3</Button>
+                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='4' onClick={() => updateScore(4)}>4</Button>
+                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='5' onClick={() => updateScore(5)}>5</Button>
+                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='6' onClick={() => updateScore(6)}>6</Button>
+                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='7' onClick={() => updateScore(7)}>7</Button>
+                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='8' onClick={() => updateScore(8)}>8</Button>
+                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='9' onClick={() => updateScore(9)}>9</Button>
+                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='10'onClick={() => updateScore(10)}>10</Button>
                 <Dropdown overlay={menu}>
                   <Button style={{ margin: '10px', height: '60px', width: '60px' }}>
                     B <Icon type="down" />
