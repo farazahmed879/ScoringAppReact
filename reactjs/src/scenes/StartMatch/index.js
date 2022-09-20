@@ -49,12 +49,36 @@ const StartMatch = () => {
   }, []);
 
   const handleSubmit = () => {
+    const teamPlayers = [];
+
+    team1SelectedPlayers.forEach(playerId => {
+      const teamPlayer = {
+        playerId: playerId,
+        position: startMatchFormik.values.striker == playerId ? 1 : startMatchFormik.values.nonStriker == playerId ? 2 : null,
+        matchId: param.matchId,
+        teamId: param.team1Id,
+        isPlayedInning: startMatchFormik.values.striker == playerId || startMatchFormik.values.nonStriker == playerId ? true : false
+      }
+      teamPlayers.push(teamPlayer);
+    });
+    team2SelectedPlayers.forEach(playerId => {
+      const teamPlayer = {
+        playerId: playerId,
+        position: null,
+        matchId: param.matchId,
+        teamId: param.team2Id,
+        isPlayedInning: false
+      }
+      teamPlayers.push(teamPlayer);
+    });
+    console.log("teamplayers", teamPlayers);
+
     var model = {
       status: MatchStatus.STARTED,
       matchId: param.matchId,
       scoringBy: ScoringBy.WEBAPP,
       isLiveStreaming: false,
-      players : [{}]
+      players : teamPlayers
     }
     matchService.startMatch(model).then(res => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
@@ -274,10 +298,11 @@ const StartMatch = () => {
           )}
           {current === steps.length - 1 && (
             <Form.Item>
-             
-                <Link to={'/liveScoring/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.id}>
+
+              {/* <Link to={'/liveScoring/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.id}>
                   <Button style={{ display: 'flex', float: 'right' }} htmlType="submit" type="primary">{('Start Match')}</Button>
-                </Link>
+                </Link> */}
+              <Button style={{ display: 'flex', float: 'right' }} htmlType="submit" type="primary">{('Start Match')}</Button>
             </Form.Item>
           )}
         </div>

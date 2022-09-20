@@ -1,9 +1,10 @@
 import { Button, Dropdown, Icon, Menu } from 'antd';
 import React, { useState } from 'react';
 
-const DropDown = ({ options = [], title = '', handleMenuClick }) => {
+const DropDown = ({ options = [], title = '', handleChange }) => {
+
   const menu = () => (
-    <Menu onClick={handleMenuClick}>
+    <Menu onClick={(e) => handleChange(e.item.props.value)}>
       {options.map((el, index) => (
         <Menu.Item value={el.id} key={index}>
           {el.name}

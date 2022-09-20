@@ -3,7 +3,7 @@ import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 import { set } from 'lodash';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { byOptions } from '../../components/Enum/enum';
+import { byOptions, legByOptions, noBallOptions, wicketOptions, wideOptions } from '../../components/Enum/enum';
 import { Extras } from '../../lib/appconst';
 import DropDown from './dropDown';
 
@@ -99,56 +99,12 @@ const LiveScoring = () => {
     lineHeight: '30px',
   };
 
-  function handleMenuClick(e) {
-    console.log('click', e);
-  }
-
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item key="1">1st item</Menu.Item>
-      <Menu.Item key="2">2nd item</Menu.Item>
-      <Menu.Item key="3">3rd item</Menu.Item>
-    </Menu>
-  );
-
-  // let handleOver = (ball) => {
-  //   let valueAfterPoint = ball.toString().split('.')[1];
-  //   if (valueAfterPoint === undefined ? valueAfterPoint : valueAfterPoint.toString().split('')[0] == 5) {
-  //     setBalls(Math.round(ball));
-  //   } else {
-  //     setBalls(ball + 0.1);
-  //   }
-  //   setRemainingBalls(remainingBalls - 1);
-  // };
-
-  // let handlePlayerSwitch = (num) => {
-  //   if (strike === plyOneId) {
-  //     if (num === 3 || num === 1 || num === 5) {
-  //       setStrike(plyTwoId);
-  //     }
-  //     setPlyOne([...plyOne, num]);
-  //   } else if (strike === plyTwoId) {
-  //     if (num === 3 || num === 1 || num === 5) {
-  //       setStrike(plyOneId);
-  //     }
-  //     setPlyTwo([...plyTwo, num]);
-  //   }
-  // };
-
-  // let updateScore = (btnclicked) => {
-  //   let runsRequired = target - score;
-
-  //   setScore(score + btnclicked);
-  //   setCurrentRate(score / balls);
-  //   handleOver(balls);
-  //   setRequiredRate(runsRequired / remainingBalls);
-  //   setBowler([...bowler, btnclicked]);
-  //   handlePlayerSwitch(btnclicked);
-  // };
+  
 
   //update state
 
   const handleExtras = (runs, ballType) => {
+    debugger
     switch (ballType) {
       case Extras.WIDE:
         updateTeamScore(runs);
@@ -212,7 +168,7 @@ const LiveScoring = () => {
     setStriker(Object.keys(batsmans).filter((i) => i != striker)[0]);
   };
 
-  const handleBattingTimeLine = (runs) => {};
+  const handleBattingTimeLine = (runs) => { };
 
   const updateScore = (runs) => {
     updateTeamScore(runs);
@@ -249,7 +205,7 @@ const LiveScoring = () => {
   const calculateRRR = () => {
     return 0;
   };
-  const handleUndoRedo = (event) => {};
+  const handleUndoRedo = (event) => { };
   const handleWicket = (wicket) => {
     console.log('wicket');
   };
@@ -269,6 +225,7 @@ const LiveScoring = () => {
           title={'Start Match'}
         />
         <Row gutter={[16, 16]}>
+          {/* Card1 */}
           <Col span={12}>
             <Card style={{ height: '200px' }}>
               <Col span={24}>
@@ -287,7 +244,6 @@ const LiveScoring = () => {
                   </h4>
                 </Col>
                 <Col span={12}>
-                  <h4>CRR :</h4>
                   <section style={{ fontSize: '20px' }}>
                     <h4> CRR: {calculateCRR(team.runs, team.overs)?.toFixed(2)} |</h4>
                     <h4> RRR: {'11'} |</h4>
@@ -297,53 +253,12 @@ const LiveScoring = () => {
               </Col>
             </Card>
           </Col>
-          <Col span={12}>
-            <Card style={{ height: '200px' }}>
-              <div style={{ display: 'flex' }}>
-                <div style={{ width: '50%' }}>
-                  <h2>{'Batsman'}</h2>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', alignItems: 'center' }}>
-                  <h3>Runs</h3>
-                  <h3>Balls</h3>
-                  <h3>Fours</h3>
-                  <h3>Sixes</h3>
-                  <h3>S/R</h3>
-                </div>
-              </div>
-              {Object.keys(batsmans).map((key) => {
-                let temp = batsmans[key];
-                return (
-                  <div
-                    style={{
-                      display: 'flex',
-                      borderRadius: 1,
-                      background: temp.id == striker ? '#eb4034' : 'white',
-                      paddingLeft: 10,
-                      cursor: 'pointer',
-                    }}
-                    onClick={handleChangeStrike}
-                  >
-                    <div style={{ width: '50%' }}>
-                      <h2 onPress={() => setStriker(temp.id.toString())}>{temp.name}</h2>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', alignItems: 'center' }}>
-                      <h3>{temp.runs}</h3>
-                      <h3>{temp.balls}</h3>
-                      <h3>{temp.fours}</h3>
-                      <h3>{temp.sixes}</h3>
-                      <h3>{calculateStrikeRate(temp)?.toFixed(2)}</h3>
-                    </div>
-                  </div>
-                );
-              })}
-            </Card>
-          </Col>
-        </Row>
-        <Row gutter={[16, 16]}>
+
+
+          {/* Card2 */}
           <Col span={12}>
             {' '}
-            <Card>
+            <Card style={{ height: '200px' }}>
               <Row>
                 <h1>
                   {' '}
@@ -364,6 +279,111 @@ const LiveScoring = () => {
               </Row>
             </Card>
           </Col>
+
+        </Row>
+        <Row gutter={[16, 16]}>
+          {/* Card3 */}
+          <Col span={12}>
+            <Card style={{ height: '250px' }}>
+              <section style={{ display: 'flex' }}>
+                <div style={{ width: '50%' }}>
+                  <h3>{'Batsman'}</h3>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', alignItems: 'center' }}>
+                  <h4>Runs</h4>
+                  <h4>Balls</h4>
+                  <h4>Fours</h4>
+                  <h4>Sixes</h4>
+                  <h4>S/R</h4>
+                </div>
+              </section>
+              {Object.keys(batsmans).map((key) => {
+                let temp = batsmans[key];
+                return (
+                  <section
+                    style={{
+                      display: 'flex',
+                      borderRadius: 5,
+                      background: temp.id == striker ? '#eb4034' : 'white',
+                      paddingLeft: 10,
+                      cursor: 'pointer',
+                    }}
+                    onClick={handleChangeStrike}
+                  >
+                    <div style={{ width: '50%', color: temp.id == striker ? 'white' : 'black', }}>
+                      <h3 onPress={() => setStriker(temp.id.toString())}>{temp.name}</h3>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', alignItems: 'center', color: temp.id == striker ? 'white' : 'black', }}>
+                      <h4>{temp.runs}</h4>
+                      <h4>{temp.balls}</h4>
+                      <h4>{temp.fours}</h4>
+                      <h4>{temp.sixes}</h4>
+                      <h4>{calculateStrikeRate(temp)?.toFixed(2)}</h4>
+                    </div>
+                  </section>
+                );
+              })}
+
+              {/* Batting Time Line */}
+              {Object.keys(batsmans).map((key) => {
+                let currentBatsman = batsmans[key];
+                return (
+                  <section style={styles.timeline}>
+                    <span style={styles.timeline}>
+                      {currentBatsman.name} Time Line:
+                    </span>
+                    {currentBatsman.timeline.map((el, index) => (
+                      <span style={styles.timeline}> {el} </span>
+                    )).reverse()}
+                  </section>
+                );
+              })}
+
+              <section style={{ display: 'flex' }}>
+                <div style={{ width: '50%' }}>
+                  <h3>{'Bowler'}</h3>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', alignItems: 'center' }}>
+                  <h4>Overs</h4>
+                  <h4>Runs</h4>
+                  <h4>Wickets</h4>
+                  <h4>Maiden</h4>
+                  <h4>Econ</h4>
+                </div>
+              </section>
+
+
+              <section
+                style={{
+                  display: 'flex',
+                  borderRadius: 5,
+                  background: '#eb4034',
+                  paddingLeft: 10,
+                  cursor: 'pointer',
+                }}
+              >
+                <div style={{ width: '50%', color: 'white' }}>
+                  <h3 onPress={() => setStriker(bowler.id.toString())}>{bowler.name}</h3>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', alignItems: 'center', color: bowler.id == striker ? 'white' : 'black', }}>
+                  <h4>{bowler.runs}</h4>
+                  <h4>{bowler.balls}</h4>
+                  <h4>{bowler.fours}</h4>
+                  <h4>{bowler.sixes}</h4>
+                  <h4>{calculateEconomyRate(bowler)?.toFixed(2)}</h4>
+                </div>
+              </section>
+
+              {/* Bowling Time Line */}
+              <section style={styles.timeline}>
+                <span style={styles.timeline}>This Over: </span>
+                {bowler.timeline.map((el) => (
+                  <span style={styles.timeline}> 0 </span>
+                ))}
+              </section>
+            </Card>
+          </Col>
+          {/* Card4 */}
           <Col span={12}>
             <Card>
               {' '}
@@ -381,29 +401,13 @@ const LiveScoring = () => {
                   </Button>
                 ))}
 
-                <DropDown options={byOptions} title="B" handleMenuClick={() => console.log('handleMenuClick')} />
+                <DropDown options={byOptions} title="B" handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
+                <DropDown options={legByOptions} title="Lb" handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
+                <DropDown options={wideOptions} title="W" handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
+                <DropDown options={noBallOptions} title="N" handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
+                <DropDown options={wicketOptions} title="Wk" handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
+                <DropDown options={wicketOptions} title="..." handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
 
-                {/* <Dropdown overlay={menu} onChange>
-                  <Button style={{ margin: '10px', height: '60px', width: '60px' }}>
-                    B <Icon type="down" />
-                  </Button>
-                </Dropdown>
-
-                <Dropdown overlay={menu}>
-                  <Button style={{ margin: '10px', height: '60px', width: '60px' }}>
-                    LB <Icon type="down" />
-                  </Button>
-                </Dropdown>
-                <Dropdown overlay={menu}>
-                  <Button style={{ margin: '10px', height: '60px', width: '60px' }}>
-                    W <Icon type="down" />
-                  </Button>
-                </Dropdown>
-                <Dropdown overlay={menu}>
-                  <Button style={{ margin: '10px', height: '60px', width: '60px' }}>
-                    N <Icon type="down" />
-                  </Button>
-                </Dropdown> */}
               </Col>
             </Card>
           </Col>
@@ -426,5 +430,12 @@ const styles = {
       height: 1,
       width: 1,
     },
+  },
+  timeline: {
+    flex: 0,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginLeft: 5,
+    fontSize: 12,
   },
 };
