@@ -1,11 +1,95 @@
-import { Button, Card, Col, Divider, Dropdown, Icon, Menu, PageHeader, Radio, Row } from 'antd';
+import { Button, Card, Col, Divider, Icon, Menu, PageHeader, Radio, Row } from 'antd';
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 import { set } from 'lodash';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { byOptions } from '../../components/Enum/enum';
+import { Extras } from '../../lib/appconst';
+import DropDown from './dropDown';
+
+const dummyData = {
+  currentInning: 'FirstInning',
+  playingTeamId: 1,
+  striker: 1,
+  batsmans: {
+    1: {
+      runs: 0,
+      id: 1,
+      name: 'Faraz',
+      sixes: 0,
+      fours: 0,
+      balls: 0,
+      timeline: [],
+    },
+    2: {
+      runs: 0,
+      id: 2,
+      name: 'Samad',
+      sixes: 0,
+      fours: 0,
+      balls: 0,
+      timeline: [],
+    },
+  },
+  bowler: {
+    runs: 0,
+    overs: 0,
+    balls: 0,
+    totalBalls: 0,
+    wickets: 0,
+    maidens: 0,
+    timeline: [],
+    id: 43,
+    name: 'Ashir',
+  },
+  team: {
+    runs: 0,
+    teamId: 1,
+    overs: 0,
+    wickets: 0,
+    name: 'Gulzar Cricket Club',
+  },
+  team2: {
+    name: 'Inqilab Cricket Club',
+    runs: 222,
+    id: 2,
+    wickets: 9,
+    overs: 20,
+  },
+  extras: {
+    wides: 10,
+    legByes: 2,
+    byes: 3,
+    NoBalls: 1,
+  },
+};
 
 const LiveScoring = () => {
   const history = useHistory();
+
+  const [striker, setStriker] = React.useState(dummyData.striker);
+  const [playingTeamId, setPlayingTeamId] = useState(1);
+  const [currentInning, setCurrentInning] = useState(dummyData.currentInning);
+  const [team, setTeam] = useState(dummyData.team);
+  const [prevTeam, setPrevTeam] = useState(dummyData.team2);
+  const [batsmans, setBatsmans] = useState(dummyData.batsmans);
+  const [bowler, setBowler] = useState(dummyData.bowler);
+  const [extras, setExtras] = useState(dummyData.extras);
+
+  // const [score, setScore] = useState(0);
+  // const [plyOne, setPlyOne] = useState([]); //ply one
+  // const [plyTwo, setPlyTwo] = useState([]); //ply two
+  // const [bowler, setBowler] = useState([]);
+  // const [currentRate, setCurrentRate] = useState(0);
+  // const [requiredRate, setRequiredRate] = useState(0);
+  // const [target, setTarget] = useState(200);
+  // const [inning, setInning] = useState(1);
+  // const [wicket, setWicket] = useState(0);
+  // const [plyOneId, setPlyOneId] = useState(1);
+  // const [plyTwoId, setPlyTwoId] = useState(2);
+  // const [strike, setStrike] = useState(plyOneId);
+  // const [remainingBalls, setRemainingBalls] = useState(totalOvers * 6);
+  // const [balls, setBalls] = useState(0);
 
   let totalOvers = 5;
 
@@ -27,83 +111,153 @@ const LiveScoring = () => {
     </Menu>
   );
 
+  // let handleOver = (ball) => {
+  //   let valueAfterPoint = ball.toString().split('.')[1];
+  //   if (valueAfterPoint === undefined ? valueAfterPoint : valueAfterPoint.toString().split('')[0] == 5) {
+  //     setBalls(Math.round(ball));
+  //   } else {
+  //     setBalls(ball + 0.1);
+  //   }
+  //   setRemainingBalls(remainingBalls - 1);
+  // };
 
-  const[score , setScore] =useState(0)
-  const[plyOne,setPlyOne] =useState([]) //ply one
-  const[plyTwo,setPlyTwo] =useState([]) //ply two
-  const[bowler , setBowler] = useState([])  
-  const[currentRate , setCurrentRate] = useState(0)
-  const[requiredRate , setRequiredRate] = useState(0)
-  const[target , setTarget] = useState(200)
-  const[inning , setInning] = useState(1)
-  const[wicket , setWicket] = useState(0)
-  const[plyOneId , setPlyOneId] = useState(1)
-  const[plyTwoId , setPlyTwoId] = useState(2)
-  const[strike , setStrike] = useState(plyOneId)
-  const[remainingBalls , setRemainingBalls] = useState(totalOvers * 6)
-  const[balls , setBalls] = useState(0)
-  
-  
-  let handleOver = (ball) => {
-     
-debugger
-    let valueAfterPoint = ball.toString().split('.')[1]
-    if(valueAfterPoint === undefined ? valueAfterPoint : valueAfterPoint.toString().split('')[0] == 5){
-     
-      setBalls((Math.round(ball)))
+  // let handlePlayerSwitch = (num) => {
+  //   if (strike === plyOneId) {
+  //     if (num === 3 || num === 1 || num === 5) {
+  //       setStrike(plyTwoId);
+  //     }
+  //     setPlyOne([...plyOne, num]);
+  //   } else if (strike === plyTwoId) {
+  //     if (num === 3 || num === 1 || num === 5) {
+  //       setStrike(plyOneId);
+  //     }
+  //     setPlyTwo([...plyTwo, num]);
+  //   }
+  // };
 
+  // let updateScore = (btnclicked) => {
+  //   let runsRequired = target - score;
+
+  //   setScore(score + btnclicked);
+  //   setCurrentRate(score / balls);
+  //   handleOver(balls);
+  //   setRequiredRate(runsRequired / remainingBalls);
+  //   setBowler([...bowler, btnclicked]);
+  //   handlePlayerSwitch(btnclicked);
+  // };
+
+  //update state
+
+  const handleExtras = (runs, ballType) => {
+    switch (ballType) {
+      case Extras.WIDE:
+        updateTeamScore(runs);
+        updateBowlerScore(runs++, Extras.WIDE);
+        break;
+      case Extras.NO_BALLS:
+        updateTeamScore(runs);
+        updateBatsmanScore(runs);
+        updateBowlerScore(runs++, Extras.NO_BALLS);
+        break;
+      case Extras.BYES:
+        updateTeamScore(runs);
+        updateBowlerScore(runs, Extras.BYES);
+        break;
+      case Extras.LEG_BYES:
+        updateTeamScore(runs);
+        updateBowlerScore(runs, Extras.LEG_BYES);
+        break;
     }
-    else{
+  };
 
-      setBalls(ball + 0.1)
+  const updateTeamScore = (runs) => {
+    setTeam({ ...team, runs: team.runs + runs });
+    runs % 2 != 0 && handleChangeStrike(runs);
+  };
+
+  const updateBatsmanScore = (runs) => {
+    const batsman = batsmans[striker];
+    let timeLine = batsman.timeline;
+    console.log('timeLine', timeLine);
+    timeLine.push(runs);
+    setBatsmans({
+      ...batsmans,
+      [striker]: {
+        ...batsman,
+        runs: batsman.runs + runs,
+        sixes: runs == 6 ? batsman.sixes + 1 : batsman.sixes,
+        fours: runs == 4 ? batsman.fours + 1 : batsman.fours,
+        balls: batsman.balls + 1,
+        timeline: timeLine,
+      },
+    });
+  };
+
+  const updateBowlerScore = (runs, extra) => {
+    const toAddBalls = extra === Extras.WIDE || extra === Extras.NO_BALLS ? 0 : 1;
+    const toAddRuns = extra === Extras.BYES || extra === Extras.LEG_BYES ? 0 : runs;
+    setBowler({
+      ...bowler,
+      runs: bowler.runs + toAddRuns,
+      totalBalls: bowler.totalBalls + toAddBalls,
+    });
+  };
+
+  const handleRuns = (runs) => {
+    updateScore(runs);
+    if (runs % 2 != 0) handleChangeStrike(runs);
+  };
+
+  const handleChangeStrike = () => {
+    setStriker(Object.keys(batsmans).filter((i) => i != striker)[0]);
+  };
+
+  const handleBattingTimeLine = (runs) => {};
+
+  const updateScore = (runs) => {
+    updateTeamScore(runs);
+    updateBatsmanScore(runs);
+    updateBowlerScore(runs, null);
+  };
+
+  //calculations
+
+  const calculateOvers = (data) => {
+    let obj = {
+      overs: 0,
+      balls: 0,
+    };
+    if (data.totalBalls >= 6) {
+      obj.overs = data.totalBalls / 6;
     }
-    setRemainingBalls(remainingBalls - 1)
-  }
 
-  let handlePlayerSwitch = (num) => {
+    obj.balls = data.totalBalls % 6;
+    return obj;
+  };
 
-    if(strike === plyOneId){
+  const calculateStrikeRate = (data) => {
+    return (data.runs * 100) / data.balls;
+  };
 
-      if(num === 3 || num === 1 || num === 5){
+  const calculateEconomyRate = (data) => {
+    return data.runs / (data.totalBalls / 6);
+  };
 
-        setStrike(plyTwoId)
+  const calculateCRR = (runs, overs) => {
+    return overs > 0 ? runs / overs : 0;
+  };
+  const calculateRRR = () => {
+    return 0;
+  };
+  const handleUndoRedo = (event) => {};
+  const handleWicket = (wicket) => {
+    console.log('wicket');
+  };
+  const calculateExtras = (data) => {
+    const sumValues = Object.values(data).reduce((a, b) => a + b);
+    return sumValues;
+  };
 
-      }
-      setPlyOne([...plyOne, num])
-    }
-
-    else if(strike === plyTwoId){
- 
-      if(num === 3 || num === 1 || num === 5){
-
-        setStrike(plyOneId)
-
-      }
-      setPlyTwo([...plyTwo,num])
-
-    }
-
-    }
-
-
-  
-
-  let updateScore = (btnclicked) => {
-
-
-   let runsRequired = target - score;
-   
-
-    setScore(score + btnclicked)
-    setCurrentRate(score/balls)
-    handleOver(balls)
-    setRequiredRate(runsRequired / remainingBalls)
-    setBowler([...bowler , btnclicked])
-    handlePlayerSwitch(btnclicked)
-    
-  }
-
-  
   return (
     <>
       <Card>
@@ -124,7 +278,8 @@ debugger
                   </h4>
                   <section style={{ fontSize: '30px' }}>
                     <h2>
-                      {score} - {wicket}<sub>({balls.toFixed(1)})</sub>
+                      {team.runs}/{team.wickets}
+                      {/* ({state.oppTeamOvers}.{state.currentOverBalls}) ov */}
                     </h2>
                   </section>
                   <h4>
@@ -134,7 +289,9 @@ debugger
                 <Col span={12}>
                   <h4>CRR :</h4>
                   <section style={{ fontSize: '20px' }}>
-                    <h4>{currentRate.toFixed(2)}</h4>
+                    <h4> CRR: {calculateCRR(team.runs, team.overs)?.toFixed(2)} |</h4>
+                    <h4> RRR: {'11'} |</h4>
+                    <h4> Extras: {calculateExtras(extras)}</h4>
                   </section>
                 </Col>
               </Col>
@@ -142,16 +299,44 @@ debugger
           </Col>
           <Col span={12}>
             <Card style={{ height: '200px' }}>
-              {' '}
-              <h1>Batsman</h1>
-              <Radio.Group value={strike} style={{ display: 'flex', flexDirection: 'column', paddingBottom: '10px' }}>
-                <Radio value={plyOneId} >Player 1 : {plyOne.join(' ')}</Radio>
-                <Radio value={plyTwoId}>Player 2 : {plyTwo.join(' ')}</Radio>
-              </Radio.Group>
-              <h1>Bowler</h1>
-              <Radio radioStyle={radioStyle} value={1}>
-                Bowler 1 : {bowler.join(' ')}
-              </Radio>
+              <div style={{ display: 'flex' }}>
+                <div style={{ width: '50%' }}>
+                  <h2>{'Batsman'}</h2>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', alignItems: 'center' }}>
+                  <h3>Runs</h3>
+                  <h3>Balls</h3>
+                  <h3>Fours</h3>
+                  <h3>Sixes</h3>
+                  <h3>S/R</h3>
+                </div>
+              </div>
+              {Object.keys(batsmans).map((key) => {
+                let temp = batsmans[key];
+                return (
+                  <div
+                    style={{
+                      display: 'flex',
+                      borderRadius: 1,
+                      background: temp.id == striker ? '#eb4034' : 'white',
+                      paddingLeft: 10,
+                      cursor: 'pointer',
+                    }}
+                    onClick={handleChangeStrike}
+                  >
+                    <div style={{ width: '50%' }}>
+                      <h2 onPress={() => setStriker(temp.id.toString())}>{temp.name}</h2>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', alignItems: 'center' }}>
+                      <h3>{temp.runs}</h3>
+                      <h3>{temp.balls}</h3>
+                      <h3>{temp.fours}</h3>
+                      <h3>{temp.sixes}</h3>
+                      <h3>{calculateStrikeRate(temp)?.toFixed(2)}</h3>
+                    </div>
+                  </div>
+                );
+              })}
             </Card>
           </Col>
         </Row>
@@ -166,16 +351,16 @@ debugger
                 </h1>
               </Row>
               <Row>
-                <h1> Target : {target}</h1>
+                <h1> Target : {'876'}</h1>
               </Row>
               <Row>
-                <h1>Runs : {score}</h1>
+                <h1>Runs : {'123'}</h1>
               </Row>
               <Row>
-                <h1>Run Rate : {currentRate.toFixed(2)}</h1>
+                <h1>Run Rate : {'123'}</h1>
               </Row>
               <Row>
-                <h1>Required Run Rate : {requiredRate.toFixed(2)}</h1>
+                <h1>Required Run Rate : {'22'}</h1>
               </Row>
             </Card>
           </Col>
@@ -190,21 +375,20 @@ debugger
                   justifyContent: 'space-evenly',
                 }}
               >
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='1' onClick={() => updateScore(1)} >1</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='2' onClick={() => updateScore(2)}>2</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='3' onClick={() => updateScore(3)}>3</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='4' onClick={() => updateScore(4)}>4</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='5' onClick={() => updateScore(5)}>5</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='6' onClick={() => updateScore(6)}>6</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='7' onClick={() => updateScore(7)}>7</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='8' onClick={() => updateScore(8)}>8</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='9' onClick={() => updateScore(9)}>9</Button>
-                <Button style={{ margin: '10px', height: '60px', width: '60px' }} value='10'onClick={() => updateScore(10)}>10</Button>
-                <Dropdown overlay={menu}>
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((el, index) => (
+                  <Button key={index} style={{ margin: '10px', height: '60px', width: '60px' }} value="1" onClick={() => handleRuns(el)}>
+                    {el}
+                  </Button>
+                ))}
+
+                <DropDown options={byOptions} title="B" handleMenuClick={() => console.log('handleMenuClick')} />
+
+                {/* <Dropdown overlay={menu} onChange>
                   <Button style={{ margin: '10px', height: '60px', width: '60px' }}>
                     B <Icon type="down" />
                   </Button>
                 </Dropdown>
+
                 <Dropdown overlay={menu}>
                   <Button style={{ margin: '10px', height: '60px', width: '60px' }}>
                     LB <Icon type="down" />
@@ -219,7 +403,7 @@ debugger
                   <Button style={{ margin: '10px', height: '60px', width: '60px' }}>
                     N <Icon type="down" />
                   </Button>
-                </Dropdown>
+                </Dropdown> */}
               </Col>
             </Card>
           </Col>
@@ -230,3 +414,17 @@ debugger
 };
 
 export default LiveScoring;
+
+const styles = {
+  container: {
+    padding: 20,
+    backgroundColor: '#d9d9d9',
+    shadowColor: '#000000',
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    shadowOffset: {
+      height: 1,
+      width: 1,
+    },
+  },
+};

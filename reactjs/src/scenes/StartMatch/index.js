@@ -1,4 +1,4 @@
-import { Card, Col, PageHeader, Row, Steps, Button, Select, Form } from 'antd';
+import { Card, Col, PageHeader, Row, Steps, Button, Select, Form, Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import CustomList from '../../components/CustomList';
@@ -7,13 +7,17 @@ import CustomInput from '../../components/Input';
 import genderConst from '../../lib/genderConst';
 import getImage from '../../lib/getImage';
 import playerService from '../../services/player/playerService';
+import matchService from '../../services/match/matchService'
 import Team from '../Teams';
 import * as Yup from 'yup';
 import { Formik, useFormik } from 'formik';
 import { get } from 'lodash';
+import { MatchStatus, ScoringBy } from '../../lib/appconst';
 
 const fakeDataUrl = `https://randomuser.me/api/?results=${10}&inc=name,gender,email,nat,picture&noinfo`;
 
+const success = Modal.success;
+const error = Modal.error;
 const startMatchInitial = {
   striker: '',
   nonStriker: '',
@@ -44,7 +48,18 @@ const StartMatch = () => {
     getAllPlayerByTeamId(param.team2Id);
   }, []);
 
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    var model = {
+      status: MatchStatus.STARTED,
+      matchId: param.matchId,
+      scoringBy: ScoringBy.WEBAPP,
+      isLiveStreaming: false,
+      players : [{}]
+    }
+    matchService.startMatch(model).then(res => {
+      res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
+    })
+  };
 
   const startMatchFormik = useFormik({
     enableReinitialize: true,
@@ -261,7 +276,7 @@ const StartMatch = () => {
             <Form.Item>
              
                 <Link to={'/liveScoring/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.id}>
-                <Button style={{ display: 'flex', float: 'right' }} htmlType="submit" type="primary">{('Start Match')}</Button>
+                  <Button style={{ display: 'flex', float: 'right' }} htmlType="submit" type="primary">{('Start Match')}</Button>
                 </Link>
             </Form.Item>
           )}
