@@ -99,7 +99,7 @@ const LiveScoring = () => {
     lineHeight: '30px',
   };
 
-  
+
 
   //update state
 
@@ -118,12 +118,16 @@ const LiveScoring = () => {
       case Extras.BYES:
         updateTeamScore(runs);
         updateBowlerScore(runs, Extras.BYES);
+        updateBatsmanScore(0);
         break;
       case Extras.LEG_BYES:
         updateTeamScore(runs);
         updateBowlerScore(runs, Extras.LEG_BYES);
+        updateBatsmanScore(0);
         break;
     }
+
+    if (runs % 2 != 0) handleChangeStrike(runs);
   };
 
   const updateTeamScore = (runs) => {
@@ -150,6 +154,7 @@ const LiveScoring = () => {
   };
 
   const updateBowlerScore = (runs, extra) => {
+    debugger
     const toAddBalls = extra === Extras.WIDE || extra === Extras.NO_BALLS ? 0 : 1;
     const toAddRuns = extra === Extras.BYES || extra === Extras.LEG_BYES ? 0 : runs;
     setBowler({
@@ -214,6 +219,8 @@ const LiveScoring = () => {
     return sumValues;
   };
 
+  console.log("calculateOvers", calculateOvers(bowler));
+
   return (
     <>
       <Card>
@@ -233,11 +240,11 @@ const LiveScoring = () => {
                   <h4>
                     India, 1<sup>st</sup> Inning
                   </h4>
-                  <section style={{ fontSize: '30px' }}>
+                  <section style={{ fontSize: '30px' ,display: 'flex' ,alignItems: 'center' }}>
                     <h2>
                       {team.runs}/{team.wickets}
-                      {/* ({state.oppTeamOvers}.{state.currentOverBalls}) ov */}
                     </h2>
+                    <h4> ({team.overs + '.' + calculateOvers(bowler)?.balls}) ov</h4>
                   </section>
                   <h4>
                     Pakistan <sub>(Yet to bat)</sub>
@@ -366,6 +373,7 @@ const LiveScoring = () => {
                   <h3 onPress={() => setStriker(bowler.id.toString())}>{bowler.name}</h3>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', alignItems: 'center', color: bowler.id == striker ? 'white' : 'black', }}>
+                  <h4>{calculateOvers(bowler)?.overs + '.' + calculateOvers(bowler)?.balls}</h4>
                   <h4>{bowler.runs}</h4>
                   <h4>{bowler.balls}</h4>
                   <h4>{bowler.fours}</h4>
@@ -401,10 +409,10 @@ const LiveScoring = () => {
                   </Button>
                 ))}
 
-                <DropDown options={byOptions} title="B" handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
-                <DropDown options={legByOptions} title="Lb" handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
+                <DropDown options={byOptions} title="B" handleChange={(runs) => handleExtras(runs, Extras.BYES)} />
+                <DropDown options={legByOptions} title="Lb" handleChange={(runs) => handleExtras(runs, Extras.LEG_BYES)} />
                 <DropDown options={wideOptions} title="W" handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
-                <DropDown options={noBallOptions} title="N" handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
+                <DropDown options={noBallOptions} title="N" handleChange={(runs) => handleExtras(runs, Extras.NO_BALLS)} />
                 <DropDown options={wicketOptions} title="Wk" handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
                 <DropDown options={wicketOptions} title="..." handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
 
