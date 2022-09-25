@@ -1,13 +1,13 @@
 import { Card, Col, PageHeader, Row, Steps, Button, Select, Form, Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { Link, useHistory, useParams } from 'react-router-dom';
+import { Link, useHistory, useParams} from 'react-router-dom';
 import CustomList from '../../components/CustomList';
 import { playingRoleOptions } from '../../components/Enum/enum';
 import CustomInput from '../../components/Input';
 import genderConst from '../../lib/genderConst';
 import getImage from '../../lib/getImage';
 import playerService from '../../services/player/playerService';
-import matchService from '../../services/match/matchService'
+import matchService from '../../services/match/matchService';
 import Team from '../Teams';
 import * as Yup from 'yup';
 import { Formik, useFormik } from 'formik';
@@ -15,7 +15,6 @@ import { get } from 'lodash';
 import { MatchStatus, ScoringBy } from '../../lib/appconst';
 
 const fakeDataUrl = `https://randomuser.me/api/?results=${10}&inc=name,gender,email,nat,picture&noinfo`;
-
 const success = Modal.success;
 const error = Modal.error;
 const startMatchInitial = {
@@ -51,38 +50,42 @@ const StartMatch = () => {
   const handleSubmit = () => {
     const teamPlayers = [];
 
-    team1SelectedPlayers.forEach(playerId => {
+    team1SelectedPlayers.forEach((playerId) => {
       const teamPlayer = {
         playerId: playerId,
         position: startMatchFormik.values.striker == playerId ? 1 : startMatchFormik.values.nonStriker == playerId ? 2 : null,
         matchId: param.matchId,
         teamId: param.team1Id,
-        isPlayedInning: startMatchFormik.values.striker == playerId || startMatchFormik.values.nonStriker == playerId ? true : false
-      }
+        isPlayedInning: startMatchFormik.values.striker == playerId || startMatchFormik.values.nonStriker == playerId ? true : false,
+      };
       teamPlayers.push(teamPlayer);
     });
-    team2SelectedPlayers.forEach(playerId => {
+    team2SelectedPlayers.forEach((playerId) => {
       const teamPlayer = {
         playerId: playerId,
         position: null,
         matchId: param.matchId,
         teamId: param.team2Id,
-        isPlayedInning: false
-      }
+        isPlayedInning: false,
+      };
       teamPlayers.push(teamPlayer);
     });
-    console.log("teamplayers", teamPlayers);
+    console.log('teamplayers', teamPlayers);
 
     var model = {
       status: MatchStatus.STARTED,
       matchId: param.matchId,
       scoringBy: ScoringBy.WEBAPP,
       isLiveStreaming: false,
-      players : teamPlayers
-    }
-    matchService.startMatch(model).then(res => {
-      res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
-    })
+      players: teamPlayers,
+    };
+    matchService.startMatch(model).then((res) => {
+      res.success
+        ? history.push(
+            '/liveScoring/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.id
+          )
+        : error({ title: res.successMessage });
+    });
   };
 
   const startMatchFormik = useFormik({
@@ -298,11 +301,12 @@ const StartMatch = () => {
           )}
           {current === steps.length - 1 && (
             <Form.Item>
-
               {/* <Link to={'/liveScoring/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.id}>
                   <Button style={{ display: 'flex', float: 'right' }} htmlType="submit" type="primary">{('Start Match')}</Button>
                 </Link> */}
-              <Button style={{ display: 'flex', float: 'right' }} htmlType="submit" type="primary">{('Start Match')}</Button>
+              <Button style={{ display: 'flex', float: 'right' }} htmlType="submit" type="primary">
+                {'Start Match'}
+              </Button>
             </Form.Item>
           )}
         </div>

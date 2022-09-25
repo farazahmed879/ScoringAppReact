@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { byOptions, legByOptions, noBallOptions, wicketOptions, wideOptions } from '../../components/Enum/enum';
 import { Extras } from '../../lib/appconst';
+import CeleberationDialog from './celeberationDialog';
 import DropDown from './dropDown';
 
 const dummyData = {
@@ -76,6 +77,9 @@ const LiveScoring = () => {
   const [bowler, setBowler] = useState(dummyData.bowler);
   const [extras, setExtras] = useState(dummyData.extras);
 
+  //
+  const [isCeleberationVisible, setIsCeleberationVisible] = useState(false);
+
   // const [score, setScore] = useState(0);
   // const [plyOne, setPlyOne] = useState([]); //ply one
   // const [plyTwo, setPlyTwo] = useState([]); //ply two
@@ -99,12 +103,9 @@ const LiveScoring = () => {
     lineHeight: '30px',
   };
 
-
-
   //update state
-
   const handleExtras = (runs, ballType) => {
-    debugger
+    debugger;
     switch (ballType) {
       case Extras.WIDE:
         updateTeamScore(runs);
@@ -136,6 +137,7 @@ const LiveScoring = () => {
   };
 
   const updateBatsmanScore = (runs) => {
+    if (runs == 6) setIsCeleberationVisible(true);
     const batsman = batsmans[striker];
     let timeLine = batsman.timeline;
     console.log('timeLine', timeLine);
@@ -154,7 +156,7 @@ const LiveScoring = () => {
   };
 
   const updateBowlerScore = (runs, extra) => {
-    debugger
+    debugger;
     const toAddBalls = extra === Extras.WIDE || extra === Extras.NO_BALLS ? 0 : 1;
     const toAddRuns = extra === Extras.BYES || extra === Extras.LEG_BYES ? 0 : runs;
     setBowler({
@@ -173,7 +175,7 @@ const LiveScoring = () => {
     setStriker(Object.keys(batsmans).filter((i) => i != striker)[0]);
   };
 
-  const handleBattingTimeLine = (runs) => { };
+  const handleBattingTimeLine = (runs) => {};
 
   const updateScore = (runs) => {
     updateTeamScore(runs);
@@ -210,7 +212,7 @@ const LiveScoring = () => {
   const calculateRRR = () => {
     return 0;
   };
-  const handleUndoRedo = (event) => { };
+  const handleUndoRedo = (event) => {};
   const handleWicket = (wicket) => {
     console.log('wicket');
   };
@@ -219,7 +221,7 @@ const LiveScoring = () => {
     return sumValues;
   };
 
-  console.log("calculateOvers", calculateOvers(bowler));
+  console.log('calculateOvers', calculateOvers(bowler));
 
   return (
     <>
@@ -240,7 +242,7 @@ const LiveScoring = () => {
                   <h4>
                     India, 1<sup>st</sup> Inning
                   </h4>
-                  <section style={{ fontSize: '30px' ,display: 'flex' ,alignItems: 'center' }}>
+                  <section style={{ fontSize: '30px', display: 'flex', alignItems: 'center' }}>
                     <h2>
                       {team.runs}/{team.wickets}
                     </h2>
@@ -260,7 +262,6 @@ const LiveScoring = () => {
               </Col>
             </Card>
           </Col>
-
 
           {/* Card2 */}
           <Col span={12}>
@@ -286,7 +287,6 @@ const LiveScoring = () => {
               </Row>
             </Card>
           </Col>
-
         </Row>
         <Row gutter={[16, 16]}>
           {/* Card3 */}
@@ -317,10 +317,18 @@ const LiveScoring = () => {
                     }}
                     onClick={handleChangeStrike}
                   >
-                    <div style={{ width: '50%', color: temp.id == striker ? 'white' : 'black', }}>
+                    <div style={{ width: '50%', color: temp.id == striker ? 'white' : 'black' }}>
                       <h3 onPress={() => setStriker(temp.id.toString())}>{temp.name}</h3>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', alignItems: 'center', color: temp.id == striker ? 'white' : 'black', }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-around',
+                        width: '100%',
+                        alignItems: 'center',
+                        color: temp.id == striker ? 'white' : 'black',
+                      }}
+                    >
                       <h4>{temp.runs}</h4>
                       <h4>{temp.balls}</h4>
                       <h4>{temp.fours}</h4>
@@ -336,12 +344,8 @@ const LiveScoring = () => {
                 let currentBatsman = batsmans[key];
                 return (
                   <section style={styles.timeline}>
-                    <span style={styles.timeline}>
-                      {currentBatsman.name} Time Line:
-                    </span>
-                    {currentBatsman.timeline.map((el, index) => (
-                      <span style={styles.timeline}> {el} </span>
-                    )).reverse()}
+                    <span style={styles.timeline}>{currentBatsman.name} Time Line:</span>
+                    {currentBatsman.timeline.map((el, index) => <span style={styles.timeline}> {el} </span>).reverse()}
                   </section>
                 );
               })}
@@ -359,7 +363,6 @@ const LiveScoring = () => {
                 </div>
               </section>
 
-
               <section
                 style={{
                   display: 'flex',
@@ -372,7 +375,15 @@ const LiveScoring = () => {
                 <div style={{ width: '50%', color: 'white' }}>
                   <h3 onPress={() => setStriker(bowler.id.toString())}>{bowler.name}</h3>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', alignItems: 'center', color: bowler.id == striker ? 'white' : 'black', }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-around',
+                    width: '100%',
+                    alignItems: 'center',
+                    color: bowler.id == striker ? 'white' : 'black',
+                  }}
+                >
                   <h4>{calculateOvers(bowler)?.overs + '.' + calculateOvers(bowler)?.balls}</h4>
                   <h4>{bowler.runs}</h4>
                   <h4>{bowler.balls}</h4>
@@ -415,11 +426,11 @@ const LiveScoring = () => {
                 <DropDown options={noBallOptions} title="N" handleChange={(runs) => handleExtras(runs, Extras.NO_BALLS)} />
                 <DropDown options={wicketOptions} title="Wk" handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
                 <DropDown options={wicketOptions} title="..." handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
-
               </Col>
             </Card>
           </Col>
         </Row>
+        <CeleberationDialog handleOk={() => setIsCeleberationVisible(false)} isVisible={isCeleberationVisible} />
       </Card>
     </>
   );
@@ -441,8 +452,8 @@ const styles = {
   },
   timeline: {
     flex: 0,
-    flexDirection: "row",
-    justifyContent: "flex-start",
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
     marginLeft: 5,
     fontSize: 12,
   },
