@@ -2,7 +2,7 @@ import http from '../httpService';
 
 class liveScoringService {
   public async updateLiveScore(input: any) {
-    let result = await http.put('/api/services/app/LiveScore/UpdateLiveScore', input);
+    let result = await http.post('/api/services/app/LiveScore/Submit', input);
     return result.data;
   }
 

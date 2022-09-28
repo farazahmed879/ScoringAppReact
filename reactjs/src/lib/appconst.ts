@@ -18,6 +18,7 @@ const AppConsts = {
 export default AppConsts;
 
 export const Extras = {
+  NO_EXTRA: 0,
   WIDE: 1,
   NO_BALLS: 2,
   LEG_BYES: 3,
@@ -35,4 +36,9 @@ export const ScoringBy = {
   MANNUAL: 1,
   MOBAPP: 2,
   WEBAPP: 3,
+};
+
+export const InningConst = {
+  FIRST_INNING: 1,
+  SECOND_INNING: 2
 };

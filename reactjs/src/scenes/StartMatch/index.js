@@ -12,7 +12,7 @@ import Team from '../Teams';
 import * as Yup from 'yup';
 import { Formik, useFormik } from 'formik';
 import { get } from 'lodash';
-import { MatchStatus, ScoringBy } from '../../lib/appconst';
+import { InningConst, MatchStatus, ScoringBy } from '../../lib/appconst';
 
 const fakeDataUrl = `https://randomuser.me/api/?results=${10}&inc=name,gender,email,nat,picture&noinfo`;
 const success = Modal.success;
@@ -57,6 +57,7 @@ const StartMatch = () => {
         matchId: param.matchId,
         teamId: param.team1Id,
         isPlayedInning: startMatchFormik.values.striker == playerId || startMatchFormik.values.nonStriker == playerId ? true : false,
+        IsStriker: startMatchFormik.values.striker == playerId 
       };
       teamPlayers.push(teamPlayer);
     });
@@ -67,22 +68,26 @@ const StartMatch = () => {
         matchId: param.matchId,
         teamId: param.team2Id,
         isPlayedInning: false,
+        isBowling: startMatchFormik.values.bowler == playerId
       };
       teamPlayers.push(teamPlayer);
     });
     console.log('teamplayers', teamPlayers);
-
+    debugger
     var model = {
       status: MatchStatus.STARTED,
       matchId: param.matchId,
       scoringBy: ScoringBy.WEBAPP,
       isLiveStreaming: false,
       players: teamPlayers,
+      team1Id: param.team1Id,
+      team2Id: param.team2Id,
+      Inning: InningConst.FIRST_INNING
     };
     matchService.startMatch(model).then((res) => {
       res.success
         ? history.push(
-            '/liveScoring/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.id
+            '/liveScoring/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.matchId
           )
         : error({ title: res.successMessage });
     });

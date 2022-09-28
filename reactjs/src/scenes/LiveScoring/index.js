@@ -1,22 +1,23 @@
-import { Button, Card, Col, Divider, Icon, Menu, PageHeader, Radio, Row } from 'antd';
+import { Button, Card, Col, Divider, Icon, Menu, Modal, PageHeader, Radio, Row } from 'antd';
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 import { set } from 'lodash';
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import { byOptions, legByOptions, noBallOptions, wicketOptions, wideOptions } from '../../components/Enum/enum';
 import { Extras } from '../../lib/appconst';
+import liveScoringService from '../../services/live-scoring/liveScoringService';
 import CeleberationDialog from './celeberationDialog';
 import DropDown from './dropDown';
 
 const dummyData = {
-  currentInning: 'FirstInning',
-  playingTeamId: 1,
-  striker: 1,
+  currentInning: '',
+  playingTeamId: 0,
+  strikerId: 0,
   batsmans: {
     1: {
       runs: 0,
-      id: 1,
-      name: 'Faraz',
+      id: 0,
+      name: '',
       sixes: 0,
       fours: 0,
       balls: 0,
@@ -24,8 +25,8 @@ const dummyData = {
     },
     2: {
       runs: 0,
-      id: 2,
-      name: 'Samad',
+      id: 0,
+      name: '',
       sixes: 0,
       fours: 0,
       balls: 0,
@@ -40,39 +41,44 @@ const dummyData = {
     wickets: 0,
     maidens: 0,
     timeline: [],
-    id: 43,
-    name: 'Ashir',
+    id: 0,
+    name: '',
   },
-  team: {
+  team1: {
     runs: 0,
-    teamId: 1,
+    teamId: 0,
     overs: 0,
     wickets: 0,
-    name: 'Gulzar Cricket Club',
+    name: '',
   },
   team2: {
-    name: 'Inqilab Cricket Club',
-    runs: 222,
-    id: 2,
-    wickets: 9,
-    overs: 20,
+    name: '',
+    runs: 0,
+    id: 0,
+    wickets: 0,
+    overs: 0,
   },
   extras: {
-    wides: 10,
-    legByes: 2,
-    byes: 3,
-    NoBalls: 1,
+    wides: 0,
+    legByes: 0,
+    byes: 0,
+    NoBalls: 0,
   },
 };
 
+const success = Modal.success;
+const error = Modal.error;
+
 const LiveScoring = () => {
   const history = useHistory();
+  const param = useParams();
+  const [data, setData] = React.useState(dummyData);
 
-  const [striker, setStriker] = React.useState(dummyData.striker);
-  const [playingTeamId, setPlayingTeamId] = useState(1);
+  const [strikerId, setStrikerId] = React.useState(dummyData.strikerId);
+  const [playingTeamId, setPlayingTeamId] = useState(dummyData.playingTeamId);
   const [currentInning, setCurrentInning] = useState(dummyData.currentInning);
-  const [team, setTeam] = useState(dummyData.team);
-  const [prevTeam, setPrevTeam] = useState(dummyData.team2);
+  const [team1, setTeam1] = useState(dummyData.team1);
+  const [team2, setTeam2] = useState(dummyData.team2);
   const [batsmans, setBatsmans] = useState(dummyData.batsmans);
   const [bowler, setBowler] = useState(dummyData.bowler);
   const [extras, setExtras] = useState(dummyData.extras);
@@ -80,71 +86,96 @@ const LiveScoring = () => {
   //
   const [isCeleberationVisible, setIsCeleberationVisible] = useState(false);
 
-  // const [score, setScore] = useState(0);
-  // const [plyOne, setPlyOne] = useState([]); //ply one
-  // const [plyTwo, setPlyTwo] = useState([]); //ply two
-  // const [bowler, setBowler] = useState([]);
-  // const [currentRate, setCurrentRate] = useState(0);
-  // const [requiredRate, setRequiredRate] = useState(0);
-  // const [target, setTarget] = useState(200);
-  // const [inning, setInning] = useState(1);
-  // const [wicket, setWicket] = useState(0);
-  // const [plyOneId, setPlyOneId] = useState(1);
-  // const [plyTwoId, setPlyTwoId] = useState(2);
-  // const [strike, setStrike] = useState(plyOneId);
-  // const [remainingBalls, setRemainingBalls] = useState(totalOvers * 6);
-  // const [balls, setBalls] = useState(0);
+  useEffect(() => {
+    getLiveScoringData(param.matchId);
+  }, []);
 
-  let totalOvers = 5;
+  useEffect(() => {
+    if (bowler.totalBalls % 6 == 0 && bowler.totalBalls != 0) {
+      setIsCeleberationVisible(true);
+    }
+  }, [bowler]);
 
-  const radioStyle = {
-    display: 'block',
-    height: '30px',
-    lineHeight: '30px',
+  const getLiveScoringData = (id) => {
+    liveScoringService.Get(id).then((res) => {
+      if (!res.success) return error({ title: res.successMessage });
+      const data = res.result;
+      mappData(data);
+    });
+  };
+
+  const mappData = (data) => {
+    if (data.strikerId) setStrikerId(data.strikerId);
+    if (data.playingTeamId) setPlayingTeamId(data.playingTeamId);
+    if (data.currentInning) setCurrentInning(data.currentInning);
+    if (data.team1) setTeam1(data.team1);
+    if (data.team2) setTeam2(data.team2);
+    if (data.batsmans) setBatsmans(data.batsmans);
+    if (data.bowler) setBowler(data.bowler);
+    if (data.extras) setExtras(data.extras);
+  };
+
+  const handleSubmit = (runs, ballType) => {
+    const req = {
+      runs: runs,
+      team1Id: team1.teamId,
+      team2Id: team2.teamId,
+      matchId: param.matchId,
+      batsmanId: strikerId,
+      bowlerId: bowler.id,
+      extras: ballType,
+    };
+    liveScoringService.updateLiveScore(req).then((res) => {
+      //res.success && ? success({ title: res.successMessage }) : error({ title: res.successMessage });
+      console.log(res);
+      mappData(res.result);
+    });
   };
 
   //update state
-  const handleExtras = (runs, ballType) => {
-    debugger;
-    switch (ballType) {
-      case Extras.WIDE:
-        updateTeamScore(runs);
-        updateBowlerScore(runs++, Extras.WIDE);
-        break;
-      case Extras.NO_BALLS:
-        updateTeamScore(runs);
-        updateBatsmanScore(runs);
-        updateBowlerScore(runs++, Extras.NO_BALLS);
-        break;
-      case Extras.BYES:
-        updateTeamScore(runs);
-        updateBowlerScore(runs, Extras.BYES);
-        updateBatsmanScore(0);
-        break;
-      case Extras.LEG_BYES:
-        updateTeamScore(runs);
-        updateBowlerScore(runs, Extras.LEG_BYES);
-        updateBatsmanScore(0);
-        break;
-    }
+  const handleRuns = (runs, ballType) => {
+    handleSubmit(runs, ballType);
+    // switch (ballType) {
+    //   case Extras.WIDE:
+    //     updateTeamScore(runs);
+    //     updateBowlerScore(runs++, Extras.WIDE);
+    //     break;
+    //   case Extras.NO_BALLS:
+    //     updateTeamScore(runs);
+    //     updateBatsmanScore(runs);
+    //     updateBowlerScore(runs++, Extras.NO_BALLS);
+    //     break;
+    //   case Extras.BYES:
+    //     updateTeamScore(runs);
+    //     updateBowlerScore(runs, Extras.BYES);
+    //     updateBatsmanScore(0);
+    //     break;
+    //   case Extras.LEG_BYES:
+    //     updateTeamScore(runs);
+    //     updateBowlerScore(runs, Extras.LEG_BYES);
+    //     updateBatsmanScore(0);
+    //     break;
+    // }
 
-    if (runs % 2 != 0) handleChangeStrike(runs);
+    // handleSubmit(strikerId);
+    // if (runs % 2 != 0) handleChangeStrike(runs);
   };
 
   const updateTeamScore = (runs) => {
-    setTeam({ ...team, runs: team.runs + runs });
+    setTeam1({ ...team1, runs: team1.runs + runs });
     runs % 2 != 0 && handleChangeStrike(runs);
   };
 
   const updateBatsmanScore = (runs) => {
     if (runs == 6) setIsCeleberationVisible(true);
-    const batsman = batsmans[striker];
+    debugger;
+    const batsman = batsmans[strikerId];
     let timeLine = batsman.timeline;
     console.log('timeLine', timeLine);
     timeLine.push(runs);
     setBatsmans({
       ...batsmans,
-      [striker]: {
+      [strikerId]: {
         ...batsman,
         runs: batsman.runs + runs,
         sixes: runs == 6 ? batsman.sixes + 1 : batsman.sixes,
@@ -156,23 +187,26 @@ const LiveScoring = () => {
   };
 
   const updateBowlerScore = (runs, extra) => {
-    debugger;
     const toAddBalls = extra === Extras.WIDE || extra === Extras.NO_BALLS ? 0 : 1;
     const toAddRuns = extra === Extras.BYES || extra === Extras.LEG_BYES ? 0 : runs;
+    const balls = (bowler.totalBalls + toAddBalls) % 6;
+    console.log(balls);
     setBowler({
       ...bowler,
       runs: bowler.runs + toAddRuns,
       totalBalls: bowler.totalBalls + toAddBalls,
+      balls: balls,
     });
   };
 
-  const handleRuns = (runs) => {
-    updateScore(runs);
-    if (runs % 2 != 0) handleChangeStrike(runs);
-  };
+  // const handleRuns = (runs) => {
+  //   // updateScore(runs);
+  //   // handleSubmit(strikerId);
+  //   // if (runs % 2 != 0) handleChangeStrike(runs);
+  // };
 
   const handleChangeStrike = () => {
-    setStriker(Object.keys(batsmans).filter((i) => i != striker)[0]);
+    setStrikerId(Object.keys(batsmans).filter((i) => i != strikerId)[0]);
   };
 
   const handleBattingTimeLine = (runs) => {};
@@ -191,7 +225,7 @@ const LiveScoring = () => {
       balls: 0,
     };
     if (data.totalBalls >= 6) {
-      obj.overs = data.totalBalls / 6;
+      obj.overs = +data.totalBalls / 6;
     }
 
     obj.balls = data.totalBalls % 6;
@@ -221,7 +255,8 @@ const LiveScoring = () => {
     return sumValues;
   };
 
-  console.log('calculateOvers', calculateOvers(bowler));
+  //s console.log('data', data);
+  console.log('batsman', batsmans);
 
   return (
     <>
@@ -240,21 +275,30 @@ const LiveScoring = () => {
               <Col span={24}>
                 <Col span={12}>
                   <h4>
-                    India, 1<sup>st</sup> Inning
+                    {team1.name},{' '}
+                    {currentInning == 1 ? (
+                      <>
+                        1<sup>st</sup> Inning
+                      </>
+                    ) : (
+                      <>
+                        2<sup>nd</sup> Inning
+                      </>
+                    )}
                   </h4>
                   <section style={{ fontSize: '30px', display: 'flex', alignItems: 'center' }}>
                     <h2>
-                      {team.runs}/{team.wickets}
+                      {team1.runs}/{team1.wickets}
                     </h2>
-                    <h4> ({team.overs + '.' + calculateOvers(bowler)?.balls}) ov</h4>
+                    <h4> ({team1.overs + '.' + bowler.balls}) ov</h4>
                   </section>
                   <h4>
-                    Pakistan <sub>(Yet to bat)</sub>
+                    {team2.name} <sub>(Yet to bat)</sub>
                   </h4>
                 </Col>
                 <Col span={12}>
                   <section style={{ fontSize: '20px' }}>
-                    <h4> CRR: {calculateCRR(team.runs, team.overs)?.toFixed(2)} |</h4>
+                    <h4> CRR: {calculateCRR(team1.runs, team1.overs)?.toFixed(2)} |</h4>
                     <h4> RRR: {'11'} |</h4>
                     <h4> Extras: {calculateExtras(extras)}</h4>
                   </section>
@@ -267,24 +311,35 @@ const LiveScoring = () => {
           <Col span={12}>
             {' '}
             <Card style={{ height: '200px' }}>
-              <Row>
-                <h1>
-                  {' '}
-                  Inning : 1<sup>st</sup>
-                </h1>
-              </Row>
-              <Row>
-                <h1> Target : {'876'}</h1>
-              </Row>
-              <Row>
-                <h1>Runs : {'123'}</h1>
-              </Row>
+              {currentInning == 1 && (
+                <>
+                  <Row>
+                    <h1>
+                      Inning : 1<sup>st</sup>
+                    </h1>
+                  </Row>
+                </>
+              )}
+              {currentInning == 2 && (
+                <>
+                  <Row>
+                    <h1>
+                      Inning : 2<sup>nd</sup>
+                    </h1>
+                  </Row>
+                  <Row>
+                    <h1> Target : {team2.runs}</h1>
+                  </Row>
+                </>
+              )}
               <Row>
                 <h1>Run Rate : {'123'}</h1>
               </Row>
-              <Row>
-                <h1>Required Run Rate : {'22'}</h1>
-              </Row>
+              {currentInning == 2 && (
+                <Row>
+                  <h1>Required Run Rate : {'22'}</h1>
+                </Row>
+              )}
             </Card>
           </Col>
         </Row>
@@ -311,14 +366,14 @@ const LiveScoring = () => {
                     style={{
                       display: 'flex',
                       borderRadius: 5,
-                      background: temp.id == striker ? '#eb4034' : 'white',
+                      background: temp.id == strikerId ? '#eb4034' : 'white',
                       paddingLeft: 10,
                       cursor: 'pointer',
                     }}
                     onClick={handleChangeStrike}
                   >
-                    <div style={{ width: '50%', color: temp.id == striker ? 'white' : 'black' }}>
-                      <h3 onPress={() => setStriker(temp.id.toString())}>{temp.name}</h3>
+                    <div style={{ width: '50%', color: temp.id == strikerId ? 'white' : 'black' }}>
+                      <h3 onPress={() => setStrikerId(temp.id.toString())}>{temp.name}</h3>
                     </div>
                     <div
                       style={{
@@ -326,7 +381,7 @@ const LiveScoring = () => {
                         justifyContent: 'space-around',
                         width: '100%',
                         alignItems: 'center',
-                        color: temp.id == striker ? 'white' : 'black',
+                        color: temp.id == strikerId ? 'white' : 'black',
                       }}
                     >
                       <h4>{temp.runs}</h4>
@@ -373,7 +428,7 @@ const LiveScoring = () => {
                 }}
               >
                 <div style={{ width: '50%', color: 'white' }}>
-                  <h3 onPress={() => setStriker(bowler.id.toString())}>{bowler.name}</h3>
+                  <h3 onPress={() => setStrikerId(bowler.id.toString())}>{bowler.name}</h3>
                 </div>
                 <div
                   style={{
@@ -381,10 +436,10 @@ const LiveScoring = () => {
                     justifyContent: 'space-around',
                     width: '100%',
                     alignItems: 'center',
-                    color: bowler.id == striker ? 'white' : 'black',
+                    color: bowler.id == strikerId ? 'white' : 'black',
                   }}
                 >
-                  <h4>{calculateOvers(bowler)?.overs + '.' + calculateOvers(bowler)?.balls}</h4>
+                  <h4>{parseInt(calculateOvers(bowler)?.overs || 0) + '.' + bowler.balls}</h4>
                   <h4>{bowler.runs}</h4>
                   <h4>{bowler.balls}</h4>
                   <h4>{bowler.fours}</h4>
@@ -415,17 +470,22 @@ const LiveScoring = () => {
                 }}
               >
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((el, index) => (
-                  <Button key={index} style={{ margin: '10px', height: '60px', width: '60px' }} value="1" onClick={() => handleRuns(el)}>
+                  <Button
+                    key={index}
+                    style={{ margin: '10px', height: '60px', width: '60px' }}
+                    value="1"
+                    onClick={() => handleRuns(el, Extras.NO_EXTRA)}
+                  >
                     {el}
                   </Button>
                 ))}
 
-                <DropDown options={byOptions} title="B" handleChange={(runs) => handleExtras(runs, Extras.BYES)} />
-                <DropDown options={legByOptions} title="Lb" handleChange={(runs) => handleExtras(runs, Extras.LEG_BYES)} />
-                <DropDown options={wideOptions} title="W" handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
-                <DropDown options={noBallOptions} title="N" handleChange={(runs) => handleExtras(runs, Extras.NO_BALLS)} />
-                <DropDown options={wicketOptions} title="Wk" handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
-                <DropDown options={wicketOptions} title="..." handleChange={(runs) => handleExtras(runs, Extras.WIDE)} />
+                <DropDown options={byOptions} title="B" handleChange={(runs) => handleRuns(runs, Extras.BYES)} />
+                <DropDown options={legByOptions} title="Lb" handleChange={(runs) => handleRuns(runs, Extras.LEG_BYES)} />
+                <DropDown options={wideOptions} title="W" handleChange={(runs) => handleRuns(runs, Extras.WIDE)} />
+                <DropDown options={noBallOptions} title="N" handleChange={(runs) => handleRuns(runs, Extras.NO_BALLS)} />
+                <DropDown options={wicketOptions} title="Wk" handleChange={(runs) => handleRuns(runs, Extras.WIDE)} />
+                <DropDown options={wicketOptions} title="..." handleChange={(runs) => handleRuns(runs, Extras.WIDE)} />
               </Col>
             </Card>
           </Col>
