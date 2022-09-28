@@ -1,17 +1,23 @@
-import { Button, Card, Col, Divider, Icon, Menu, Modal, PageHeader, Radio, Row } from 'antd';
+import { Button, Card, Col, Divider, Icon, List, Menu, Modal, PageHeader, Radio, Row } from 'antd';
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 import { set } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { byOptions, legByOptions, noBallOptions, wicketOptions, wideOptions } from '../../components/Enum/enum';
+import CustomList from '../../components/CustomList';
+import { byOptions, legByOptions, noBallOptions, playingRoleOptions, wicketOptions, wideOptions } from '../../components/Enum/enum';
+import CustomModal from '../../components/Modal';
+import UserList from '../../components/UserList/indes';
 import { Extras } from '../../lib/appconst';
+import genderConst from '../../lib/genderConst';
 import liveScoringService from '../../services/live-scoring/liveScoringService';
+import playerService from '../../services/player/playerService';
 import CeleberationDialog from './celeberationDialog';
 import DropDown from './dropDown';
 
 const dummyData = {
   currentInning: '',
   playingTeamId: 0,
+  bowlingTeamId: 0,
   strikerId: 0,
   batsmans: {
     1: {
@@ -75,7 +81,8 @@ const LiveScoring = () => {
   const [data, setData] = React.useState(dummyData);
 
   const [strikerId, setStrikerId] = React.useState(dummyData.strikerId);
-  const [playingTeamId, setPlayingTeamId] = useState(dummyData.playingTeamId);
+  const [playingTeamId, setPlayingTeamId] = useState();
+  const [bowlingTeamId, setBowlingTeamId] = useState();
   const [currentInning, setCurrentInning] = useState(dummyData.currentInning);
   const [team1, setTeam1] = useState(dummyData.team1);
   const [team2, setTeam2] = useState(dummyData.team2);
@@ -85,6 +92,12 @@ const LiveScoring = () => {
 
   //
   const [isCeleberationVisible, setIsCeleberationVisible] = useState(false);
+  const [isNewBowler, setIsNewBowler] = useState(false);
+  const [initLoading, setInitLoading] = useState(false);
+
+  //
+  const [team1AllPlayers, setTeam1AllPlayers] = useState([]);
+  const [team2AllPlayers, setTeam2AllPlayers] = useState([]);
 
   useEffect(() => {
     getLiveScoringData(param.matchId);
@@ -92,9 +105,24 @@ const LiveScoring = () => {
 
   useEffect(() => {
     if (bowler.totalBalls % 6 == 0 && bowler.totalBalls != 0) {
-      setIsCeleberationVisible(true);
+      setIsNewBowler(true);
+      getAllBowlers(bowlingTeamId);
     }
   }, [bowler]);
+
+  const getAllBowlers = (id) => {
+    setInitLoading(true);
+    playerService.getAllByTeamId(id).then((res) => {
+      console.log('Team Player', res);
+      setInitLoading(false);
+      if (id == playingTeamId) {
+        setTeam1AllPlayers(res);
+      }
+      if (id == bowlingTeamId) {
+        setTeam2AllPlayers(res.filter(i=> i.id != bowler.id));
+      }
+    });
+  };
 
   const getLiveScoringData = (id) => {
     liveScoringService.Get(id).then((res) => {
@@ -107,6 +135,7 @@ const LiveScoring = () => {
   const mappData = (data) => {
     if (data.strikerId) setStrikerId(data.strikerId);
     if (data.playingTeamId) setPlayingTeamId(data.playingTeamId);
+    if (data.bowlingTeamId) setBowlingTeamId(data.bowlingTeamId);
     if (data.currentInning) setCurrentInning(data.currentInning);
     if (data.team1) setTeam1(data.team1);
     if (data.team2) setTeam2(data.team2);
@@ -255,8 +284,25 @@ const LiveScoring = () => {
     return sumValues;
   };
 
+
+  const handleSelectedBowler = (event) => {
+    var req = {
+      prevBowlerId: bowler.id,
+      newBowlerId: event.id,
+      matchId: param.matchId,
+      teamId: bowlingTeamId
+    }
+    liveScoringService.changeBowler(req).then((res) => {
+      if (!res.success) return error({ title: res.successMessage });
+      const data = res.result;
+      setIsNewBowler(false)
+      mappData(data);
+    });
+  }
+
   //s console.log('data', data);
   console.log('batsman', batsmans);
+  console.log('bowler', bowler);
 
   return (
     <>
@@ -290,7 +336,7 @@ const LiveScoring = () => {
                     <h2>
                       {team1.runs}/{team1.wickets}
                     </h2>
-                    <h4> ({team1.overs + '.' + bowler.balls}) ov</h4>
+                    <h4> ({team1.overs}) ov</h4>
                   </section>
                   <h4>
                     {team2.name} <sub>(Yet to bat)</sub>
@@ -490,6 +536,9 @@ const LiveScoring = () => {
             </Card>
           </Col>
         </Row>
+        <CustomModal title="Select Bowler" isModalVisible={isNewBowler} handleCancel={() => setIsNewBowler(false)} handleSubmit={handleSubmit}>
+          <UserList data={team2AllPlayers} handleResponse={handleSelectedBowler} />
+        </CustomModal>
         <CeleberationDialog handleOk={() => setIsCeleberationVisible(false)} isVisible={isCeleberationVisible} />
       </Card>
     </>

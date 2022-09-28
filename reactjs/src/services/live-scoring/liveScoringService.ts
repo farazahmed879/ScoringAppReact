@@ -11,11 +11,15 @@ class liveScoringService {
     return result.data;
   }
 
-  public async getPlayers(matchId: Number,teamId: Number): Promise<any> {
+  public async getPlayers(matchId: Number, teamId: Number): Promise<any> {
     let result = await http.get(`/api/services/app/LiveScore/GetPlayers?matchId=${matchId}&teamId=${teamId}`);
     return result.data;
   }
 
+  public async changeBowler(input: any) {
+    let result = await http.post('/api/services/app/LiveScore/ChangeBowler', input);
+    return result.data;
+  }
 }
 
 export default new liveScoringService();
