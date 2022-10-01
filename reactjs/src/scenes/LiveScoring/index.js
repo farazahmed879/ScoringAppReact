@@ -49,6 +49,7 @@ const dummyData = {
     timeline: [],
     id: 0,
     name: '',
+    newOver: false
   },
   team1: {
     runs: 0,
@@ -104,7 +105,7 @@ const LiveScoring = () => {
   }, []);
 
   useEffect(() => {
-    if (bowler.totalBalls % 6 == 0 && bowler.totalBalls != 0) {
+    if (bowler.totalBalls % 6 == 0 && bowler.totalBalls != 0 && !bowler.newOver) {
       setIsNewBowler(true);
       getAllBowlers(bowlingTeamId);
     }
@@ -536,7 +537,7 @@ const LiveScoring = () => {
             </Card>
           </Col>
         </Row>
-        <CustomModal title="Select Bowler" isModalVisible={isNewBowler} handleCancel={() => setIsNewBowler(false)} handleSubmit={handleSubmit}>
+        <CustomModal title="Select Bowler" isModalVisible={isNewBowler} handleSubmit={handleSubmit}>
           <UserList data={team2AllPlayers} handleResponse={handleSelectedBowler} />
         </CustomModal>
         <CeleberationDialog handleOk={() => setIsCeleberationVisible(false)} isVisible={isCeleberationVisible} />
