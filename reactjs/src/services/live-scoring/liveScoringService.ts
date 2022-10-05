@@ -20,6 +20,11 @@ class liveScoringService {
     let result = await http.post('/api/services/app/LiveScore/ChangeBowler', input);
     return result.data;
   }
+
+  public async changeBatsman(input: any) {
+    let result = await http.post('/api/services/app/LiveScore/ChangeBatsman', input);
+    return result.data;
+  }
 }
 
 export default new liveScoringService();

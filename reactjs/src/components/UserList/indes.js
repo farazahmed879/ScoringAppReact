@@ -1,7 +1,6 @@
 import { List, Avatar } from 'antd';
 import React, { useEffect, useState } from 'react';
 import getImage from '../../lib/getImage';
-import * as styles from './styles.module.css';
 
 const UserList = ({ data = [], handleResponse }) => {
   const [isHovering, setIsHovering] = useState(0);

@@ -244,3 +244,10 @@ export const matchSettings = [
     name: 'Refresh',
   },
 ];
+
+const generateEnum = (data = []) => {
+  return data.reduce((a, v) => ({ ...a, [v.name.replace(/[^A-Z0-9]/gi, '_')]: v.id }), {});
+};
+
+
+export const WICKETCONST = generateEnum(wicketOptions);

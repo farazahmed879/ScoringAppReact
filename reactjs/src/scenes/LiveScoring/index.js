@@ -4,7 +4,7 @@ import { set } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import CustomList from '../../components/CustomList';
-import { byOptions, legByOptions, noBallOptions, playingRoleOptions, wicketOptions, wideOptions } from '../../components/Enum/enum';
+import { byOptions, legByOptions, noBallOptions, playingRoleOptions, WICKETCONST, wicketOptions, wideOptions } from '../../components/Enum/enum';
 import CustomModal from '../../components/Modal';
 import UserList from '../../components/UserList/indes';
 import { Extras } from '../../lib/appconst';
@@ -13,6 +13,7 @@ import liveScoringService from '../../services/live-scoring/liveScoringService';
 import playerService from '../../services/player/playerService';
 import CeleberationDialog from './celeberationDialog';
 import DropDown from './dropDown';
+import RunOutDialog from './runoutDialog';
 
 const dummyData = {
   currentInning: '',
@@ -49,7 +50,7 @@ const dummyData = {
     timeline: [],
     id: 0,
     name: '',
-    newOver: false
+    newOver: false,
   },
   team1: {
     runs: 0,
@@ -95,10 +96,12 @@ const LiveScoring = () => {
   const [isCeleberationVisible, setIsCeleberationVisible] = useState(false);
   const [isNewBowler, setIsNewBowler] = useState(false);
   const [initLoading, setInitLoading] = useState(false);
+  const [isRunOutDialog, setIsRunOutDialog] = useState(false);
 
   //
   const [team1AllPlayers, setTeam1AllPlayers] = useState([]);
   const [team2AllPlayers, setTeam2AllPlayers] = useState([]);
+  const [team2Bowlers, setTeam2Bowlers] = useState([]);
 
   useEffect(() => {
     getLiveScoringData(param.matchId);
@@ -111,17 +114,25 @@ const LiveScoring = () => {
     }
   }, [bowler]);
 
-  const getAllBowlers = (id) => {
+  const getAllBowlers = (teamId) => {
     setInitLoading(true);
-    playerService.getAllByTeamId(id).then((res) => {
+    if (team2AllPlayers.length == 0)
+      playerService.getAllByTeamId(teamId).then((res) => {
+        console.log('Team Player', res);
+        setInitLoading(false);
+        if (teamId == playingTeamId) {
+          setTeam1AllPlayers(res);
+        }
+        if (teamId == bowlingTeamId) {
+          setTeam2AllPlayers(res);
+        }
+      });
+  };
+
+  const getAllPlayers = (teamId) => {
+    setInitLoading(true);
+    playerService.getAllByTeamId(teamId).then((res) => {
       console.log('Team Player', res);
-      setInitLoading(false);
-      if (id == playingTeamId) {
-        setTeam1AllPlayers(res);
-      }
-      if (id == bowlingTeamId) {
-        setTeam2AllPlayers(res.filter(i=> i.id != bowler.id));
-      }
     });
   };
 
@@ -189,6 +200,44 @@ const LiveScoring = () => {
 
     // handleSubmit(strikerId);
     // if (runs % 2 != 0) handleChangeStrike(runs);
+  };
+
+  const handleWicket = (runs, howOutId) => {
+    console.log(WICKETCONST.Run_Out);
+    if (howOutId == WICKETCONST.Run_Out) {
+      let currentBatsmans = [];
+      getAllBowlers(bowlingTeamId);
+      Object.keys(batsmans).map((el) => {
+        currentBatsmans.push(batsmans[el]);
+      });
+      setTeam1AllPlayers(currentBatsmans);
+      return setIsRunOutDialog(true);
+    }
+    handleWicketSubmit(runs, howOutId);
+  };
+
+  const handleRunOut = (e) => {
+    console.log('handleRunOut', e);
+  };
+
+  const handleWicketSubmit = (runs, howOutId) => {
+    const batmanId = strikerId;
+    const req = {
+      howOutId: howOutId,
+      batsmanId: batmanId,
+      matchId: param.matchId,
+      team1Id: playingTeamId,
+      team2Id: bowlingTeamId,
+      bowlerId: bowler.id,
+      fielderId: 0,
+      runs: 0,
+      extra: 0,
+      isByeOrLegBye: false,
+    };
+    liveScoringService.changeBatsman(req).then((res) => {
+      !res.success && error({ title: res.successMessage });
+      console.log('changeBatsman', res);
+    });
   };
 
   const updateTeamScore = (runs) => {
@@ -277,32 +326,30 @@ const LiveScoring = () => {
     return 0;
   };
   const handleUndoRedo = (event) => {};
-  const handleWicket = (wicket) => {
-    console.log('wicket');
-  };
+
   const calculateExtras = (data) => {
     const sumValues = Object.values(data).reduce((a, b) => a + b);
     return sumValues;
   };
-
 
   const handleSelectedBowler = (event) => {
     var req = {
       prevBowlerId: bowler.id,
       newBowlerId: event.id,
       matchId: param.matchId,
-      teamId: bowlingTeamId
-    }
+      teamId: bowlingTeamId,
+    };
     liveScoringService.changeBowler(req).then((res) => {
       if (!res.success) return error({ title: res.successMessage });
       const data = res.result;
-      setIsNewBowler(false)
+      setIsNewBowler(false);
       mappData(data);
     });
-  }
+  };
 
   //s console.log('data', data);
   console.log('batsman', batsmans);
+  console.log('team1AllPlayers', team1AllPlayers);
   console.log('bowler', bowler);
 
   return (
@@ -531,15 +578,16 @@ const LiveScoring = () => {
                 <DropDown options={legByOptions} title="Lb" handleChange={(runs) => handleRuns(runs, Extras.LEG_BYES)} />
                 <DropDown options={wideOptions} title="W" handleChange={(runs) => handleRuns(runs, Extras.WIDE)} />
                 <DropDown options={noBallOptions} title="N" handleChange={(runs) => handleRuns(runs, Extras.NO_BALLS)} />
-                <DropDown options={wicketOptions} title="Wk" handleChange={(runs) => handleRuns(runs, Extras.WIDE)} />
+                <DropDown options={wicketOptions} title="Wk" handleChange={(runs) => handleWicket(runs, Extras.WIDE)} />
                 <DropDown options={wicketOptions} title="..." handleChange={(runs) => handleRuns(runs, Extras.WIDE)} />
               </Col>
             </Card>
           </Col>
         </Row>
         <CustomModal title="Select Bowler" isModalVisible={isNewBowler} handleSubmit={handleSubmit}>
-          <UserList data={team2AllPlayers} handleResponse={handleSelectedBowler} />
+          <UserList data={team2AllPlayers.filter((i) => i.id != bowler.id)} handleResponse={handleSelectedBowler} />
         </CustomModal>
+        <RunOutDialog isOpen={isRunOutDialog} handleSelectedBowler={handleRunOut} team1Players={team1AllPlayers} team2Players={team2AllPlayers} />
         <CeleberationDialog handleOk={() => setIsCeleberationVisible(false)} isVisible={isCeleberationVisible} />
       </Card>
     </>
