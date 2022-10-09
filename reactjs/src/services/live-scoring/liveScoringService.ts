@@ -21,6 +21,11 @@ class liveScoringService {
     return result.data;
   }
 
+  public async updateNewBatsman(input: any) {
+    let result = await http.put('/api/services/app/LiveScore/UpdateNewBatsman', input);
+    return result.data;
+  }
+
   public async changeBatsman(input: any) {
     let result = await http.post('/api/services/app/LiveScore/ChangeBatsman', input);
     return result.data;

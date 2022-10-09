@@ -2,7 +2,7 @@ import { List, Avatar } from 'antd';
 import React, { useEffect, useState } from 'react';
 import getImage from '../../lib/getImage';
 
-const UserList = ({ data = [], handleResponse }) => {
+const UserList = ({ data = [], handleResponse, selected = 0 }) => {
   const [isHovering, setIsHovering] = useState(0);
 
   const handleMouseOver = (item) => {
@@ -18,7 +18,7 @@ const UserList = ({ data = [], handleResponse }) => {
       dataSource={data}
       renderItem={(item) => (
         <List.Item
-          style={{ cursor: 'pointer', backgroundColor: isHovering == item.id ? 'orange' : '' }}
+          style={{ cursor: 'pointer', backgroundColor: isHovering == item.id ? '#90EE90' : selected == item.id ? 'green' : '' }}
           onMouseOver={() => handleMouseOver(item)}
           onMouseOut={handleMouseOut}
           onClick={() => handleResponse(item)}

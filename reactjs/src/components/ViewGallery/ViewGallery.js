@@ -15,7 +15,6 @@ const ViewGallery = ({ data = [] }) => {
   };
 
   const viewImageModal = (file) => {
-    debugger;
     if (Object.keys(file).length) {
       setPreviewImage(file.profileUrl || file.url);
     }

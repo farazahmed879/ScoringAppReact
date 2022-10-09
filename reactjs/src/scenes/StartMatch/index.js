@@ -73,7 +73,6 @@ const StartMatch = () => {
       teamPlayers.push(teamPlayer);
     });
     console.log('teamplayers', teamPlayers);
-    debugger
     var model = {
       status: MatchStatus.STARTED,
       matchId: param.matchId,

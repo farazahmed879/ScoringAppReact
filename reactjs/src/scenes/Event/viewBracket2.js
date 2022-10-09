@@ -323,7 +323,6 @@ const ViewBracket2 = ({ formikData, event, loading = true, handleBracketUpdate =
 
 
   const handleSubmit = () => {
-    debugger
     const response = handleSubmitMatch(matchFormik);
     if (response) handleBracketUpdate(true);
     setIsOpenModal(false);

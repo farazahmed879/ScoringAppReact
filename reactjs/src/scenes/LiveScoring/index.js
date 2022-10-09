@@ -7,7 +7,7 @@ import CustomList from '../../components/CustomList';
 import { byOptions, legByOptions, noBallOptions, playingRoleOptions, WICKETCONST, wicketOptions, wideOptions } from '../../components/Enum/enum';
 import CustomModal from '../../components/Modal';
 import UserList from '../../components/UserList/indes';
-import { Extras } from '../../lib/appconst';
+import { ERRORMESSAGE, Extras } from '../../lib/appconst';
 import genderConst from '../../lib/genderConst';
 import liveScoringService from '../../services/live-scoring/liveScoringService';
 import playerService from '../../services/player/playerService';
@@ -95,6 +95,7 @@ const LiveScoring = () => {
   //
   const [isCeleberationVisible, setIsCeleberationVisible] = useState(false);
   const [isNewBowler, setIsNewBowler] = useState(false);
+  const [isNewBatsman, setIsNewBatsman] = useState(false);
   const [initLoading, setInitLoading] = useState(false);
   const [isRunOutDialog, setIsRunOutDialog] = useState(false);
 
@@ -129,22 +130,29 @@ const LiveScoring = () => {
       });
   };
 
-  const getAllPlayers = (teamId) => {
+  const getBatsmanOrBowlers = (teamId) => {
     setInitLoading(true);
-    playerService.getAllByTeamId(teamId).then((res) => {
+    playerService.getTeamPlayersByMatchId(param.matchId, teamId).then((res) => {
       console.log('Team Player', res);
     });
   };
 
   const getLiveScoringData = (id) => {
     liveScoringService.Get(id).then((res) => {
+      debugger;
       if (!res.success) return error({ title: res.successMessage });
+      // if(res.result.errorMessage == ERRORMESSAGE.STRIKER_NOT_FOUND || res.result.errorMessage == ERRORMESSAGE.NON_STRIKER_NOT_FOUND){
+      //   setTeam1AllPlayers(res.result.playerList.filter(i=> i.howOutId == WICKETCONST.Not_Out));
+      //   setIsNewBatsman(true);
+      //   return
+      // }
       const data = res.result;
       mappData(data);
     });
   };
 
   const mappData = (data) => {
+    debugger;
     if (data.strikerId) setStrikerId(data.strikerId);
     if (data.playingTeamId) setPlayingTeamId(data.playingTeamId);
     if (data.bowlingTeamId) setBowlingTeamId(data.bowlingTeamId);
@@ -154,6 +162,11 @@ const LiveScoring = () => {
     if (data.batsmans) setBatsmans(data.batsmans);
     if (data.bowler) setBowler(data.bowler);
     if (data.extras) setExtras(data.extras);
+
+    if (Object.keys(data.batsmans).length < 2) {
+      setTeam1AllPlayers(data.players);
+      setIsNewBatsman(true);
+    }
   };
 
   const handleSubmit = (runs, ballType) => {
@@ -202,8 +215,8 @@ const LiveScoring = () => {
     // if (runs % 2 != 0) handleChangeStrike(runs);
   };
 
-  const handleWicket = (runs, howOutId) => {
-    console.log(WICKETCONST.Run_Out);
+  const handleWicket = (howOutId) => {
+    console.log(howOutId);
     if (howOutId == WICKETCONST.Run_Out) {
       let currentBatsmans = [];
       getAllBowlers(bowlingTeamId);
@@ -213,16 +226,9 @@ const LiveScoring = () => {
       setTeam1AllPlayers(currentBatsmans);
       return setIsRunOutDialog(true);
     }
-    handleWicketSubmit(runs, howOutId);
-  };
-
-  const handleRunOut = (e) => {
-    console.log('handleRunOut', e);
-  };
-
-  const handleWicketSubmit = (runs, howOutId) => {
     const batmanId = strikerId;
     const req = {
+      strikerId: strikerId,
       howOutId: howOutId,
       batsmanId: batmanId,
       matchId: param.matchId,
@@ -234,9 +240,34 @@ const LiveScoring = () => {
       extra: 0,
       isByeOrLegBye: false,
     };
+    handleWicketSubmit(req);
+  };
+
+  const handleRunOut = (e) => {
+    debugger;
+    const req = {
+      strikerId: strikerId,
+      howOutId: WICKETCONST.Run_Out,
+      batsmanId: e?.batsman?.id,
+      matchId: param.matchId,
+      team1Id: playingTeamId,
+      team2Id: bowlingTeamId,
+      bowlerId: bowler.id,
+      fielderId: e.fielderId,
+      runs: e.runs,
+      wideOrNoBall: e.wideOrNoBall,
+      buyOrlegBye: e.buyOrlegBye,
+    };
+    handleWicketSubmit(req);
+  };
+
+  const handleWicketSubmit = (req) => {
     liveScoringService.changeBatsman(req).then((res) => {
-      !res.success && error({ title: res.successMessage });
-      console.log('changeBatsman', res);
+      if (!res.success) return error({ title: res.successMessage });
+      debugger;
+      setTeam1AllPlayers(res.data.filter((i) => i.howOutId == 1));
+      setIsNewBatsman(true);
+      setIsRunOutDialog(false);
     });
   };
 
@@ -247,7 +278,6 @@ const LiveScoring = () => {
 
   const updateBatsmanScore = (runs) => {
     if (runs == 6) setIsCeleberationVisible(true);
-    debugger;
     const batsman = batsmans[strikerId];
     let timeLine = batsman.timeline;
     console.log('timeLine', timeLine);
@@ -330,6 +360,21 @@ const LiveScoring = () => {
   const calculateExtras = (data) => {
     const sumValues = Object.values(data).reduce((a, b) => a + b);
     return sumValues;
+  };
+
+  const handleSelectNewBatsman = (event) => {
+    debugger;
+    var req = {
+      batsmanId: event.id,
+      matchId: param.matchId,
+      teamId: playingTeamId,
+    };
+    liveScoringService.updateNewBatsman(req).then((res) => {
+      if (!res.success) return error({ title: res.successMessage });
+      const data = res.result;
+      setIsNewBatsman(false);
+      mappData(data);
+    });
   };
 
   const handleSelectedBowler = (event) => {
@@ -578,16 +623,19 @@ const LiveScoring = () => {
                 <DropDown options={legByOptions} title="Lb" handleChange={(runs) => handleRuns(runs, Extras.LEG_BYES)} />
                 <DropDown options={wideOptions} title="W" handleChange={(runs) => handleRuns(runs, Extras.WIDE)} />
                 <DropDown options={noBallOptions} title="N" handleChange={(runs) => handleRuns(runs, Extras.NO_BALLS)} />
-                <DropDown options={wicketOptions} title="Wk" handleChange={(runs) => handleWicket(runs, Extras.WIDE)} />
+                <DropDown options={wicketOptions} title="Wk" handleChange={(wicket) => handleWicket(wicket)} />
                 <DropDown options={wicketOptions} title="..." handleChange={(runs) => handleRuns(runs, Extras.WIDE)} />
               </Col>
             </Card>
           </Col>
         </Row>
-        <CustomModal title="Select Bowler" isModalVisible={isNewBowler} handleSubmit={handleSubmit}>
+        <CustomModal title="Select Bowler" isModalVisible={isNewBowler}>
           <UserList data={team2AllPlayers.filter((i) => i.id != bowler.id)} handleResponse={handleSelectedBowler} />
         </CustomModal>
-        <RunOutDialog isOpen={isRunOutDialog} handleSelectedBowler={handleRunOut} team1Players={team1AllPlayers} team2Players={team2AllPlayers} />
+        <CustomModal title="Select Batsman" isModalVisible={isNewBatsman}>
+          <UserList data={team1AllPlayers} handleResponse={handleSelectNewBatsman} />
+        </CustomModal>
+        <RunOutDialog isOpen={isRunOutDialog} handleSubmit={handleRunOut} team1Players={team1AllPlayers} team2Players={team2AllPlayers} />
         <CeleberationDialog handleOk={() => setIsCeleberationVisible(false)} isVisible={isCeleberationVisible} />
       </Card>
     </>

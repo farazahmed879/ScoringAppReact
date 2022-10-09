@@ -1,39 +1,70 @@
 import React, { useState } from 'react';
-import { Radio } from 'antd';
+import { Button, Radio } from 'antd';
 import CustomModal from '../../components/Modal';
 import UserList from '../../components/UserList/indes';
 import { Extras } from '../../lib/appconst';
 import CustomInput from '../../components/Input';
-const RunOutDialog = ({ isOpen, handleSubmit, handleSelectedBowler, team1Players = [], team2Players = [] }) => {
+const RunOutDialog = ({ isOpen, handleSubmit, team1Players = [], team2Players = [] }) => {
   const [runs, setRuns] = useState('0');
-  const [extra, setExtra] = useState(Extras.NO_EXTRA);
+  const [buyOrlegBye, buyOrLegBye] = useState(Extras.NO_EXTRA);
+  const [wideOrNoBall, setWideOrNoBall] = useState(Extras.NO_EXTRA);
   const [fielderId, setFielderId] = useState();
+  const [batsman, setSelectedBatsman] = useState({});
 
   console.log('fielding players', team2Players);
   const handleRuns = (e) => {
     setRuns(e.target.value);
   };
-  const handleExtra = (e) => {
-    setExtra(e.target.value);
+
+  const handleWideOrNoBall = (e) => {
+    setWideOrNoBall(e.target.value);
+  };
+
+  const handleBuyOrLegBye = (e) => {
+    buyOrLegBye(e.target.value);
   };
 
   const handleChangeFielder = (e) => {
-    debugger;
     setFielderId(e);
   };
 
-  // const handleSelectedBowler = (e) => {
-  //   setExtra(e.target.value);
-  // };
+  const onSubmit = (e) => {
+    if (!Object.keys(batsman).length) return;
+    const obj = {
+      batsman,
+      wideOrNoBall,
+      buyOrlegBye,
+      fielderId,
+      runs,
+    };
+    handleSubmit(obj);
+  };
+
+  const handleSelectBatman = (e) => {
+    setSelectedBatsman(e);
+  };
   return (
     <CustomModal title="Run Out" isModalVisible={isOpen}>
       <>
-        <h3>Extras?</h3>
-        <Radio.Group value={extra} onChange={handleExtra}>
-          <Radio.Button value={Extras.NO_EXTRA}>With bat</Radio.Button>
-          <Radio.Button value={Extras.BYES}>Byes</Radio.Button>
-          <Radio.Button value={Extras.LEG_BYES}>Leg Byes</Radio.Button>
-        </Radio.Group>
+        <div style={{ marginTop: 10 }}>
+          <h3>Extras?</h3>
+          <Radio.Group value={wideOrNoBall} onChange={handleWideOrNoBall}>
+            <Radio.Button value={Extras.NO_EXTRA}>Legal</Radio.Button>
+            <Radio.Button value={Extras.WIDE}>Wide</Radio.Button>
+            <Radio.Button value={Extras.NO_BALLS}>No Ball</Radio.Button>
+          </Radio.Group>
+        </div>
+        {wideOrNoBall != Extras.WIDE && (
+          <div style={{ marginTop: 10 }}>
+            {/* <h3>Extras?</h3> */}
+            <Radio.Group value={buyOrlegBye} onChange={handleBuyOrLegBye}>
+              <Radio.Button value={Extras.NO_EXTRA}>With bat</Radio.Button>
+              <Radio.Button value={Extras.BYES}>Byes</Radio.Button>
+              <Radio.Button value={Extras.LEG_BYES}>Leg Byes</Radio.Button>
+            </Radio.Group>
+          </div>
+        )}
+
         <div style={{ marginTop: 10 }}>
           <h3>Runs</h3>
           <Radio.Group value={runs} onChange={handleRuns}>
@@ -54,7 +85,12 @@ const RunOutDialog = ({ isOpen, handleSubmit, handleSelectedBowler, team1Players
 
         <div style={{ marginTop: 10 }}>
           <h3>Which Batman got out?</h3>
-          <UserList data={team1Players} handleResponse={(e) => handleSelectedBowler({ e, runs, extra, fielderId })} />
+          <UserList data={team1Players} handleResponse={handleSelectBatman} selected={batsman.id} />
+        </div>
+        <div style={{ marginTop: 10 }}>
+          <Button type="primary" htmlType="button" onClick={onSubmit} disabled={!Object.keys(batsman).length}>
+            Submit
+          </Button>
         </div>
       </>
     </CustomModal>

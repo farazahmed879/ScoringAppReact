@@ -42,3 +42,10 @@ export const InningConst = {
   FIRST_INNING: 1,
   SECOND_INNING: 2
 };
+
+
+export const ERRORMESSAGE = {
+  STRIKER_NOT_FOUND: "Striker Not Found",
+  NON_STRIKER_NOT_FOUND: "Non-Striker Not Found"
+};
+
