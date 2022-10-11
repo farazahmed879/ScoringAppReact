@@ -18,7 +18,7 @@ import EventService from '../../services/event/EventService';
 import CustomTable from '../../components/Table';
 import { getBase64 } from '../../helper/getBase64';
 import matchTypeConst from '../../lib/matchTypeConst';
-import AppConsts from '../../lib/appconst';
+import AppConsts, { MatchStatus } from '../../lib/appconst';
 import tournamentTypeConst from '../../lib/tournamentTypeConst';
 import ViewImage from '../../components/ViewImage';
 import AddOrEditMatchModal from './addOrEditMatchModal';
@@ -463,10 +463,23 @@ const Matches = () => {
                   {' '}
                   <Link to={'/scoreCard/team1/' + item.team1Id + '/team2/' + item.team2Id + '/match/' + item.id}>{L('Add Score')}</Link>
                 </Menu.Item>
+
                 <Menu.Item>
-                  {' '}
-                  <Link to={'/startMatch/team1/' + item.team1Id + '/team2/' + item.team2Id + '/match/' + item.id}>{L('Start Match')}</Link>
+                  {item && !item.status &&
+                    <Link
+                      to={'/startMatch/team1/' + item.team1Id + '/' + item.team1 + '/team2/' + item.team2Id + '/' + item.team2 + '/match/' + item.id}>
+                      {L('Start')}
+                    </Link>
+                  }
+                  {item && item.status == MatchStatus.STARTED &&
+                    <Link
+                      to={'/liveScoring/team1/' + item.team1Id + '/' + item.team1 + '/team2/' + item.team2Id + '/' + item.team2 + '/match/' + item.id}>
+                      {L('Resume')}
+                    </Link>
+                  }
                 </Menu.Item>
+
+
               </Menu>
             }
             placement="bottomLeft"
@@ -474,8 +487,8 @@ const Matches = () => {
             <Button type="primary" icon="setting">
               {L('Actions')}
             </Button>
-          </Dropdown>
-        </div>
+          </Dropdown >
+        </div >
       ),
     },
   ];

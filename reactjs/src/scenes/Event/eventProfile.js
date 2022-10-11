@@ -177,7 +177,6 @@ const EventProfile = () => {
     match.values.matchTypeId = matchTypeConst.tournament;
     match.values.eventId = param.eventId;
     const response = handleSubmitMatch(match);
-    debugger;
     if (response) {
       setIsOpenMatchModal(false);
       getMatchesViewByEventId(param.eventId);

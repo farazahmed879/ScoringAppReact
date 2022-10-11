@@ -46,7 +46,6 @@ const AssignAdmin = ({ entityId, title, entityName }) => {
 
     }
     const handleChange = (value, key) => {
-        debugger
         setContact(value);
     }
 

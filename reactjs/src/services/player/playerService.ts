@@ -32,6 +32,11 @@ class PlayerService {
     return result.data.result;
   }
 
+  public async getTeamPlayersByMatchId(matchId: number, teamId: number) {
+    let result = await http.get(`/api/services/app/Player/GetTeamPlayersByMatchId?matchId=${matchId}&teamId=${teamId}`);
+    return result.data.result;
+  }
+
   public async getPlayersByEventId(eventId: number) {
     let result = await http.get(`/api/services/app/Player/GetAllByEventId?id=${eventId}`);
     return result.data.result;

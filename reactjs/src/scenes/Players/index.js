@@ -3,7 +3,7 @@ import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse, U
 import { L } from '../../lib/abpUtility';
 import playerService from '../../services/player/playerService';
 // import CustomModal from '../../components/Modal';
-import { Link } from 'react-router-dom';
+import { Link,router } from 'react-router-dom';
 import { battingStyleOptions, bowlingStyleOptions, genderOptions, playingRoleOptions } from '../../components/Enum/enum';
 import CustomInput from '../../components/Input';
 //import { CreateOrUpdatePlayerDto } from '../../services/player/dto/CreateOrUpdatePlayerDto';

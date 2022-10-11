@@ -41,7 +41,7 @@ const CustomInput = ({
       ) : type == 'datePicker' ? (
         <DatePicker value={value} style={{ width: width }} onChange={(e) => handleChange(e, stateKey)} name={stateKey}></DatePicker>
       ) : type == 'checkbox' ? (
-        <Checkbox  onChange={(e) => handleChange(e.target.checked, stateKey)} name={stateKey}></Checkbox>
+        <Checkbox  onChange={(e) => handleChange(e.target.checked, stateKey)} name={stateKey} checked={value}></Checkbox>
       ) : type == 'switch' ? (
         <Switch
           style={{ margin: '20px' }}
@@ -52,7 +52,7 @@ const CustomInput = ({
           name={stateKey}
         />
       ) : type == 'multiple' ? (
-        <Select disabled={disabled} mode="multiple" style={{ width: '100%' }} placeholder="Please select" onChange={(e) => handleChange(e, stateKey)}>
+        <Select disabled={disabled} mode="multiple" value={value} style={{ width: '100%' }} placeholder="Please select" onChange={(e) => handleChange(e, stateKey)}>
           {OptionGenerator(options)}
         </Select>
       ) : (

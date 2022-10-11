@@ -74,3 +74,189 @@ export const tournamentTypes = [
   { id: 1, name: 'Knock-out' },
   { id: 2, name: 'League Based' },
 ];
+
+export const wicketOptions = [
+  {
+    id: 1,
+    name: 'Not Out',
+  },
+  {
+    id: 2,
+    name: 'Bowled',
+  },
+  {
+    id: 3,
+    name: 'Catch',
+  },
+  {
+    id: 4,
+    name: 'Stump',
+  },
+  {
+    id: 5,
+    name: 'Hit Wicket',
+  },
+  {
+    id: 6,
+    name: 'Lbw',
+  },
+  {
+    id: 7,
+    name: 'Retired',
+  },
+  {
+    id: 7,
+    name: 'Run Out',
+  },
+];
+
+export const noBallOptions = [
+  {
+    id: 0,
+    name: '0',
+  },
+  {
+    id: 1,
+    name: '1',
+  },
+  {
+    id: 2,
+    name: '2',
+  },
+  {
+    id: 3,
+    name: '3',
+  },
+  {
+    id: 4,
+    name: '4',
+  },
+  {
+    id: 5,
+    name: '5',
+  },
+  {
+    id: 6,
+    name: '6',
+  },
+  {
+    id: 7,
+    name: '7',
+  },
+];
+export const wideOptions = [
+  {
+    id: 0,
+    name: '0',
+  },
+  {
+    id: 1,
+    name: '1',
+  },
+  {
+    id: 2,
+    name: '2',
+  },
+  {
+    id: 3,
+    name: '3',
+  },
+  {
+    id: 4,
+    name: '4',
+  },
+  {
+    id: 5,
+    name: '5',
+  },
+  {
+    id: 6,
+    name: '6',
+  },
+  {
+    id: 7,
+    name: '7',
+  },
+];
+export const byOptions = [
+  {
+    id: 1,
+    name: '1',
+  },
+  {
+    id: 2,
+    name: '2',
+  },
+  {
+    id: 3,
+    name: '3',
+  },
+  {
+    id: 4,
+    name: '4',
+  },
+  {
+    id: 5,
+    name: '5',
+  },
+  {
+    id: 6,
+    name: '6',
+  },
+  {
+    id: 7,
+    name: '7',
+  },
+];
+export const legByOptions = [
+  {
+    id: 1,
+    name: '1',
+  },
+  {
+    id: 2,
+    name: '2',
+  },
+  {
+    id: 3,
+    name: '3',
+  },
+  {
+    id: 4,
+    name: '4',
+  },
+  {
+    id: 5,
+    name: '5',
+  },
+  {
+    id: 6,
+    name: '6',
+  },
+  {
+    id: 7,
+    name: '7',
+  },
+];
+
+export const matchSettings = [
+  {
+    id: 1,
+    name: 'Exit Match',
+  },
+  {
+    id: 2,
+    name: 'Suspend Inning',
+  },
+  {
+    id: 3,
+    name: 'Refresh',
+  },
+];
+
+const generateEnum = (data = []) => {
+  return data.reduce((a, v) => ({ ...a, [v.name.replace(/[^A-Z0-9]/gi, '_')]: v.id }), {});
+};
+
+
+export const WICKETCONST = generateEnum(wicketOptions);
