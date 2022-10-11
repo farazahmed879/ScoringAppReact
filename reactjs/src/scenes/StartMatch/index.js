@@ -1,6 +1,6 @@
 import { Card, Col, PageHeader, Row, Steps, Button, Select, Form, Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { Link, useHistory, useParams} from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import CustomList from '../../components/CustomList';
 import { playingRoleOptions } from '../../components/Enum/enum';
 import CustomInput from '../../components/Input';
@@ -57,7 +57,7 @@ const StartMatch = () => {
         matchId: param.matchId,
         teamId: param.team1Id,
         isPlayedInning: startMatchFormik.values.striker == playerId || startMatchFormik.values.nonStriker == playerId ? true : false,
-        IsStriker: startMatchFormik.values.striker == playerId 
+        IsStriker: startMatchFormik.values.striker == playerId,
       };
       teamPlayers.push(teamPlayer);
     });
@@ -68,7 +68,7 @@ const StartMatch = () => {
         matchId: param.matchId,
         teamId: param.team2Id,
         isPlayedInning: false,
-        isBowling: startMatchFormik.values.bowler == playerId
+        isBowling: startMatchFormik.values.bowler == playerId,
       };
       teamPlayers.push(teamPlayer);
     });
@@ -81,7 +81,7 @@ const StartMatch = () => {
       players: teamPlayers,
       team1Id: param.team1Id,
       team2Id: param.team2Id,
-      Inning: InningConst.FIRST_INNING
+      Inning: InningConst.FIRST_INNING,
     };
     matchService.startMatch(model).then((res) => {
       res.success
@@ -163,23 +163,25 @@ const StartMatch = () => {
   const selectTeamPlayers = () => {
     return (
       <>
-        <Row justify="space-around" style={{ marginTop: '20px', marginBottom: '20px' }}>
-          <Col style={{ display: 'flex', justifyContent: 'center' }} span={10}>
+        <Row justify="space-evenly" style={{ marginTop: '20px', marginBottom: '20px' }}>
+          <Col span={10} style={{ display: 'flex', justifyContent: 'space-evenly' }}>
             <div>
               <b>{param.team1}</b>
+              <b style={{ marginLeft: 40 }}>{team1SelectedPlayers?.length || 0} selected</b>
             </div>
           </Col>
           <Col style={{ display: 'flex', justifyContent: 'center' }} span={4}>
             <div>V/S</div>
           </Col>
-          <Col style={{ display: 'flex', justifyContent: 'center' }} span={10}>
+          <Col span={10} style={{ display: 'flex', justifyContent: 'space-evenly' }}>
             <div>
-              <b>{param.team2}</b>
+              <b style={{ marginRight: 60 }}>{param.team2}</b>
+              <b>{team2SelectedPlayers?.length} selected</b>
             </div>
           </Col>
         </Row>
-        <Row justify="space-around">
-          <Col style={{ display: 'flex', justifyContent: 'center', paddingRight: '50px' }} span={12}>
+        <Row justify="space-evenly">
+          <Col style={{ display: 'flex', justifyContent: 'space-evenly', paddingRight: '50px', color: 'black' }} span={12}>
             <div>
               <CustomList
                 title={'Select Players'}
@@ -191,7 +193,7 @@ const StartMatch = () => {
               />
             </div>
           </Col>
-          <Col style={{ display: 'flex', justifyContent: 'center', paddingLeft: '50px' }} span={12}>
+          <Col style={{ display: 'flex', justifyContent: 'space-evenly', paddingLeft: '50px', color: 'black' }} span={12}>
             <div>
               <CustomList
                 title={'Select Players'}

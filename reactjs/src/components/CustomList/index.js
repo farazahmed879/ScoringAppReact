@@ -33,7 +33,6 @@ const CustomList = ({ title, list, initLoading, handleChange }) => {
   //       });
   //   };
 
-
   const loadMore =
     !initLoading && !loading ? (
       <div
@@ -49,17 +48,23 @@ const CustomList = ({ title, list, initLoading, handleChange }) => {
     ) : null;
   return (
     <>
-      <div>{title}</div>
+      {/* <div>{title}</div> */}
       <List
         className="demo-loadmore-list"
         loading={initLoading}
         itemLayout="horizontal"
         loadMore={loadMore}
         dataSource={list}
-        renderItem={(item,index) => (
-          <List.Item actions={[<CustomInput type={'checkbox'} handleChange={(x,y)=> handleChange(x,y,index)} stateKey={item.id} value={item.checked} />]}>
+        renderItem={(item, index) => (
+          <List.Item
+            actions={[<CustomInput type={'checkbox'} handleChange={(x, y) => handleChange(x, y, index)} stateKey={item.id} value={item.checked} />]}
+          >
             <Skeleton avatar title={false} loading={item.loading} active>
-              <List.Item.Meta avatar={<Avatar src={item.picture.large} />} title={item.name?.title} description="" />
+              <List.Item.Meta
+                avatar={<Avatar src={item.picture.large} />}
+                title={<span style={{ color: 'black' }}>{item.name?.title.toUpperCase()}</span>}
+                description=""
+              />
               <div>{item.playerRole}</div>
             </Skeleton>
           </List.Item>

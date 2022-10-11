@@ -264,7 +264,6 @@ const LiveScoring = () => {
   const handleWicketSubmit = (req) => {
     liveScoringService.changeBatsman(req).then((res) => {
       if (!res.success) return error({ title: res.successMessage });
-      debugger;
       setTeam1AllPlayers(res.data.filter((i) => i.howOutId == 1));
       setIsNewBatsman(true);
       setIsRunOutDialog(false);
