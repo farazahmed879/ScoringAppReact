@@ -45,7 +45,7 @@ const playerValidation = Yup.object().shape({
   gender: Yup.string().required('Required'),
   contact: Yup.string().required('Required').min(11, 'Contact must contain 11 numbers').max(11, 'Contact must contain 12 numbers'),
 });
-
+const [isOpenModal, setIsOpenModal] = useState(false);
 const success = Modal.success;
 const error = Modal.error;
 const { Panel } = Collapse;
@@ -216,7 +216,7 @@ const Player = () => {
 
   // useEffect(() => {
   //   if (!isOpenModal) {
-     
+
   //     //setProfile([]);
   //   }
   // }, [isOpenModal]);

@@ -24,6 +24,7 @@ class GroundService {
   }
 
   public async getPaginatedAll(pagedFilterAndSortedRequest: PagedGroundResultRequestDto) {
+    await http.get('/api/services/app/Ground/GetAll');
     let result = await http.get('/api/services/app/Ground/GetPaginatedAll', { params: pagedFilterAndSortedRequest });
     return result.data.result;
   }
