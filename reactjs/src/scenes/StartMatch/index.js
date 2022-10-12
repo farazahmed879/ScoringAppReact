@@ -173,7 +173,7 @@ const StartMatch = () => {
           <Col style={{ display: 'flex', justifyContent: 'center' }} span={4}>
             <div>V/S</div>
           </Col>
-          <Col span={10} style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+          <Col span={8} style={{ display: 'flex', justifyContent: 'space-evenly' }}>
             <div>
               <b style={{ marginRight: 60 }}>{param.team2}</b>
               <b>{team2SelectedPlayers?.length} selected</b>
