@@ -83,6 +83,7 @@ const LiveScoring = () => {
   const [data, setData] = React.useState(dummyData);
 
   const [strikerId, setStrikerId] = React.useState(dummyData.strikerId);
+  const [nonStrikerId, setNonStrikerId] = React.useState(dummyData.nonStrikerId);
   const [playingTeamId, setPlayingTeamId] = useState();
   const [bowlingTeamId, setBowlingTeamId] = useState();
   const [currentInning, setCurrentInning] = useState(dummyData.currentInning);
@@ -176,6 +177,7 @@ const LiveScoring = () => {
       team2Id: team2.teamId,
       matchId: param.matchId,
       batsmanId: strikerId,
+      nonStrikerId: nonStrikerId,
       bowlerId: bowler.id,
       extras: ballType,
     };
