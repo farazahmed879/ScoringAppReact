@@ -480,6 +480,46 @@ const LiveScoring = () => {
                   <h1>Required Run Rate : {'22'}</h1>
                 </Row>
               )}
+              <Row>
+                <section style={{ display: 'flex' }}>
+                  <div style={{ width: '10%' }}>
+                    <h3>{'Partnership:'}</h3>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-around', width: '80%', alignItems: 'center' }}>
+                    <h4>Batsman</h4>
+                    <h4>Batsman</h4>
+                  </div>
+                </section>
+              </Row>
+
+              <Col span={6}>
+                <div style={{ width: '50%', marginLeft: '10px' }}>
+                  <h3 style={{ fontSize: '40px' }}>{team1.runs}*</h3>
+                </div>
+              </Col>
+              <Col span={15}>
+                <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', alignItems: 'center' }}>
+                  <h4>Balls</h4>
+                  <h4>Fours</h4>
+                  <h4>Sixes</h4>
+                  <h4>S/R</h4>
+                </div>
+
+                <div style={{ width: '50%' }}></div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-around',
+                    width: '100%',
+                    alignItems: 'center',
+                  }}
+                >
+                  <h4>0</h4>
+                  <h4>0</h4>
+                  <h4>0</h4>
+                  <h4>0</h4>
+                </div>
+              </Col>
             </Card>
           </Col>
         </Row>
@@ -599,7 +639,7 @@ const LiveScoring = () => {
           </Col>
           {/* Card4 */}
           <Col span={12}>
-            <Card>
+            <Card style={{ height: '250px' }}>
               {' '}
               <Col
                 style={{
