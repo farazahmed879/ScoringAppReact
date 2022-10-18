@@ -3,7 +3,7 @@ import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse, U
 import { L } from '../../lib/abpUtility';
 import playerService from '../../services/player/playerService';
 // import CustomModal from '../../components/Modal';
-import { Link,router } from 'react-router-dom';
+import { Link, router } from 'react-router-dom';
 import { battingStyleOptions, bowlingStyleOptions, genderOptions, playingRoleOptions } from '../../components/Enum/enum';
 import CustomInput from '../../components/Input';
 //import { CreateOrUpdatePlayerDto } from '../../services/player/dto/CreateOrUpdatePlayerDto';
@@ -45,7 +45,7 @@ const playerValidation = Yup.object().shape({
   gender: Yup.string().required('Required'),
   contact: Yup.string().required('Required').min(11, 'Contact must contain 11 numbers').max(11, 'Contact must contain 12 numbers'),
 });
-const [isOpenModal, setIsOpenModal] = useState(false);
+
 const success = Modal.success;
 const error = Modal.error;
 const { Panel } = Collapse;

@@ -231,7 +231,7 @@ const TeamPlayers = () => {
         onBack={history.goBack}
         title={teamName + ' Players'}
       />
-      <Button style={floatingButton} class="filterButton" type="primary" shape="circle" icon="plus" onClick={addPlayer} />
+      <Button style={floatingButton} className="filterButton" type="primary" shape="circle" icon="plus" onClick={addPlayer} />
       {/* <h3>{teamName} Players</h3>{' '} */}
       <Transfer
         titles={['All Players', 'Selected Players']}
