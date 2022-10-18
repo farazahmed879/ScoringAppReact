@@ -182,7 +182,6 @@ const LiveScoring = () => {
   };
 
   const mappData = (data) => {
-    debugger;
     if (data.strikerId) setStrikerId(data.strikerId);
     if (data.nonStrikerId) setNonStrikerId(data.nonStrikerId);
     if (data.playingTeamId) setPlayingTeamId(data.playingTeamId);
@@ -297,7 +296,8 @@ const LiveScoring = () => {
   const handleWicketSubmit = (req) => {
     liveScoringService.changeBatsman(req).then((res) => {
       if (!res.success) return error({ title: res.successMessage });
-      setTeam1AllPlayers(res.data.filter((i) => i.howOutId == 1));
+      debugger
+      setTeam1AllPlayers(res.result.filter((i) => i.howOutId == 1));
       setIsNewBatsman(true);
       setIsRunOutDialog(false);
     });
@@ -525,7 +525,7 @@ const LiveScoring = () => {
                     </h4>
                     <h4>
                       {partnership?.player2Name}{' '}
-                      <Progress showInfo={false} percent={calculatePercentage(partnership.totalRuns, partnership.player1Runs)} status="active" />
+                      <Progress showInfo={false} percent={calculatePercentage(partnership.totalRuns, partnership.player2Runs)} status="active" />
                       {partnership?.player2Runs}
                     </h4>
                   </div>
