@@ -39,6 +39,7 @@ const StartMatch = () => {
   const [team2AllPlayers, setTeam2AllPlayers] = useState([]);
   const [team1SelectedPlayers, setTeam1SelectedPlayers] = useState([]);
   const [team2SelectedPlayers, setTeam2SelectedPlayers] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const param = useParams();
   const { Step } = Steps;
@@ -83,12 +84,14 @@ const StartMatch = () => {
       team2Id: param.team2Id,
       Inning: InningConst.FIRST_INNING,
     };
+    setIsLoading(true);
     matchService.startMatch(model).then((res) => {
       res.success
         ? history.push(
             '/liveScoring/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.matchId
           )
         : error({ title: res.successMessage });
+      setIsLoading(false);
     });
   };
 
@@ -310,7 +313,7 @@ const StartMatch = () => {
               {/* <Link to={'/liveScoring/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.id}>
                   <Button style={{ display: 'flex', float: 'right' }} htmlType="submit" type="primary">{('Start Match')}</Button>
                 </Link> */}
-              <Button style={{ display: 'flex', float: 'right' }} htmlType="submit" type="primary">
+              <Button style={{ display: 'flex', float: 'right' }} htmlType="submit" type="primary" disabled={isLoading}>
                 {'Start Match'}
               </Button>
             </Form.Item>

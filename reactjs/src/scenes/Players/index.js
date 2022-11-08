@@ -3,7 +3,7 @@ import { Button, Card, Form, Modal, Table, Dropdown, Menu, Row, Col, Collapse, U
 import { L } from '../../lib/abpUtility';
 import playerService from '../../services/player/playerService';
 // import CustomModal from '../../components/Modal';
-import { Link,router } from 'react-router-dom';
+import { Link, router } from 'react-router-dom';
 import { battingStyleOptions, bowlingStyleOptions, genderOptions, playingRoleOptions } from '../../components/Enum/enum';
 import CustomInput from '../../components/Input';
 //import { CreateOrUpdatePlayerDto } from '../../services/player/dto/CreateOrUpdatePlayerDto';
@@ -17,6 +17,7 @@ import CustomTable from '../../components/Table';
 import { getBase64 } from '../../helper/getBase64';
 import ViewImage from '../../components/ViewImage';
 import AddOrEditPlayerModal from './addOrEditPlayerModal';
+import PlayerColumns from './columns';
 
 // import './style.css';
 
@@ -45,7 +46,7 @@ const playerValidation = Yup.object().shape({
   gender: Yup.string().required('Required'),
   contact: Yup.string().required('Required').min(11, 'Contact must contain 11 numbers').max(11, 'Contact must contain 12 numbers'),
 });
-const [isOpenModal, setIsOpenModal] = useState(false);
+
 const success = Modal.success;
 const error = Modal.error;
 const { Panel } = Collapse;
@@ -316,102 +317,7 @@ const Player = () => {
     setPreview(true);
   };
 
-  const columns = [
-    {
-      title: 'Full Name',
-      width: 250,
-      dataIndex: 'name',
-      key: 'name',
-      fixed: 'left',
-      render: (text, item) => {
-        return (
-          <div>
-            <Link to={'/playerProfile/' + item.id}>{item.name}</Link>
-          </div>
-        );
-      },
-    },
-    {
-      title: 'Team',
-      width: 250,
-      dataIndex: 'teams',
-      fixed: 'left',
-      render: (text, item) => {
-        if (item && item.teams) {
-          Array.from(Array(item.teams), (e, index) => {
-            return <div>{e.title}</div>;
-          });
-        }
-      },
-    },
-    {
-      title: 'Contact',
-      width: 250,
-      dataIndex: 'contact',
-      key: 'contact',
-    },
-    {
-      title: 'Birth',
-      width: 250,
-      dataIndex: 'dob',
-      key: 'dob',
-      render: (item) => {
-        return moment(item).format('MM/DD/YYYY');
-      },
-    },
-    {
-      title: 'Playing Role',
-      width: 250,
-      dataIndex: 'playerRoleId',
-      key: 'playerRoleId',
-      render: (text, item) => {
-        return text > 0 ? playingRoleOptions.filter((i) => i.id == text)[0].name : 'N/A';
-      },
-    },
-    {
-      title: 'Batting Style',
-      width: 250,
-      dataIndex: 'battingStyleId',
-      key: 'battingStyleId',
-      render: (text, item) => {
-        return text > 0 ? battingStyleOptions.filter((i) => i.id == text)[0].name : 'N/A';
-      },
-    },
-    {
-      title: 'Bowling Style',
-      width: 250,
-      dataIndex: 'bowlingStyleId',
-      key: 'bowlingStyleId',
-      render: (text, item) => {
-        return text > 0 ? bowlingStyleOptions.filter((i) => i.id == text)[0].name : 'N/A';
-      },
-    },
-    {
-      title: 'Action',
-      key: 'operation',
-      fixed: 'right',
-      width: 100,
-      render: (text, item) => (
-        <div>
-          <Dropdown
-            trigger={['click']}
-            overlay={
-              <Menu>
-                <Menu.Item onClick={(e) => handleEditPlayer(item)}>{L('Edit')}</Menu.Item>
-                <Menu.Item onClick={(e) => handleDeletePlayer(item)}>{L('Delete')}</Menu.Item>
-                <Menu.Item onClick={(e) => viewPlayerProfile(item)}>{L('Profile')}</Menu.Item>
-              </Menu>
-            }
-            placement="bottomLeft"
-          >
-            <Button type="primary" icon="setting">
-              {L('Actions')}
-            </Button>
-          </Dropdown>
-        </div>
-      ),
-    },
-  ];
+
 
   console.log('validations', playerFormik);
 
@@ -431,7 +337,7 @@ const Player = () => {
       <CustomTable
         loading={loading}
         pagination={pagination}
-        columns={columns}
+        columns={PlayerColumns}
         data={playerList}
         scroll={{ x: 1500 }}
         handleTableChange={handleTableChange}

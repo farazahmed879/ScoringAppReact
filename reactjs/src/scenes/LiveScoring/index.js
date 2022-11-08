@@ -1,4 +1,4 @@
-import { Button, Card, Col, Divider, Icon, List, Menu, Modal, PageHeader, Radio, Row } from 'antd';
+import { Button, Card, Col, Divider, Icon, List, Menu, Modal, PageHeader, Progress, Radio, Row } from 'antd';
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 import { set } from 'lodash';
 import React, { useEffect, useState } from 'react';
@@ -20,6 +20,7 @@ const dummyData = {
   playingTeamId: 0,
   bowlingTeamId: 0,
   strikerId: 0,
+  nonStrikerId: 0,
   batsmans: {
     1: {
       runs: 0,
@@ -66,6 +67,33 @@ const dummyData = {
     wickets: 0,
     overs: 0,
   },
+  partnership: {
+    matchId: 0,
+    teamId: 0,
+    wicketNo: 0,
+    totalRuns: 0,
+    startTime: 0,
+    endTime: 0,
+    extras: 0,
+    six: 0,
+    four: 0,
+    playerOutId: 0,
+    //player2
+    player1Id: 0,
+    player1Name: 0,
+    player1Runs: 0,
+    player1Balls: 0,
+    player1Six: 0,
+    player1Four: 0,
+
+    //player2
+    player2Id: 0,
+    player2Name: 0,
+    player2Runs: 0,
+    player2Balls: 0,
+    player2Six: 0,
+    player2Four: 0,
+  },
   extras: {
     wides: 0,
     legByes: 0,
@@ -83,6 +111,7 @@ const LiveScoring = () => {
   const [data, setData] = React.useState(dummyData);
 
   const [strikerId, setStrikerId] = React.useState(dummyData.strikerId);
+  const [nonStrikerId, setNonStrikerId] = React.useState(dummyData.nonStrikerId);
   const [playingTeamId, setPlayingTeamId] = useState();
   const [bowlingTeamId, setBowlingTeamId] = useState();
   const [currentInning, setCurrentInning] = useState(dummyData.currentInning);
@@ -91,6 +120,7 @@ const LiveScoring = () => {
   const [batsmans, setBatsmans] = useState(dummyData.batsmans);
   const [bowler, setBowler] = useState(dummyData.bowler);
   const [extras, setExtras] = useState(dummyData.extras);
+  const [partnership, setPartnership] = useState(dummyData.partnership);
 
   //
   const [isCeleberationVisible, setIsCeleberationVisible] = useState(false);
@@ -152,6 +182,7 @@ const LiveScoring = () => {
 
   const mappData = (data) => {
     if (data.strikerId) setStrikerId(data.strikerId);
+    if (data.nonStrikerId) setNonStrikerId(data.nonStrikerId);
     if (data.playingTeamId) setPlayingTeamId(data.playingTeamId);
     if (data.bowlingTeamId) setBowlingTeamId(data.bowlingTeamId);
     if (data.currentInning) setCurrentInning(data.currentInning);
@@ -160,6 +191,7 @@ const LiveScoring = () => {
     if (data.batsmans) setBatsmans(data.batsmans);
     if (data.bowler) setBowler(data.bowler);
     if (data.extras) setExtras(data.extras);
+    if (data.partnership) setPartnership(data.partnership);
 
     if (Object.keys(data.batsmans).length < 2) {
       setTeam1AllPlayers(data.players);
@@ -176,6 +208,7 @@ const LiveScoring = () => {
       team2Id: team2.teamId,
       matchId: param.matchId,
       batsmanId: strikerId,
+      nonStrikerId: nonStrikerId,
       bowlerId: bowler.id,
       extras: ballType,
     };
@@ -264,7 +297,8 @@ const LiveScoring = () => {
   const handleWicketSubmit = (req) => {
     liveScoringService.changeBatsman(req).then((res) => {
       if (!res.success) return error({ title: res.successMessage });
-      setTeam1AllPlayers(res.data.filter((i) => i.howOutId == 1));
+      debugger
+      setTeam1AllPlayers(res.result.filter((i) => i.howOutId == 1));
       setIsNewBatsman(true);
       setIsRunOutDialog(false);
     });
@@ -390,6 +424,10 @@ const LiveScoring = () => {
     });
   };
 
+  const calculatePercentage = (total, obtain) => {
+    return (obtain * 100) / total;
+  };
+
   //s console.log('data', data);
   console.log('batsman', batsmans);
   console.log('team1AllPlayers', team1AllPlayers);
@@ -469,9 +507,6 @@ const LiveScoring = () => {
                   </Row>
                 </>
               )}
-              <Row>
-                <h1>Run Rate : {'123'}</h1>
-              </Row>
               {currentInning == 2 && (
                 <Row>
                   <h1>Required Run Rate : {'22'}</h1>
@@ -483,15 +518,23 @@ const LiveScoring = () => {
                     <h3>{'Partnership:'}</h3>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-around', width: '80%', alignItems: 'center' }}>
-                    <h4>Batsman</h4>
-                    <h4>Batsman</h4>
+                    <h4>
+                      {partnership?.player1Name}{' '}
+                      <Progress showInfo={false} percent={calculatePercentage(partnership.totalRuns, partnership.player1Runs)} status="active" />
+                      {partnership?.player1Runs}
+                    </h4>
+                    <h4>
+                      {partnership?.player2Name}{' '}
+                      <Progress showInfo={false} percent={calculatePercentage(partnership.totalRuns, partnership.player2Runs)} status="active" />
+                      {partnership?.player2Runs}
+                    </h4>
                   </div>
                 </section>
               </Row>
 
               <Col span={6}>
                 <div style={{ width: '50%', marginLeft: '10px' }}>
-                  <h3 style={{ fontSize: '40px' }}>{team1.runs}*</h3>
+                  <h3 style={{ fontSize: '40px' }}>{partnership.totalRuns}*</h3>
                 </div>
               </Col>
               <Col span={15}>
@@ -511,10 +554,10 @@ const LiveScoring = () => {
                     alignItems: 'center',
                   }}
                 >
-                  <h4>0</h4>
-                  <h4>0</h4>
-                  <h4>0</h4>
-                  <h4>0</h4>
+                  <h4>{partnership?.player1Balls + partnership?.player2Balls}</h4>
+                  <h4>{partnership?.four}</h4>
+                  <h4>{partnership?.six}</h4>
+                  <h4>{}</h4>
                 </div>
               </Col>
             </Card>
