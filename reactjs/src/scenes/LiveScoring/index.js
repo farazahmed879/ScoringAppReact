@@ -139,7 +139,6 @@ const LiveScoring = () => {
 
   const getLiveScoringData = (id) => {
     liveScoringService.Get(id).then((res) => {
-      debugger;
       if (!res.success) return error({ title: res.successMessage });
       // if(res.result.errorMessage == ERRORMESSAGE.STRIKER_NOT_FOUND || res.result.errorMessage == ERRORMESSAGE.NON_STRIKER_NOT_FOUND){
       //   setTeam1AllPlayers(res.result.playerList.filter(i=> i.howOutId == WICKETCONST.Not_Out));
@@ -152,7 +151,6 @@ const LiveScoring = () => {
   };
 
   const mappData = (data) => {
-    debugger;
     if (data.strikerId) setStrikerId(data.strikerId);
     if (data.playingTeamId) setPlayingTeamId(data.playingTeamId);
     if (data.bowlingTeamId) setBowlingTeamId(data.bowlingTeamId);
@@ -170,6 +168,8 @@ const LiveScoring = () => {
   };
 
   const handleSubmit = (runs, ballType) => {
+    setInitLoading(true);
+
     const req = {
       runs: runs,
       team1Id: team1.teamId,
@@ -181,8 +181,9 @@ const LiveScoring = () => {
     };
     liveScoringService.updateLiveScore(req).then((res) => {
       //res.success && ? success({ title: res.successMessage }) : error({ title: res.successMessage });
-      console.log(res);
+      console.log("result", res);
       mappData(res.result);
+      setInitLoading(false)
     });
   };
 
@@ -244,7 +245,6 @@ const LiveScoring = () => {
   };
 
   const handleRunOut = (e) => {
-    debugger;
     const req = {
       strikerId: strikerId,
       howOutId: WICKETCONST.Run_Out,
@@ -317,7 +317,7 @@ const LiveScoring = () => {
     setStrikerId(Object.keys(batsmans).filter((i) => i != strikerId)[0]);
   };
 
-  const handleBattingTimeLine = (runs) => {};
+  const handleBattingTimeLine = (runs) => { };
 
   const updateScore = (runs) => {
     updateTeamScore(runs);
@@ -354,7 +354,7 @@ const LiveScoring = () => {
   const calculateRRR = () => {
     return 0;
   };
-  const handleUndoRedo = (event) => {};
+  const handleUndoRedo = (event) => { };
 
   const calculateExtras = (data) => {
     const sumValues = Object.values(data).reduce((a, b) => a + b);
@@ -362,7 +362,6 @@ const LiveScoring = () => {
   };
 
   const handleSelectNewBatsman = (event) => {
-    debugger;
     var req = {
       batsmanId: event.id,
       matchId: param.matchId,
@@ -652,13 +651,14 @@ const LiveScoring = () => {
                     key={index}
                     style={{ margin: '10px', height: '60px', width: '60px' }}
                     value="1"
+                    disabled={initLoading}
                     onClick={() => handleRuns(el, Extras.NO_EXTRA)}
                   >
                     {el}
                   </Button>
                 ))}
 
-                <DropDown options={byOptions} title="B" handleChange={(runs) => handleRuns(runs, Extras.BYES)} />
+                <DropDown options={byOptions} title="B" handleChange={(runs) => handleRuns(runs, Extras.BYES)} disabled={initLoading}/>
                 <DropDown options={legByOptions} title="Lb" handleChange={(runs) => handleRuns(runs, Extras.LEG_BYES)} />
                 <DropDown options={wideOptions} title="W" handleChange={(runs) => handleRuns(runs, Extras.WIDE)} />
                 <DropDown options={noBallOptions} title="N" handleChange={(runs) => handleRuns(runs, Extras.NO_BALLS)} />
