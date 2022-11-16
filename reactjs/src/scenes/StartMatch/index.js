@@ -1,4 +1,4 @@
-import { Card, Col, PageHeader, Row, Steps, Button, Select, Form, Modal } from 'antd';
+import { Card, Col, PageHeader, Row, Steps, Button, Select, Form, Modal, Avatar } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import CustomList from '../../components/CustomList';
@@ -12,7 +12,8 @@ import Team from '../Teams';
 import * as Yup from 'yup';
 import { Formik, useFormik } from 'formik';
 import { get } from 'lodash';
-import { InningConst, MatchStatus, ScoringBy } from '../../lib/appconst';
+import { InningConst, IsLiveOrMannual, MatchStatus, ScoringBy } from '../../lib/appconst';
+import PlayerProfile from '../PlayerProfile/playerProfile';
 
 const fakeDataUrl = `https://randomuser.me/api/?results=${10}&inc=name,gender,email,nat,picture&noinfo`;
 const success = Modal.success;
@@ -78,7 +79,8 @@ const StartMatch = () => {
       status: MatchStatus.STARTED,
       matchId: param.matchId,
       scoringBy: ScoringBy.WEBAPP,
-      isLiveStreaming: false,
+      IsLiveOrMannual: IsLiveOrMannual.LIVE,
+
       players: teamPlayers,
       team1Id: param.team1Id,
       team2Id: param.team2Id,
@@ -213,6 +215,11 @@ const StartMatch = () => {
     );
   };
 
+  console.log(
+    'striker',
+    team1AllPlayers.find((i) => i.id == startMatchFormik.values.striker)
+  );
+
   const chooseOppeners = () => {
     return (
       <>
@@ -220,6 +227,15 @@ const StartMatch = () => {
         <Row justify="space-around">
           <Col style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingRight: '50px' }} span={12}>
             <Row gutter={16} className="form-container">
+              <Col span={24}>
+                <Col>
+                  <h1 style={{ marginLeft: '275px' }}>striker</h1>
+                </Col>
+                <img
+                  style={{ borderRadius: '10px', marginLeft: '200px', height: '175px', width: '200px' }}
+                  src={getImage(team1AllPlayers.find((i) => i.id == startMatchFormik.values.striker)?.profileUrl)}
+                />
+              </Col>
               <Col span={24}>
                 <CustomInput
                   style={{ margin: '50px' }}
@@ -232,21 +248,16 @@ const StartMatch = () => {
                   errorMessage={startMatchFormik.errors.striker}
                 />
               </Col>
+
               <Col span={24}>
-                <CustomInput
-                  type="select"
-                  options={team1AllPlayers.filter((i) => team1SelectedPlayers.includes(i.id) && i.id != startMatchFormik.values.striker)}
-                  title="Choose Non Striker"
-                  stateKey="nonStriker"
-                  handleChange={handleChange}
-                  value={startMatchFormik.values.nonStriker}
-                  errorMessage={startMatchFormik.errors.nonStriker}
+                <Col>
+                  <h1 style={{ marginLeft: '275px' }}>bowler</h1>
+                </Col>
+                <img
+                  style={{ borderRadius: '10px', marginLeft: '200px', height: '175px', width: '200px' }}
+                  src={getImage(team2AllPlayers.find((i) => i.id == startMatchFormik.values.bowler)?.profileUrl)}
                 />
               </Col>
-            </Row>
-          </Col>
-          <Col style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingLeft: '50px' }} span={12}>
-            <Row gutter={16} className="form-container">
               <Col span={24}>
                 <CustomInput
                   type="select"
@@ -256,6 +267,30 @@ const StartMatch = () => {
                   handleChange={handleChange}
                   value={startMatchFormik.values.bowler}
                   errorMessage={startMatchFormik.errors.bowler}
+                />
+              </Col>
+            </Row>
+          </Col>
+          <Col style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingLeft: '50px' }} span={12}>
+            <Row gutter={16} className="form-container">
+              <Col>
+                <Col>
+                  <h1 style={{ marginLeft: '275px' }}>nonStriker</h1>
+                </Col>
+                <img
+                  style={{ borderRadius: '10px', marginLeft: '200px', height: '175px', width: '200px' }}
+                  src={getImage(team1AllPlayers.find((i) => i.id == startMatchFormik.values.nonStriker)?.profileUrl)}
+                />
+              </Col>
+              <Col span={24}>
+                <CustomInput
+                  type="select"
+                  options={team1AllPlayers.filter((i) => team1SelectedPlayers.includes(i.id) && i.id != startMatchFormik.values.striker)}
+                  title="Choose Non Striker"
+                  stateKey="nonStriker"
+                  handleChange={handleChange}
+                  value={startMatchFormik.values.nonStriker}
+                  errorMessage={startMatchFormik.errors.nonStriker}
                 />
               </Col>
             </Row>
@@ -314,7 +349,7 @@ const StartMatch = () => {
                   <Button style={{ display: 'flex', float: 'right' }} htmlType="submit" type="primary">{('Start Match')}</Button>
                 </Link> */}
               <Button style={{ display: 'flex', float: 'right' }} htmlType="submit" type="primary" disabled={isLoading}>
-                {'Start Match'}
+                Start Match
               </Button>
             </Form.Item>
           )}

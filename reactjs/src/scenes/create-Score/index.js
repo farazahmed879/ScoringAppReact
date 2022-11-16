@@ -16,6 +16,7 @@ import ViewTeamScore from './viewTeamScore';
 import FallofWicket from './fallofWicket';
 import ViewFallOfWicket from './viewFallofWicket';
 import CustomTable from '../../components/Table';
+import { IsLiveOrMannual } from '../../lib/appconst';
 
 const { TabPane } = Tabs;
 
@@ -173,6 +174,7 @@ const AddScore = (prop) => {
       legByes: e.legByes,
       teamId: e.teamId || activeTag == 1 ? +param.team1Id : +param.team2Id,
       matchId: +param.matchId,
+      IsLiveOrMannual: IsLiveOrMannual.MANNUAL
     };
 
     //console.log('Team SCore Object', req);
