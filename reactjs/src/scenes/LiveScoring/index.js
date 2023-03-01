@@ -2,18 +2,20 @@ import { Button, Card, Col, Divider, Icon, List, Menu, Modal, PageHeader, Progre
 import { SSL_OP_SSLEAY_080_CLIENT_DH_BUG } from 'constants';
 import { set } from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 import CustomList from '../../components/CustomList';
 import { byOptions, legByOptions, noBallOptions, playingRoleOptions, WICKETCONST, wicketOptions, wideOptions } from '../../components/Enum/enum';
 import CustomModal from '../../components/Modal';
 import UserList from '../../components/UserList/indes';
 import { ERRORMESSAGE, Extras } from '../../lib/appconst';
 import genderConst from '../../lib/genderConst';
+import EventService from '../../services/event/EventService';
 import liveScoringService from '../../services/live-scoring/liveScoringService';
 import playerService from '../../services/player/playerService';
 import CeleberationDialog from './celeberationDialog';
 import DropDown from './dropDown';
 import RunOutDialog from './runoutDialog';
+import NewInning from '../StartMatch/new-Inning'
 
 const dummyData = {
   currentInning: '',
@@ -21,6 +23,7 @@ const dummyData = {
   bowlingTeamId: 0,
   strikerId: 0,
   nonStrikerId: 0,
+  overs: 0,
   batsmans: {
     1: {
       runs: 0,
@@ -104,6 +107,7 @@ const dummyData = {
 
 const success = Modal.success;
 const error = Modal.error;
+const confirm = Modal.confirm;
 
 const LiveScoring = () => {
   const history = useHistory();
@@ -121,6 +125,7 @@ const LiveScoring = () => {
   const [bowler, setBowler] = useState(dummyData.bowler);
   const [extras, setExtras] = useState(dummyData.extras);
   const [partnership, setPartnership] = useState(dummyData.partnership);
+  const [overs, setOvers] = useState(dummyData.overs);
 
   //
   const [isCeleberationVisible, setIsCeleberationVisible] = useState(false);
@@ -128,22 +133,26 @@ const LiveScoring = () => {
   const [isNewBatsman, setIsNewBatsman] = useState(false);
   const [initLoading, setInitLoading] = useState(false);
   const [isRunOutDialog, setIsRunOutDialog] = useState(false);
+  const [isNewInningPopUp, setNewInningPopUp] = useState(false);
 
   //
   const [team1AllPlayers, setTeam1AllPlayers] = useState([]);
   const [team2AllPlayers, setTeam2AllPlayers] = useState([]);
   const [team2Bowlers, setTeam2Bowlers] = useState([]);
 
+
   useEffect(() => {
     getLiveScoringData(param.matchId);
   }, []);
 
   useEffect(() => {
+    // debugger
     if (bowler.totalBalls % 6 == 0 && bowler.totalBalls != 0 && !bowler.newOver) {
       setIsNewBowler(true);
       getAllBowlers(bowlingTeamId);
     }
   }, [bowler]);
+
 
   const getAllBowlers = (teamId) => {
     setInitLoading(true);
@@ -169,6 +178,7 @@ const LiveScoring = () => {
 
   const getLiveScoringData = (id) => {
     liveScoringService.Get(id).then((res) => {
+      // debugger
       if (!res.success) return error({ title: res.successMessage });
       // if(res.result.errorMessage == ERRORMESSAGE.STRIKER_NOT_FOUND || res.result.errorMessage == ERRORMESSAGE.NON_STRIKER_NOT_FOUND){
       //   setTeam1AllPlayers(res.result.playerList.filter(i=> i.howOutId == WICKETCONST.Not_Out));
@@ -192,9 +202,16 @@ const LiveScoring = () => {
     if (data.bowler) setBowler(data.bowler);
     if (data.extras) setExtras(data.extras);
     if (data.partnership) setPartnership(data.partnership);
+    if (data.overs) setOvers(data.overs);
+
 
     if (Object.keys(data.batsmans).length < 2) {
+      console.log("Data.players", data.players);
       setTeam1AllPlayers(data.players);
+      if (data.players.length == 0) {
+        newInningModal()
+        return
+      }
       setIsNewBatsman(true);
     }
   };
@@ -208,9 +225,10 @@ const LiveScoring = () => {
       team2Id: team2.teamId,
       matchId: param.matchId,
       batsmanId: strikerId,
-      nonStrikerId: nonStrikerId,
       bowlerId: bowler.id,
       extras: ballType,
+      newOver: bowler.newOver,
+      nonStrikerId: nonStrikerId,
     };
     liveScoringService.updateLiveScore(req).then((res) => {
       //res.success && ? success({ title: res.successMessage }) : error({ title: res.successMessage });
@@ -273,6 +291,7 @@ const LiveScoring = () => {
       runs: 0,
       extra: 0,
       isByeOrLegBye: false,
+      nonStrikerId: nonStrikerId,
     };
     handleWicketSubmit(req);
   };
@@ -280,6 +299,7 @@ const LiveScoring = () => {
   const handleRunOut = (e) => {
     const req = {
       strikerId: strikerId,
+      nonStrikerId: nonStrikerId,
       howOutId: WICKETCONST.Run_Out,
       batsmanId: e?.batsman?.id,
       matchId: param.matchId,
@@ -294,13 +314,35 @@ const LiveScoring = () => {
     handleWicketSubmit(req);
   };
 
+  const newInningModal = () => {
+    confirm({
+      title: 'Current Inning Is Ended! Do Yo Want To Continue Another Inning',
+      onOk() {
+        history.push(
+          // '/startMatch/' + NewInning + 'team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.matchId
+          '/newInning/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.matchId
+
+        )
+        console.log('Ok');
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  }
+
   const handleWicketSubmit = (req) => {
     liveScoringService.changeBatsman(req).then((res) => {
       if (!res.success) return error({ title: res.successMessage });
-      debugger
-      setTeam1AllPlayers(res.result.filter((i) => i.howOutId == 1));
-      setIsNewBatsman(true);
-      setIsRunOutDialog(false);
+      if (res.result.length > 0) {
+        setTeam1AllPlayers(res.result.filter((i) => i.howOutId == 1));
+        setIsNewBatsman(true);
+        setIsRunOutDialog(false);
+      }
+
+      if (res.result.length == 0) {
+        newInningModal()
+      }
     });
   };
 
@@ -476,6 +518,7 @@ const LiveScoring = () => {
                     <h4> CRR: {calculateCRR(team1.runs, team1.overs)?.toFixed(2)} |</h4>
                     <h4> RRR: {'11'} |</h4>
                     <h4> Extras: {calculateExtras(extras)}</h4>
+                    <h4> Overs: {overs}</h4>
                   </section>
                 </Col>
               </Col>
@@ -557,7 +600,7 @@ const LiveScoring = () => {
                   <h4>{partnership?.player1Balls + partnership?.player2Balls}</h4>
                   <h4>{partnership?.four}</h4>
                   <h4>{partnership?.six}</h4>
-                  <h4>{}</h4>
+                  <h4>{ }</h4>
                 </div>
               </Col>
             </Card>
@@ -701,7 +744,7 @@ const LiveScoring = () => {
                   </Button>
                 ))}
 
-                <DropDown options={byOptions} title="B" handleChange={(runs) => handleRuns(runs, Extras.BYES)} disabled={initLoading}/>
+                <DropDown options={byOptions} title="B" handleChange={(runs) => handleRuns(runs, Extras.BYES)} disabled={initLoading} />
                 <DropDown options={legByOptions} title="Lb" handleChange={(runs) => handleRuns(runs, Extras.LEG_BYES)} />
                 <DropDown options={wideOptions} title="W" handleChange={(runs) => handleRuns(runs, Extras.WIDE)} />
                 <DropDown options={noBallOptions} title="N" handleChange={(runs) => handleRuns(runs, Extras.NO_BALLS)} />
@@ -717,6 +760,7 @@ const LiveScoring = () => {
         <CustomModal title="Select Batsman" isModalVisible={isNewBatsman}>
           <UserList data={team1AllPlayers} handleResponse={handleSelectNewBatsman} />
         </CustomModal>
+        {/* <CustomModal title="Do Yo Want To Continue New Inning" isModalVisible={isNewInningPopUp} /> */}
         <RunOutDialog isOpen={isRunOutDialog} handleSubmit={handleRunOut} team1Players={team1AllPlayers} team2Players={team2AllPlayers} />
         <CeleberationDialog handleOk={() => setIsCeleberationVisible(false)} isVisible={isCeleberationVisible} />
       </Card>

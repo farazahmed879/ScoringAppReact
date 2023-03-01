@@ -76,10 +76,7 @@ export const tournamentTypes = [
 ];
 
 export const wicketOptions = [
-  {
-    id: 1,
-    name: 'Not Out',
-  },
+
   {
     id: 2,
     name: 'Bowled',
@@ -102,12 +99,13 @@ export const wicketOptions = [
   },
   {
     id: 7,
-    name: 'Retired',
-  },
-  {
-    id: 7,
     name: 'Run Out',
   },
+  {
+    id: 8,
+    name: 'Retired',
+  },
+ 
 ];
 
 export const noBallOptions = [

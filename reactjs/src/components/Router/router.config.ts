@@ -203,6 +203,15 @@ export const appRouters: any = [
     component: LoadableComponent(() => import('../../scenes/StartMatch')),
   },
   {
+    path: '/newInning/team1/:team1Id/:team1/team2/:team2Id/:team2/match/:matchId',
+    permission: '',
+    title: 'New Inning',
+    name: 'newInning',
+    icon: 'info-circle',
+    showInMenu: false,
+    component: LoadableComponent(() => import('../../scenes/StartMatch/new-Inning')),
+  },
+  {
     path: '/liveScoring/team1/:team1Id/:team1/team2/:team2Id/:team2/match/:matchId',
     permission: '',
     title: 'Live Scoring',
