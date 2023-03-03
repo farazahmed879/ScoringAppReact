@@ -225,7 +225,7 @@ const AddOrEditMatchModal = ({
 
           <Form.Item>
             <Button type="primary" htmlType="submit" disabled={!matchFormik.isValid} onClick={matchFormik.handleSubmit}>
-              {Object.keys(matchFormik.values).length ? 'Update' : 'Add'}
+              {matchFormik?.values?.id ? 'Update' : 'Add'}
             </Button>
             <Button htmlType="button" onClick={handleCancel}>
               Cancel

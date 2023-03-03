@@ -30,6 +30,18 @@ class liveScoringService {
     let result = await http.post('/api/services/app/LiveScore/ChangeBatsman', input);
     return result.data;
   }
+
+  // this service is used for StartMatch or FirstInning 
+  public async startMatch(model: any) {
+    let result = await http.post('/api/services/app/Match/CreateMatchDetails', model);
+    return result.data.result;
+  }
+
+// this service is used for StartMatch or SeconsdInning
+  public async startSecondInning(input: any) {
+    let result = await http.put('/api/services/app/Match/UpdateMatchDetails', input);
+    return result.data;
+  }
 }
 
 export default new liveScoringService();

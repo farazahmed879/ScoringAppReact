@@ -7,7 +7,7 @@ import CustomList from '../../components/CustomList';
 import { byOptions, legByOptions, noBallOptions, playingRoleOptions, WICKETCONST, wicketOptions, wideOptions } from '../../components/Enum/enum';
 import CustomModal from '../../components/Modal';
 import UserList from '../../components/UserList/indes';
-import { ERRORMESSAGE, Extras } from '../../lib/appconst';
+import { ERRORMESSAGE, Extras, InningConst } from '../../lib/appconst';
 import genderConst from '../../lib/genderConst';
 import EventService from '../../services/event/EventService';
 import liveScoringService from '../../services/live-scoring/liveScoringService';
@@ -146,20 +146,23 @@ const LiveScoring = () => {
   }, []);
 
   useEffect(() => {
-    // debugger
+    debugger
     if (bowler.totalBalls % 6 == 0 && bowler.totalBalls != 0 && !bowler.newOver) {
       setIsNewBowler(true);
-      getAllBowlers(bowlingTeamId);
+      getAllBowlers(param.matchId, bowlingTeamId);
     }
   }, [bowler]);
 
 
-  const getAllBowlers = (teamId) => {
+  const getAllBowlers = (matchId, teamId) => {
     setInitLoading(true);
     if (team2AllPlayers.length == 0)
-      playerService.getAllByTeamId(teamId).then((res) => {
+      playerService.getTeamPlayersByMatchId(matchId, teamId).then((res) => {
         console.log('Team Player', res);
         setInitLoading(false);
+        console.log("PlayingTeamId", playingTeamId);
+        console.log("BowlingTeamId", bowlingTeamId);
+
         if (teamId == playingTeamId) {
           setTeam1AllPlayers(res);
         }
@@ -191,6 +194,7 @@ const LiveScoring = () => {
   };
 
   const mappData = (data) => {
+    debugger;
     if (data.strikerId) setStrikerId(data.strikerId);
     if (data.nonStrikerId) setNonStrikerId(data.nonStrikerId);
     if (data.playingTeamId) setPlayingTeamId(data.playingTeamId);
@@ -227,7 +231,7 @@ const LiveScoring = () => {
       batsmanId: strikerId,
       bowlerId: bowler.id,
       extras: ballType,
-      newOver: bowler.newOver,
+      newOver: bowler.totalBalls % 6 == 0,
       nonStrikerId: nonStrikerId,
     };
     liveScoringService.updateLiveScore(req).then((res) => {
@@ -271,7 +275,7 @@ const LiveScoring = () => {
     console.log(howOutId);
     if (howOutId == WICKETCONST.Run_Out) {
       let currentBatsmans = [];
-      getAllBowlers(bowlingTeamId);
+      getAllBowlers(param.matchId, bowlingTeamId);
       Object.keys(batsmans).map((el) => {
         currentBatsmans.push(batsmans[el]);
       });
@@ -509,8 +513,11 @@ const LiveScoring = () => {
                     </h2>
                     <h4> ({team1.overs}) ov</h4>
                   </section>
+                  
                   <h4>
-                    {team2.name} <sub>(Yet to bat)</sub>
+                    {team2.name} 
+                    {currentInning != InningConst.SECOND_INNING ? <sub>(Yet to bat)</sub> : <sub>{team2.runs}/{team2.wickets} ({team1.overs})</sub>  }
+                    
                   </h4>
                 </Col>
                 <Col span={12}>

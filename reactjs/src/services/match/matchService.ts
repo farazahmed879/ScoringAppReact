@@ -55,10 +55,7 @@ class MatchService {
     let result = await http.get(`/api/services/app/Match/GetMatchesByEventId?id=${id}`);
     return result.data.result;
   }
-  public async startMatch(model: any) {
-    let result = await http.post('/api/services/app/Match/CreateMatchDetails',model);
-    return result.data.result;
-  }
+  
 }
 
 export default new MatchService();

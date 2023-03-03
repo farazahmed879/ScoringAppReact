@@ -15,6 +15,7 @@ import { get } from 'lodash';
 import { InningConst, IsLiveOrMannual, MatchStatus, ScoringBy } from '../../lib/appconst';
 import PlayerProfile from '../PlayerProfile/playerProfile';
 import ChooseOppeners from './chooseOppeners';
+import liveScoringService from '../../services/live-scoring/liveScoringService';
 
 const fakeDataUrl = `https://randomuser.me/api/?results=${10}&inc=name,gender,email,nat,picture&noinfo`;
 const success = Modal.success;
@@ -88,7 +89,7 @@ const StartMatch = () => {
       Inning: InningConst.FIRST_INNING,
     };
     setIsLoading(true);
-    matchService.startMatch(model).then((res) => {
+    liveScoringService.startMatch(model).then((res) => {
       res.success
         ? history.push(
           '/liveScoring/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.matchId
