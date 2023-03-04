@@ -49,7 +49,6 @@ const NewInning = () => {
 
     const handleSubmit = () => {
         const teamPlayers = []
-        debugger
         team2SelectedPlayers.forEach((playerId) => {
             const teamPlayer = {
                 playerId: playerId,
@@ -72,7 +71,6 @@ const NewInning = () => {
             };
             teamPlayers.push(teamPlayer);
         });
-        debugger;
         const req = {
             status: MatchStatus.STARTED,
             matchId: param.matchId,

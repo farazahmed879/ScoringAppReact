@@ -24,6 +24,7 @@ const dummyData = {
   strikerId: 0,
   nonStrikerId: 0,
   overs: 0,
+  currentOvers: 0,
   batsmans: {
     1: {
       runs: 0,
@@ -126,6 +127,7 @@ const LiveScoring = () => {
   const [extras, setExtras] = useState(dummyData.extras);
   const [partnership, setPartnership] = useState(dummyData.partnership);
   const [overs, setOvers] = useState(dummyData.overs);
+  const [currentOvers, setCurrentOvers] = useState(dummyData.currentOvers);
 
   //
   const [isCeleberationVisible, setIsCeleberationVisible] = useState(false);
@@ -146,11 +148,16 @@ const LiveScoring = () => {
   }, []);
 
   useEffect(() => {
-    debugger
     if (bowler.totalBalls % 6 == 0 && bowler.totalBalls != 0 && !bowler.newOver) {
-      setIsNewBowler(true);
-      getAllBowlers(param.matchId, bowlingTeamId);
+      {
+        team1.overs == overs ?
+          newInningModal()
+          :
+          setIsNewBowler(true);
+        getAllBowlers(param.matchId, bowlingTeamId);
+      }
     }
+    console.log("CurrentOvers", currentOvers);
   }, [bowler]);
 
 
@@ -189,12 +196,14 @@ const LiveScoring = () => {
       //   return
       // }
       const data = res.result;
+      setCurrentOvers(res.result.overs)
       mappData(data);
     });
   };
 
+
   const mappData = (data) => {
-    debugger;
+    debugger
     if (data.strikerId) setStrikerId(data.strikerId);
     if (data.nonStrikerId) setNonStrikerId(data.nonStrikerId);
     if (data.playingTeamId) setPlayingTeamId(data.playingTeamId);
@@ -218,7 +227,12 @@ const LiveScoring = () => {
       }
       setIsNewBatsman(true);
     }
+
+    if (team1.overs == data.overs) {
+      newInningModal()
+    }
   };
+
 
   const handleSubmit = (runs, ballType) => {
     setInitLoading(true);
@@ -513,11 +527,11 @@ const LiveScoring = () => {
                     </h2>
                     <h4> ({team1.overs}) ov</h4>
                   </section>
-                  
+
                   <h4>
-                    {team2.name} 
-                    {currentInning != InningConst.SECOND_INNING ? <sub>(Yet to bat)</sub> : <sub>{team2.runs}/{team2.wickets} ({team1.overs})</sub>  }
-                    
+                    {team2.name}
+                    {currentInning != InningConst.SECOND_INNING ? <sub>(Yet to bat)</sub> : <sub>{team2.runs}/{team2.wickets} ({team1.overs})</sub>}
+
                   </h4>
                 </Col>
                 <Col span={12}>
