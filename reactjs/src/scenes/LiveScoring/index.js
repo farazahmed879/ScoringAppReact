@@ -150,11 +150,24 @@ const LiveScoring = () => {
   useEffect(() => {
     if (bowler.totalBalls % 6 == 0 && bowler.totalBalls != 0 && !bowler.newOver) {
       {
-        team1.overs == overs ?
-          newInningModal()
-          :
-          setIsNewBowler(true);
-        getAllBowlers(param.matchId, bowlingTeamId);
+        debugger
+        if (currentInning == 1) {
+          if (team2.overs == currentOvers || team2.overs > currentOvers) {
+            newInningModal()
+          } else {
+            setIsNewBowler(true);
+            getAllBowlers(param.matchId, bowlingTeamId);
+          }
+        }
+
+        if (currentInning == 2) {
+          if (team1.overs == currentOvers || team1.overs > currentOvers) {
+            endMatchModal()
+          } else {
+            setIsNewBowler(true);
+            getAllBowlers(param.matchId, bowlingTeamId);
+          }
+        }
       }
     }
     console.log("CurrentOvers", currentOvers);
@@ -188,7 +201,6 @@ const LiveScoring = () => {
 
   const getLiveScoringData = (id) => {
     liveScoringService.Get(id).then((res) => {
-      // debugger
       if (!res.success) return error({ title: res.successMessage });
       // if(res.result.errorMessage == ERRORMESSAGE.STRIKER_NOT_FOUND || res.result.errorMessage == ERRORMESSAGE.NON_STRIKER_NOT_FOUND){
       //   setTeam1AllPlayers(res.result.playerList.filter(i=> i.howOutId == WICKETCONST.Not_Out));
@@ -203,7 +215,6 @@ const LiveScoring = () => {
 
 
   const mappData = (data) => {
-    debugger
     if (data.strikerId) setStrikerId(data.strikerId);
     if (data.nonStrikerId) setNonStrikerId(data.nonStrikerId);
     if (data.playingTeamId) setPlayingTeamId(data.playingTeamId);
@@ -339,6 +350,22 @@ const LiveScoring = () => {
         history.push(
           // '/startMatch/' + NewInning + 'team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.matchId
           '/newInning/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.matchId
+
+        )
+        console.log('Ok');
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  }
+  const endMatchModal = () => {
+    confirm({
+      title: 'Match Has Been Ended',
+      onOk() {
+        history.push(
+          // '/startMatch/' + NewInning + 'team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.matchId
+          '/matches'
 
         )
         console.log('Ok');
