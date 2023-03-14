@@ -152,7 +152,7 @@ const LiveScoring = () => {
       {
         debugger
         if (currentInning == 1) {
-          if (team2.overs == currentOvers || team2.overs > currentOvers) {
+          if (team1.overs === currentOvers || team1.overs > currentOvers) {
             newInningModal()
           } else {
             setIsNewBowler(true);
@@ -161,7 +161,7 @@ const LiveScoring = () => {
         }
 
         if (currentInning == 2) {
-          if (team1.overs == currentOvers || team1.overs > currentOvers) {
+          if (team1.overs === currentOvers || team1.overs > currentOvers) {
             endMatchModal()
           } else {
             setIsNewBowler(true);
@@ -240,6 +240,7 @@ const LiveScoring = () => {
     }
 
     if (team1.overs == data.overs) {
+      debugger
       newInningModal()
     }
   };
@@ -366,7 +367,6 @@ const LiveScoring = () => {
         history.push(
           // '/startMatch/' + NewInning + 'team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.matchId
           '/matches'
-
         )
         console.log('Ok');
       },
