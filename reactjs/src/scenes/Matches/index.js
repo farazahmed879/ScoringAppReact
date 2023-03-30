@@ -463,7 +463,7 @@ const Matches = () => {
                 <Menu.Item onClick={(e) => handleDeleteMatch(item)}>{L('Delete')}</Menu.Item>
                 <Menu.Item>
                   {' '}
-                  <Link to={'/scoreCard/team1/' + item.team1Id + '/team2/' + item.team2Id + '/match/' + item.id}>{L('Add Score')}</Link>
+                  <Link to={'/scoreCard/team1/' + item.team1Id + '/team2/' + item.team2Id + '/match/' + item.id}>{L('Add Score Manually')}</Link>
                 </Menu.Item>
 
                 {item && item.isLiveOrMannual != IsLiveOrMannual.MANNUAL && (
@@ -474,7 +474,7 @@ const Matches = () => {
                           '/startMatch/team1/' + item.team1Id + '/' + item.team1 + '/team2/' + item.team2Id + '/' + item.team2 + '/match/' + item.id
                         }
                       >
-                        {L('Start')}
+                        {L('Start Live Scoring')}
                       </Link>
                     )}
                     {item && item.status == MatchStatus.STARTED && (

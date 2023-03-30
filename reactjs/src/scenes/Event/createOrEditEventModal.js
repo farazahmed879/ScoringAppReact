@@ -162,7 +162,7 @@ const CreateOrEditEventModal = ({
             <Form.Item>
               <Button type="primary" htmlType="submit" onClick={eventFormik.handleSubmit}>
                 {/* {Object.keys(editEvent).length ? 'Update' : 'Add'} */}
-                {Object.keys(eventFormik.values).length ? 'Update' : 'Add'}
+                {eventFormik.values.id ? 'Update' : 'Add'}
               </Button>
               <Button htmlType="button" onClick={handleCancel}>
                 Cancel

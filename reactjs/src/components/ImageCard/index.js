@@ -11,7 +11,7 @@ const ImageCard = ({ data, viewImageModal }) => {
           <div className="img-wrapper">
             <img className="blur" alt="example" src={getImage(data.profileUrl || data.url)} height={150} width={150} />
             <div className="content fade">
-              <Icon type="eye" onClick={() => viewImageModal(data)} />
+              <Icon type="eye" onClick={() => viewImageModal(data)} style={{ curson: 'pointer' }} />
             </div>
           </div>
         </div>

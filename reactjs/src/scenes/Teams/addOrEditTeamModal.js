@@ -127,7 +127,7 @@ const AddOrEditTeamModal = ({
           </Row>
           <Form.Item>
             <Button type="primary" htmlType="submit" disabled={!teamFormik.isValid} onClick={teamFormik.handleSubmit}>
-              {Object.keys(teamFormik.values).length ? 'Update' : 'Add'}
+              {teamFormik.values.id ? 'Update' : 'Add'}
             </Button>
             <Button htmlType="button" onClick={handleCancel}>
               Cancel

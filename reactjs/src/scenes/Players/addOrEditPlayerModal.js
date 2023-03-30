@@ -190,7 +190,7 @@ const AddOrEditPlayerModal = ({
 
             <Form.Item>
               <Button type="primary" htmlType="submit" onClick={playerFormik.handleSubmit}>
-                {Object.keys(playerFormik.values).length ? 'Update' : 'Add'}
+                {playerFormik.values.id ? 'Update' : 'Add'}
               </Button>
               <Button htmlType="button" onClick={handleCancel}>
                 Cancel
