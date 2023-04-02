@@ -24,7 +24,6 @@ const AddOrEditPlayerModal = ({
   profile = {},
   teamName,
 }) => {
-  console.log('playerFormik AddOrEditPlayerModal', playerFormik);
   return (
     <>
       <CustomModal

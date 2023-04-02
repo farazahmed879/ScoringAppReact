@@ -21,7 +21,7 @@ const ChooseOppeners = ({ team1AllPlayers = [],
                 <Row gutter={16} className="form-container">
                     <Col span={24}>
                         <Col>
-                            <h1 style={{ marginLeft: '275px' }}>striker</h1>
+                            <h1 style={{ marginLeft: '275px' }}>Striker</h1>
                         </Col>
                         <img
                             style={{ borderRadius: '10px', marginLeft: '200px', height: '175px', width: '200px' }}
@@ -46,7 +46,7 @@ const ChooseOppeners = ({ team1AllPlayers = [],
 
                     <Col span={24}>
                         <Col>
-                            <h1 style={{ marginLeft: '275px' }}>bowler</h1>
+                            <h1 style={{ marginLeft: '275px' }}>Bowler</h1>
                         </Col>
                         <img
                             style={{ borderRadius: '10px', marginLeft: '200px', height: '175px', width: '200px' }}
@@ -72,7 +72,7 @@ const ChooseOppeners = ({ team1AllPlayers = [],
                 <Row gutter={16} className="form-container">
                     <Col>
                         <Col>
-                            <h1 style={{ marginLeft: '275px' }}>nonStriker</h1>
+                            <h1 style={{ marginLeft: '275px' }}>Non-Striker</h1>
                         </Col>
                         <img
                             style={{ borderRadius: '10px', marginLeft: '200px', height: '175px', width: '200px' }}

@@ -30,6 +30,7 @@ const baseUrl = 'http://localhost:21021';
 const matchValidation = Yup.object().shape({
   team1Id: Yup.string().required('Required'),
   team2Id: Yup.string().required('Required'),
+  matchOvers: Yup.number().required('Required'),
   matchTypeId: Yup.string().required('Required'),
 });
 
@@ -113,7 +114,6 @@ const Matches = () => {
       return;
     }
 
-    console.log('Match Object', req);
     matchService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);
@@ -212,7 +212,6 @@ const Matches = () => {
     }
     setGroups(group);
 
-    console.log('groups', groups);
   };
 
   const getAll = (filter) => {
@@ -228,7 +227,6 @@ const Matches = () => {
         date: filter && filter.date ? moment(filter.date).valueOf() : undefined,
       })
       .then((res) => {
-        console.log('Matches', res.items);
         setLoading(false);
         setMatchList(
           res.items.map((r) => ({
@@ -246,21 +244,18 @@ const Matches = () => {
 
   const getAllTeamsByEventId = (id, group) => {
     TeamService.getAllEventTeams(id, group).then((res) => {
-      console.log('Event Teams', res);
       setTeamList(res);
     });
   };
 
   const getAllTeams = () => {
     TeamService.getAll().then((res) => {
-      console.log('Teams', res);
       setFilterTeamList(res);
     });
   };
 
   const getAllGrounds = () => {
     GroundService.getAll().then((res) => {
-      console.log('Grounds', res);
       setGroundList(res);
     });
   };
@@ -270,13 +265,11 @@ const Matches = () => {
     teamIds.push(matchFormik.values.team1Id);
     teamIds.push(matchFormik.values.team2Id);
     playerService.AllPlayersByTeamIds(teamIds).then((res) => {
-      console.log('Players', res);
       setPlayerList(res);
     });
   };
   const getAllEvents = () => {
     EventService.getAll().then((res) => {
-      console.log('eventList', res);
       setEventList(res);
     });
   };
@@ -323,7 +316,6 @@ const Matches = () => {
         console.log('Cancel');
       },
     });
-    console.log(picture);
   };
 
   const handleEditMatch = (item) => {
@@ -370,7 +362,6 @@ const Matches = () => {
     matchFormik.setValues({});
   };
 
-  console.log('matchFormik', matchFormik.values);
 
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
@@ -461,10 +452,12 @@ const Matches = () => {
               <Menu>
                 <Menu.Item onClick={() => handleEditMatch(item)}>{L('Edit')}</Menu.Item>
                 <Menu.Item onClick={(e) => handleDeleteMatch(item)}>{L('Delete')}</Menu.Item>
-                <Menu.Item>
-                  {' '}
-                  <Link to={'/scoreCard/team1/' + item.team1Id + '/team2/' + item.team2Id + '/match/' + item.id}>{L('Add Score Manually')}</Link>
-                </Menu.Item>
+                {item && item.isLiveOrMannual != IsLiveOrMannual.LIVE && (
+                  <Menu.Item>
+                    {' '}
+                    <Link to={'/scoreCard/team1/' + item.team1Id + '/team2/' + item.team2Id + '/match/' + item.id}>{L('Add Score Manually')}</Link>
+                  </Menu.Item>
+                )}
 
                 {item && item.isLiveOrMannual != IsLiveOrMannual.MANNUAL && (
                   <Menu.Item>
@@ -500,7 +493,6 @@ const Matches = () => {
       ),
     },
   ];
-  // console.log('matchFormik', matchFormik);
 
   return (
     <Card>

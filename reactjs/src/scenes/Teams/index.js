@@ -84,7 +84,6 @@ const Team = () => {
       //setIsOpenModal(true);
     }
     TeamService.createOrUpdate(teamForm).then((res) => {
-      console.log('res', res);
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       getAll();
       setIsOpenModal(false);
@@ -109,7 +108,6 @@ const Team = () => {
   });
 
   const callback = (key) => {
-    console.log(key);
   };
 
   useEffect(() => {
@@ -125,7 +123,6 @@ const Team = () => {
       type: filter ? filter.type : undefined,
     }).then((res) => {
       if (res) {
-        console.log('Teams', res);
         setTeamList(
           res.items.map((r) => ({
             ...r,
@@ -166,7 +163,6 @@ const Team = () => {
 
   const handleProfileUpload = ({ fileList }) => {
     setProfile(fileList);
-    //console.log('profile', e.file);
   };
 
   const handleTableChange = (e) => {
@@ -184,7 +180,6 @@ const Team = () => {
     setProfile([]);
     TeamService.getTeamById(item.id).then((res) => {
       if (res) {
-        console.log('Team', res);
         teamFormik.setValues({
           ...teamFormik.values,
           ...res,
@@ -228,7 +223,6 @@ const Team = () => {
         console.log('Cancel');
       },
     });
-    console.log(picture);
   };
 
   const resetForm = () => {};
@@ -256,7 +250,6 @@ const Team = () => {
     setPreview(true);
   };
 
-  //console.log('gallery', gallery);
 
   const columns = [
     {
@@ -316,7 +309,6 @@ const Team = () => {
     },
   ];
 
-  //console.log('profile', profile);
   return (
     <Card>
       <div style={{ display: 'flex', justifyContent: 'space-between', margin: '10px' }}>

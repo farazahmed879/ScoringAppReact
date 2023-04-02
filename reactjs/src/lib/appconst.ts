@@ -41,6 +41,8 @@ export const ScoringBy = {
 export const InningConst = {
   FIRST_INNING: 1,
   SECOND_INNING: 2,
+  FIRST_INNING_ENDED: 3,
+  MATCH_ENDED: 4,
 };
 export const IsLiveOrMannual = {
   LIVE: 1,
@@ -50,4 +52,94 @@ export const IsLiveOrMannual = {
 export const ERRORMESSAGE = {
   STRIKER_NOT_FOUND: 'Striker Not Found',
   NON_STRIKER_NOT_FOUND: 'Non-Striker Not Found',
+};
+
+
+export const dummyData = {
+  currentInning: '',
+  playingTeamId: 0,
+  bowlingTeamId: 0,
+  strikerId: 0,
+  nonStrikerId: 0,
+  overs: 0,
+  currentOvers: 0,
+  batsmans: {
+    1: {
+      runs: 0,
+      id: 0,
+      name: '',
+      sixes: 0,
+      fours: 0,
+      balls: 0,
+      timeline: [],
+    },
+    2: {
+      runs: 0,
+      id: 0,
+      name: '',
+      sixes: 0,
+      fours: 0,
+      balls: 0,
+      timeline: [],
+    },
+  },
+  bowler: {
+    runs: 0,
+    overs: 0,
+    balls: 0,
+    totalBalls: 0,
+    wickets: 0,
+    maidens: 0,
+    timeline: [],
+    id: 0,
+    name: '',
+    newOver: false,
+  },
+  team1: {
+    runs: 0,
+    teamId: 0,
+    overs: 0,
+    wickets: 0,
+    name: '',
+  },
+  team2: {
+    name: '',
+    runs: 0,
+    id: 0,
+    wickets: 0,
+    overs: 0,
+  },
+  partnership: {
+    matchId: 0,
+    teamId: 0,
+    wicketNo: 0,
+    totalRuns: 0,
+    startTime: 0,
+    endTime: 0,
+    extras: 0,
+    six: 0,
+    four: 0,
+    playerOutId: 0,
+    //player2
+    player1Id: 0,
+    player1Name: 0,
+    player1Runs: 0,
+    player1Balls: 0,
+    player1Six: 0,
+    player1Four: 0,
+
+    //player2
+    player2Id: 0,
+    player2Name: 0,
+    player2Runs: 0,
+    player2Balls: 0,
+    player2Six: 0,
+    player2Four: 0,
+  },
+  extras: {
+    wides: 0,
+    legByes: 0,
+    byes: 0,
+    NoBalls: 0,
+  },
 };

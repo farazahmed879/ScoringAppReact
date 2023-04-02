@@ -1,10 +1,8 @@
 import React from 'react';
 import { Row, Col, Card } from 'antd';
 const Scorecard = ({ batsman = [], bowler = [], teamScore, matchDetails }) => {
-  console.log(teamScore);
 
   const handleHowOut = (data) => {
-    // console.log('data', data);
     switch (data.howOut) {
       case 1: {
         return 'Not out';
@@ -28,145 +26,156 @@ const Scorecard = ({ batsman = [], bowler = [], teamScore, matchDetails }) => {
         return 'run out ' + data.fielder;
       }
       default: {
-        return 'N/A'
+        return 'N/A';
       }
     }
   };
 
   return (
     <Card>
-      <Row>
-        <Col span={14}>
-          <h2>Batsman</h2>
-        </Col>
-        <Col span={2}>
-          <h2>R</h2>
-        </Col>
-        <Col span={2}>
-          <h2>B</h2>
-        </Col>
-        <Col span={2}>
-          <h2>4s</h2>
-        </Col>
-        <Col span={2}>
-          <h2>6s</h2>
-        </Col>
-        <Col span={2}>
-          <h2>S/R</h2>
-        </Col>
-      </Row>
-      <hr />
-      {batsman.map((a, index) => (
-        <div key={index}>
-          <Row>
-            <Col span={14}>
-              <h1 style={{ marginBottom: '0' }}>{a.playerName}</h1>
-              {/* <h6>{a.bowler}</h6> */}
-              <h5>{handleHowOut(a)}</h5>
-            </Col>
-            <Col span={2}>
-              <h1>{a.runs || '-'}</h1>
-            </Col>
-            <Col span={2}>
-              <h1>{a.balls || '-'}</h1>
-            </Col>
-            <Col span={2}>
-              <h1>{a.four || '-'}</h1>
-            </Col>
-            <Col span={2}>
-              <h1>{a.six || '-'}</h1>
-            </Col>
-            <Col span={2}>
-              <h1>{((a.runs * 100) / a.balls).toFixed(2)}</h1>
-            </Col>
-          </Row>
-          <hr />
-        </div>
-      ))}
-      <Row>
-        <Col span={14}>
-          <h1>Extras</h1>
-        </Col>
-        <Col span={10}>
-          <h1>
-            {teamScore.extras} (NB {teamScore.noBall}, W {teamScore.wide}, LB {teamScore.legBye}, B {teamScore.bye})
-          </h1>
-        </Col>
-      </Row>
-      <hr />
-      <Row>
-        <Col span={14}>
-          <h1>Total Runs</h1>
-        </Col>
-        <Col span={10}>
-          <h1>
-            {' '}
-            {teamScore.score} ({teamScore.wickets} wkts , {teamScore.overs} ov )
-          </h1>
-        </Col>
-      </Row>
-      <Row style={{ marginTop: '40px' }}>
-        <Col span={14}>
-          <h2>Bowling</h2>
-        </Col>
-        <Col span={2}>
-          <h2>O</h2>
-        </Col>
-        <Col span={2}>
-          <h2>M</h2>
-        </Col>
-        <Col span={2}>
-          <h2>R</h2>
-        </Col>
-        <Col span={2}>
-          <h2>W</h2>
-        </Col>
-        <Col span={2}>
-          <h2>Econ</h2>
-        </Col>
-      </Row>
-      <hr />
-      {bowler.map((a, index) => (
-        <div key={index}>
-          <Row>
-            <Col span={14}>
-              <h4>{a.playerName}</h4>
-            </Col>
-            <Col span={2}>
-              <h4>{a.overs || '-'}</h4>
-            </Col>
-            <Col span={2}>
-              <h3>{a.maiden || '-'}</h3>
-            </Col>
-            <Col span={2}>
-              <h3>{a.runs || '-'}</h3>
-            </Col>
-            <Col span={2}>
-              <h3>{a.wickets || '-'}</h3>
-            </Col>
-            <Col span={2}>
-              <h3>{(a.runs / a.overs).toFixed(2) || '-'}</h3>
-            </Col>
-          </Row>
-          <hr />
-        </div>
-      ))}
-      <Row>
-        <Col span={14}>
-          <h1>Toss : </h1>
-        </Col>
-        <Col span={10}>
-          <h1>{matchDetails.toss}</h1>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={14}>
-          <h1>Ground : </h1>
-        </Col>
-        <Col span={10}>
-          <h1>{matchDetails.stadium}</h1>
-        </Col>
-      </Row>
+      <Col span={8}></Col>
+      <Col span={16}>
+        {/* Batsman Header */}
+        <Row>
+          <Col span={14}>
+            <h2>Batsman</h2>
+          </Col>
+          <Col span={2}>
+            <h2>R</h2>
+          </Col>
+          <Col span={2}>
+            <h2>B</h2>
+          </Col>
+          <Col span={2}>
+            <h2>4s</h2>
+          </Col>
+          <Col span={2}>
+            <h2>6s</h2>
+          </Col>
+          <Col span={2}>
+            <h2>S/R</h2>
+          </Col>
+        </Row>
+        <hr />
+        {/* Batsman Data */}
+        {batsman.map((a, index) => (
+          <div key={index}>
+            <Row>
+              <Col span={14} style={{ textAlign: 'left' }}>
+                <h1 style={{ marginBottom: '0' }}>{a.playerName}</h1>
+                {/* <h6>{a.bowler}</h6> */}
+                <h5>{handleHowOut(a)}</h5>
+              </Col>
+              <Col span={2}>
+                <h1>{a.runs || '-'}</h1>
+              </Col>
+              <Col span={2}>
+                <h1>{a.balls || '-'}</h1>
+              </Col>
+              <Col span={2}>
+                <h1>{a.four || '-'}</h1>
+              </Col>
+              <Col span={2}>
+                <h1>{a.six || '-'}</h1>
+              </Col>
+              <Col span={2}>
+                <h1>{((a.runs * 100) / a.balls).toFixed(2)}</h1>
+              </Col>
+            </Row>
+            <hr />
+          </div>
+        ))}
+        {/* Extras*/}
+        <Row>
+          <Col span={14}>
+            <h1>Extras</h1>
+          </Col>
+          <Col span={10}>
+            <h1>
+              {teamScore.extras} (NB {teamScore.noBall}, W {teamScore.wide}, LB {teamScore.legBye}, B {teamScore.bye})
+            </h1>
+          </Col>
+        </Row>
+        <hr />
+        {/* Total*/}
+        <Row>
+          <Col span={14}>
+            <h1>Total Runs</h1>
+          </Col>
+          <Col span={10}>
+            <h1>
+              {' '}
+              {teamScore.score} ({teamScore.wickets} wkts , {teamScore.overs} ov )
+            </h1>
+          </Col>
+        </Row>
+
+        {/* Bowling Header */}
+        <Row style={{ marginTop: '40px' }}>
+          <Col span={14}>
+            <h2>Bowling</h2>
+          </Col>
+          <Col span={2}>
+            <h2>O</h2>
+          </Col>
+          <Col span={2}>
+            <h2>M</h2>
+          </Col>
+          <Col span={2}>
+            <h2>R</h2>
+          </Col>
+          <Col span={2}>
+            <h2>W</h2>
+          </Col>
+          <Col span={2}>
+            <h2>Econ</h2>
+          </Col>
+        </Row>
+        <hr />
+
+        {/* Bowling Data */}
+        {bowler.map((a, index) => (
+          <div key={index}>
+            <Row>
+              <Col span={14} style={{ textAlign: 'left' }}>
+                <h4>{a.playerName}</h4>
+              </Col>
+              <Col span={2}>
+                <h4>{a.overs || '-'}</h4>
+              </Col>
+              <Col span={2}>
+                <h3>{a.maiden || '-'}</h3>
+              </Col>
+              <Col span={2}>
+                <h3>{a.runs || '-'}</h3>
+              </Col>
+              <Col span={2}>
+                <h3>{a.wickets || '-'}</h3>
+              </Col>
+              <Col span={2}>
+                <h3>{(a.runs / a.overs).toFixed(2) || '-'}</h3>
+              </Col>
+            </Row>
+            <hr />
+          </div>
+        ))}
+        <Row>
+          <Col span={14}>
+            <h1>Toss : </h1>
+          </Col>
+          <Col span={10}>
+            <h1>{matchDetails.toss}</h1>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={14}>
+            <h1>Ground : </h1>
+          </Col>
+          <Col span={10}>
+            <h1>{matchDetails.stadium}</h1>
+          </Col>
+        </Row>
+      </Col>
     </Card>
   );
 };

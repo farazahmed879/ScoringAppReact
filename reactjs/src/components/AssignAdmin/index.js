@@ -53,10 +53,8 @@ const AssignAdmin = ({ entityId, title, entityName }) => {
         if (!contact)
             return;
         setIsLoading(true)
-        console.log("handleGetUser");
         userService.getUserByContact(contact).then((res) => {
             if (res) {
-                console.log("getUserByContact", res);
                 setUser(res.result);
             }
             setIsLoading(false);

@@ -107,7 +107,6 @@ const Register = () => {
   };
 
   const handleRegisterSubmit = () => {
-    console.log('handleSubmit');
     let req = {
       id: 0,
       name: userFormik.values.name,

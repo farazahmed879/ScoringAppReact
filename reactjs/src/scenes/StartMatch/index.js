@@ -76,7 +76,6 @@ const StartMatch = () => {
       };
       teamPlayers.push(teamPlayer);
     });
-    console.log('teamplayers', teamPlayers);
     var model = {
       status: MatchStatus.STARTED,
       matchId: param.matchId,
@@ -92,8 +91,8 @@ const StartMatch = () => {
     liveScoringService.startMatch(model).then((res) => {
       res.success
         ? history.push(
-          '/liveScoring/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.matchId
-        )
+            '/liveScoring/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.matchId
+          )
         : error({ title: res.successMessage });
       setIsLoading(false);
     });
@@ -113,8 +112,6 @@ const StartMatch = () => {
   const getAllPlayerByTeamId = (id) => {
     setInitLoading(true);
     playerService.getAllByTeamId(id).then((res) => {
-      console.log('Team Player', res);
-
       let array = [];
       res.forEach((el, index) => {
         let ob = {
@@ -163,9 +160,6 @@ const StartMatch = () => {
     event ? arra.push(key) : arra.pop(key);
     setTeam2SelectedPlayers(arra);
   };
-  console.log('team1SelectedPlayers', team1SelectedPlayers);
-  console.log('team2SelectedPlayers', team2SelectedPlayers);
-  console.log('startMatchFormik', startMatchFormik);
 
   const selectTeamPlayers = () => {
     return (
@@ -189,39 +183,34 @@ const StartMatch = () => {
         </Row>
         <Row justify="space-evenly">
           <Col style={{ display: 'flex', justifyContent: 'space-evenly', paddingRight: '50px', color: 'black' }} span={12}>
-            <div>
-              <CustomList
-                title={'Select Players'}
-                list={team1List}
-                initLoading={initLoading}
-                handleChange={handleTeam1PlayerChange}
-                stateKey="Player"
-                value={startMatchFormik.values.Players}
-              />
-            </div>
+            <CustomList
+              title={'Select Players'}
+              list={team1List}
+              initLoading={initLoading}
+              handleChange={handleTeam1PlayerChange}
+              stateKey="Player"
+              value={startMatchFormik.values.Players}
+            />
           </Col>
           <Col style={{ display: 'flex', justifyContent: 'space-evenly', paddingLeft: '50px', color: 'black' }} span={12}>
-            <div>
-              <CustomList
-                title={'Select Players'}
-                list={team2List}
-                initLoading={initLoading}
-                handleChange={handleTeam2PlayerChange}
-                stateKey="Players"
-                value={startMatchFormik.values.Players}
-              />
-            </div>
+            <CustomList
+              title={'Select Players'}
+              list={team2List}
+              initLoading={initLoading}
+              handleChange={handleTeam2PlayerChange}
+              stateKey="Players"
+              value={startMatchFormik.values.Players}
+            />
           </Col>
         </Row>
       </>
     );
   };
 
-  console.log(
-    'striker',
-    team1AllPlayers.find((i) => i.id == startMatchFormik.values.striker)
-  );
-
+  // console.log(
+  //   'striker',
+  //   team1AllPlayers.find((i) => i.id == startMatchFormik.values.striker)
+  // );
 
   const steps = [
     {
@@ -230,15 +219,16 @@ const StartMatch = () => {
     },
     {
       title: 'Select Oppeners',
-      content: <ChooseOppeners
-        team1AllPlayers={team1AllPlayers}
-        team1SelectedPlayers={team1SelectedPlayers}
-        startMatchFormik={startMatchFormik}
-        handleChange={handleChange}
-        team2AllPlayers={team2AllPlayers}
-        team2SelectedPlayers={team2SelectedPlayers}
-
-      />,
+      content: (
+        <ChooseOppeners
+          team1AllPlayers={team1AllPlayers}
+          team1SelectedPlayers={team1SelectedPlayers}
+          startMatchFormik={startMatchFormik}
+          handleChange={handleChange}
+          team2AllPlayers={team2AllPlayers}
+          team2SelectedPlayers={team2SelectedPlayers}
+        />
+      ),
     },
   ];
 

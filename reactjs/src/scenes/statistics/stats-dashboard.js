@@ -28,7 +28,7 @@ const StatsDashboard = () => {
   const mostRuns = () => {
     let req = {};
     statisticsService.mostRuns(req).then((res) => {
-      console.log('Grounds', res);
+
       setData(res);
       columns = [
         {
@@ -85,7 +85,6 @@ const StatsDashboard = () => {
   const mostWickets = () => {
     let req = {};
     statisticsService.mostWickets(req).then((res) => {
-      console.log('Grounds', res);
       setData(res);
       columns = [
         {
@@ -142,7 +141,7 @@ const StatsDashboard = () => {
   const mostFifties = () => {
     let req = {};
     statisticsService.mostFifties(req).then((res) => {
-      console.log('mostFifties', res);
+
       setData(res);
       columns = [
         {
@@ -199,7 +198,6 @@ const StatsDashboard = () => {
   const mostCenturies = () => {
     let req = {};
     statisticsService.mostCenturies(req).then((res) => {
-      console.log('mostCenturies', res);
       setData(res);
       columns = [
         {
@@ -256,7 +254,6 @@ const StatsDashboard = () => {
   const mostFours = () => {
     let req = {};
     statisticsService.mostFours(req).then((res) => {
-      console.log('mostFours', res);
       setData(res);
       columns = [
         {
@@ -313,7 +310,7 @@ const StatsDashboard = () => {
   const mostSixes = () => {
     let req = {};
     statisticsService.mostSixes(req).then((res) => {
-      console.log('mostSixes', res);
+
       setData(res);
       columns = [
         {
@@ -370,7 +367,7 @@ const StatsDashboard = () => {
   const mostCatches = () => {
     let req = {};
     statisticsService.mostCatches(req).then((res) => {
-      console.log('mostCatches', res);
+
       setData(res);
       columns = [
         {
@@ -427,7 +424,7 @@ const StatsDashboard = () => {
   const mostStumps = () => {
     let req = {};
     statisticsService.mostStumps(req).then((res) => {
-      console.log('mostStumps', res);
+
       setData(res);
       columns = [
         {

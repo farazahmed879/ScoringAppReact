@@ -120,7 +120,6 @@ const AddScore = (prop) => {
   }, []);
 
   const callback = (key) => {
-    console.log(key);
   };
 
   //handle Submit
@@ -149,7 +148,6 @@ const AddScore = (prop) => {
       isPlayedInning: scoreCardFormik.values.isPlayedInning,
     };
 
-    //console.log('Match Object', req);
     ScoreCardService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);

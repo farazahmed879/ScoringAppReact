@@ -72,7 +72,7 @@ const Player = () => {
   });
 
   const callback = (key) => {
-    console.log(key);
+
   };
 
   const handleSubmit = () => {
@@ -109,7 +109,6 @@ const Player = () => {
       return;
     }
 
-    console.log('Player Object', playerObject);
     playerService.createOrUpdate(playerObject).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);
@@ -251,7 +250,6 @@ const Player = () => {
         contact: filter ? filter.contact : undefined,
       })
       .then((res) => {
-        console.log('Players', res.items);
         setLoading(false);
         // setPlayerList(res.items)
         setPlayerList(
@@ -270,7 +268,6 @@ const Player = () => {
 
   const getAllTeams = () => {
     TeamService.getAll().then((res) => {
-      console.log('Teams', res);
       setTeamList(res);
     });
   };
@@ -280,7 +277,6 @@ const Player = () => {
       playerId: id,
     };
     playerService.playerStatistics(req).then((res) => {
-      console.log('setPlayerStats', res);
       setPlayerStats(res);
     });
   };
@@ -306,7 +302,6 @@ const Player = () => {
         console.log('Cancel');
       },
     });
-    console.log(picture);
   };
 
   const handleChange = (value, key) => {
@@ -334,7 +329,6 @@ const Player = () => {
 
   const handleProfileUpload = ({ fileList }) => {
     setProfile(fileList);
-    //console.log('profile', e.file);
   };
 
   const handleChangeDatePicker = (date, dateString) => {
@@ -360,7 +354,6 @@ const Player = () => {
           error({ title: res.successMessage });
           return;
         }
-        console.log('player', res);
         playerFormik.setValues({
           ...playerFormik.values,
           ...res.result,
@@ -415,7 +408,6 @@ const Player = () => {
     setPreview(true);
   };
 
-  console.log('validations', playerFormik);
 
   return (
     <Card>
