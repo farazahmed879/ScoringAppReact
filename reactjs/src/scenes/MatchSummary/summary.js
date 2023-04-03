@@ -1,15 +1,16 @@
-import React  from 'react';
-import { Col, PageHeader, Row, Skeleton } from 'antd';
+import React from 'react';
+import { Col, PageHeader, Row, Skeleton, Tag } from 'antd';
 
 const Summary = ({
   loading = false,
   team1Score = {},
   team2Score = {},
   firstInningTop3Batsman = [],
-  firstInningTop3Bowler= [],
+  firstInningTop3Bowler = [],
   secondInningTop3Batsman = [],
   secondInningTop3Bowler = [],
   matchDetails = {},
+  isShowResult = false
 }) => {
   return (
     <Skeleton loading={loading}>
@@ -23,7 +24,7 @@ const Summary = ({
 
         <Col span={12} style={{ padding: '10px' }}>
           {firstInningTop3Batsman.map((data, index) => (
-            <Row id={index}>
+            <Row key={index}>
               <Col span={20}>
                 <h1>{data.playerName}</h1>
               </Col>
@@ -37,7 +38,7 @@ const Summary = ({
         </Col>
         <Col span={12} style={{ padding: '10px' }}>
           {firstInningTop3Bowler.map((data, index) => (
-            <Row id={index}>
+            <Row key={index}>
               <Col span={20}>
                 <h1>{data.playerName || '-'}</h1>
               </Col>
@@ -59,7 +60,7 @@ const Summary = ({
         />
         <Col span={12} style={{ padding: '10px' }}>
           {secondInningTop3Batsman.map((data, index) => (
-            <Row id={index}>
+            <Row key={index}>
               <Col span={20}>
                 <h1>{data.playerName}</h1>
               </Col>
@@ -73,7 +74,7 @@ const Summary = ({
         </Col>
         <Col span={12} style={{ padding: '10px' }}>
           {secondInningTop3Bowler.map((data, index) => (
-            <Row id={index}>
+            <Row key={index}>
               <Col span={20}>
                 <h1>{data.playerName || '-'}</h1>
               </Col>
@@ -90,6 +91,11 @@ const Summary = ({
         <h1>Toss: {matchDetails.toss || 'N/A'}</h1>
         <h1>Ground: {matchDetails.ground || 'N/A'}</h1>
       </Row>
+      {isShowResult && (
+        <Row style={{ textAlign: 'center', font: 20 }}>
+          <h2>{matchDetails.matchResult || 'N/A'}</h2>
+        </Row>
+      )}
     </Skeleton>
   );
 };

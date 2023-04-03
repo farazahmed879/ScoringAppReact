@@ -183,6 +183,7 @@ const MatchSummary = () => {
             secondInningTop3Batsman={secondInningTop3Batsman}
             secondInningTop3Bowler={secondInningTop3Bowler}
             matchDetails={matchDetails}
+            isShowResult={false}
           />
         </TabPane>
         <TabPane

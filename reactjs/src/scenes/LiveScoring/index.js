@@ -4,10 +4,19 @@ import { set } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { Link, useHistory, useParams } from 'react-router-dom';
 import CustomList from '../../components/CustomList';
-import { byOptions, legByOptions, noBallOptions, playingRoleOptions, WICKETCONST, wicketOptions, wideOptions } from '../../components/Enum/enum';
+import {
+  byOptions,
+  legByOptions,
+  matchSettings,
+  noBallOptions,
+  playingRoleOptions,
+  WICKETCONST,
+  wicketOptions,
+  wideOptions,
+} from '../../components/Enum/enum';
 import CustomModal from '../../components/Modal';
 import UserList from '../../components/UserList/indes';
-import { ERRORMESSAGE, Extras, InningConst, dummyData } from '../../lib/appconst';
+import { ERRORMESSAGE, Extras, InningConst, LIVESCORINGCONST, dummyData } from '../../lib/appconst';
 import genderConst from '../../lib/genderConst';
 import EventService from '../../services/event/EventService';
 import liveScoringService from '../../services/live-scoring/liveScoringService';
@@ -203,30 +212,6 @@ const LiveScoring = () => {
   //update state
   const handleRuns = (runs, ballType) => {
     handleSubmit(runs, ballType);
-    // switch (ballType) {
-    //   case Extras.WIDE:
-    //     updateTeamScore(runs);
-    //     updateBowlerScore(runs++, Extras.WIDE);
-    //     break;
-    //   case Extras.NO_BALLS:
-    //     updateTeamScore(runs);
-    //     updateBatsmanScore(runs);
-    //     updateBowlerScore(runs++, Extras.NO_BALLS);
-    //     break;
-    //   case Extras.BYES:
-    //     updateTeamScore(runs);
-    //     updateBowlerScore(runs, Extras.BYES);
-    //     updateBatsmanScore(0);
-    //     break;
-    //   case Extras.LEG_BYES:
-    //     updateTeamScore(runs);
-    //     updateBowlerScore(runs, Extras.LEG_BYES);
-    //     updateBatsmanScore(0);
-    //     break;
-    // }
-
-    // handleSubmit(strikerId);
-    // if (runs % 2 != 0) handleChangeStrike(runs);
   };
 
   const handleWicket = (howOutId) => {
@@ -343,12 +328,6 @@ const LiveScoring = () => {
     });
   };
 
-  // const handleRuns = (runs) => {
-  //   // updateScore(runs);
-  //   // handleSubmit(strikerId);
-  //   // if (runs % 2 != 0) handleChangeStrike(runs);
-  // };
-
   const handleChangeStrike = () => {
     if (initLoading) return;
     setStrikerId(Object.keys(batsmans).filter((i) => i != strikerId)[0]);
@@ -464,6 +443,13 @@ const LiveScoring = () => {
     );
   };
 
+  const handleBack = () => {
+    if (currentInning == InningConst.SECOND_INNING) return history.push('/matches');
+    return history.push('/matches');
+  };
+
+  const undoRedo = () => {};
+
   return (
     <>
       <Card>
@@ -471,7 +457,7 @@ const LiveScoring = () => {
           style={{
             border: '1px solid rgb(235, 237, 240)',
           }}
-          onBack={history.goBack}
+          onBack={handleBack}
           title={'Start Match'}
         />
         {currentInning == InningConst.FIRST_INNING_ENDED ? (
@@ -762,25 +748,75 @@ const LiveScoring = () => {
                     <DropDown options={wideOptions} title="W" handleChange={(runs) => handleRuns(runs, Extras.WIDE)} />
                     <DropDown options={noBallOptions} title="N" handleChange={(runs) => handleRuns(runs, Extras.NO_BALLS)} />
                     <DropDown options={wicketOptions} title="Wk" handleChange={(wicket) => handleWicket(wicket)} />
-                    <DropDown options={wicketOptions} title="..." handleChange={(runs) => handleRuns(runs, Extras.WIDE)} />
+                    <DropDown options={matchSettings} title="..." handleChange={(runs) => handleRuns(runs, Extras.WIDE)} />
+                    {/* <Button
+                      style={{ margin: '10px', height: '60px', width: '60px' }}
+                      value="1"
+                      disabled={initLoading}
+                      onClick={() => undoRedo(LIVESCORINGCONST.UNDO)}
+                    >
+                      Undo
+                    </Button>
+                    <Button
+                      style={{ margin: '10px', height: '60px', width: '60px' }}
+                      value="1"
+                      disabled={initLoading}
+                      onClick={() => undoRedo(LIVESCORINGCONST.REDO)}
+                    >
+                      Redo
+                    </Button> */}
                   </Col>
                 </Card>
               </Col>
             </Row>
+            {/* <Row>
+              <Button onClick={handleBack} style={{ display: 'flex', float: 'right' }} htmlType="submit" type="primary" disabled={initLoading}>
+                Exit
+              </Button>
+            </Row> */}
           </>
         ) : currentInning == InningConst.MATCH_ENDED ? (
-          <Summary
-            loading={initLoading}
-            team1Score={team1Score}
-            team2Score={team2Score}
-            firstInningTop3Batsman={firstInningTop3Batsman}
-            firstInningTop3Bowler={firstInningTop3Bowler}
-            secondInningTop3Batsman={secondInningTop3Batsman}
-            secondInningTop3Bowler={secondInningTop3Bowler}
-            matchDetails={matchDetails}
-          />
+          <>
+            <Summary
+              loading={initLoading}
+              team1Score={team1Score}
+              team2Score={team2Score}
+              firstInningTop3Batsman={firstInningTop3Batsman}
+              firstInningTop3Bowler={firstInningTop3Bowler}
+              secondInningTop3Batsman={secondInningTop3Batsman}
+              secondInningTop3Bowler={secondInningTop3Bowler}
+              matchDetails={matchDetails}
+              isShowResult={true}
+            />
+            <Row>
+              <Button
+                style={{ display: 'flex', float: 'right', marginTop: 5 }}
+                htmlType="button"
+                onClick={handleBack}
+                type="primary"
+                disabled={initLoading}
+              >
+                Exit
+              </Button>
+              <Button
+                style={{ display: 'flex', float: 'right', marginTop: 5 }}
+                htmlType="button"
+                onClick={() => undoRedo(LIVESCORINGCONST.UNDO)}
+                type="primary"
+                disabled={initLoading}
+              >
+                Undo
+              </Button>
+            </Row>
+          </>
         ) : null}
-
+        <>
+          {/* <Link to={'/liveScoring/team1/' + param.team1Id + '/' + param.team1 + '/team2/' + param.team2Id + '/' + param.team2 + '/match/' + param.id}>
+            <Button style={{ display: 'flex', float: 'right' }} htmlType="submit" type="primary">
+              {'Start Match'}
+            </Button>
+          </Link> */}
+        </>
         <CustomModal title="Select Bowler" isModalVisible={isNewBowler}>
           <UserList data={team2AllPlayers.filter((i) => i.id != bowler.id)} handleResponse={handleSelectedBowler} />
         </CustomModal>

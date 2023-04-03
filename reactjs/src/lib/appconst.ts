@@ -17,6 +17,11 @@ const AppConsts = {
 };
 export default AppConsts;
 
+export const LIVESCORINGCONST = {
+  UNDO: 1,
+  REDO: 2
+}
+
 export const Extras = {
   NO_EXTRA: 0,
   WIDE: 1,

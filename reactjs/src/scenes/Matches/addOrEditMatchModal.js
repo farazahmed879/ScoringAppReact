@@ -26,10 +26,9 @@ const AddOrEditMatchModal = ({
   groups,
   eventList,
 }) => {
-
-    console.log(matchFormik.values);
+  // console.log(matchFormik.values);
   return (
-    <CustomModal title={Object.keys(matchFormik.values).length ? 'Edit Match' : 'Add Match'} isModalVisible={isOpenModal} handleCancel={handleCancel}>
+    <CustomModal title={matchFormik.values.id ? 'Edit Match' : 'Add Match'} isModalVisible={isOpenModal} handleCancel={handleCancel}>
       <Skeleton loading={isEditDataLoading}>
         <Form className="form" onSubmit={matchFormik.handleSubmit}>
           <Row gutter={16} className="form-container">
@@ -182,7 +181,7 @@ const AddOrEditMatchModal = ({
                 />
               ) : null}
             </Col>
-            {matchFormik.values.team1Id && matchFormik.values.team2Id ? (
+            {matchFormik.values.team1Id && matchFormik.values.team2Id && matchFormik.values.id ? (
               <Col span={8}>
                 <CustomInput
                   title="Player Of the Match"

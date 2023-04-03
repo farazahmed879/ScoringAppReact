@@ -240,15 +240,24 @@ export const legByOptions = [
 export const matchSettings = [
   {
     id: 1,
-    name: 'Exit Match',
+    name: 'Refresh',
   },
   {
     id: 2,
-    name: 'Suspend Inning',
+    name: 'Undo',
   },
   {
     id: 3,
-    name: 'Refresh',
+    name: 'Redo',
+  },
+  {
+    id: 4,
+    name: 'Suspend Inning',
+  },
+  
+  {
+    id: 1,
+    name: 'Exit Match',
   },
 ];
 
