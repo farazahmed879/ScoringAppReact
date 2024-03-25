@@ -60,7 +60,6 @@ const UmpireProfile = () => {
     setStatsLoading(true);
     UmpireService.getById(id).then((res) => {
       if (res) {
-        console.log(res);
         setEventStats(res.result);
         setGAllery(res.result.pictures);
         setStatsLoading(false);

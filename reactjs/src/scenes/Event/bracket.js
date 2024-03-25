@@ -136,7 +136,6 @@ const Bracket = () => {
     }
   };
 
-  //console.log('Bracket Values', bracketFormik.values);
   return (
     <Skeleton loading={loading}>
       <Card>

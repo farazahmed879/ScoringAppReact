@@ -28,7 +28,6 @@ const FilterPanel = ({ teams, handleSubmit = (e) => {} }) => {
     setFilters({ ...filters, [key]: value });
     //playerFormik.setValues({ ...playerFormik.values, [key]: value });
   };
-  console.log('filters', filters);
 
   return (
     <>

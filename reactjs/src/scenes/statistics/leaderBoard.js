@@ -50,7 +50,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     setLoading(true);
     statisticsService.mostRuns(filters).then((res) => {
       setLoading(false);
-      console.log('mostRuns', res);
       setLeaderStats(res);
       setColumns([
         {
@@ -85,7 +84,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     setLoading(true);
     statisticsService.mostCenturies(filters).then((res) => {
       setLoading(false);
-      console.log('mostCenturies', res);
       setLeaderStats(res);
       setColumns([
         {
@@ -120,7 +118,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     setLoading(true);
     statisticsService.mostFifties(filters).then((res) => {
       setLoading(false);
-      console.log('mostFifties', res);
       setLeaderStats(res);
       setColumns([
         {
@@ -155,7 +152,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     setLoading(true);
     statisticsService.mostFours(filters).then((res) => {
       setLoading(false);
-      console.log('mostFours', res);
       setLeaderStats(res);
       setColumns([
         {
@@ -190,7 +186,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     setLoading(true);
     statisticsService.mostSixes(filters).then((res) => {
       setLoading(false);
-      console.log('mostSixes', res);
       setLeaderStats(res);
       setColumns([
         {
@@ -225,7 +220,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     setLoading(true);
     statisticsService.mostWickets(filters).then((res) => {
       setLoading(false);
-      console.log('mostWickets', res);
       setLeaderStats(res);
       setColumns([
         {
@@ -254,7 +248,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     setLoading(true);
     statisticsService.mostCatches(filters).then((res) => {
       setLoading(false);
-      console.log('mostCatches', res);
       setLeaderStats(res);
       setColumns([
         {
@@ -283,7 +276,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     setLoading(true);
     statisticsService.mostStumps(filters).then((res) => {
       setLoading(false);
-      console.log('mostStumps', res);
       setLeaderStats(res);
       setColumns([
         {
@@ -312,7 +304,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     setLoading(true);
     statisticsService.mostMaidens(filters).then((res) => {
       setLoading(false);
-      console.log('mostMaidens', res);
       setLeaderStats(res);
       setColumns([
         {
@@ -340,7 +331,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     setLoading(true);
     statisticsService.mostRunOuts(filters).then((res) => {
       setLoading(false);
-      console.log('mostRunOuts', res);
       setLeaderStats(res);
       setColumns([
         {
@@ -369,7 +359,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     setLoading(true);
     statisticsService.highestWicketsInAnInning(filters).then((res) => {
       setLoading(false);
-      console.log('highestWicketsInAnInning', res);
       setLeaderStats(res);
       setColumns([
         {
@@ -398,7 +387,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     setLoading(true);
     statisticsService.highestRunsInAnInning(filters).then((res) => {
       setLoading(false);
-      console.log('highestRunsInAnInning', res);
       setLeaderStats(res);
       setColumns([
         {
@@ -469,7 +457,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     handleSubmitStatsFilter();
   };
 
-  console.log(leaderType, filters);
 
   const handleChange = (value, key) => {
     setFilters({ ...filters, [key]: value });
@@ -479,7 +466,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     //setLoading(true);
     TeamService.getAll().then((res) => {
       // setLoading(false);
-      console.log('getAll', res);
       setTeamList(res);
     });
   };
@@ -488,7 +474,6 @@ const LeaderBoard = ({ teamId = null, eventId = null }) => {
     //setLoading(true);
     EventService.getAll().then((res) => {
       //setLoading(false);
-      console.log('Events', res);
       setEventList(res);
     });
   };

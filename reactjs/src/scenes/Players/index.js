@@ -109,7 +109,6 @@ const Player = () => {
       return;
     }
 
-    console.log('Player Object', playerObject);
     playerService.createOrUpdate(playerObject).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);
@@ -123,19 +122,6 @@ const Player = () => {
     validationSchema: playerValidation,
     onSubmit: handleSubmit,
   });
-
-  useEffect(() => {
-    //getAll();
-    getAllTeams();
-  }, []);
-
-  useEffect(() => {
-    getAll();
-  }, [pagination.current]);
-
-  // useEffect(() => {
-  //   if (isOpenModal) getAllTeams();
-  // }, [isOpenModal]);
 
   const filterHandleSubmit = (event) => {
     getAll(event);
@@ -154,14 +140,8 @@ const Player = () => {
         contact: filter ? filter.contact : undefined,
       })
       .then((res) => {
-        console.log('Players', res.items);
         setLoading(false);
-        setPlayerList(
-          res.items.map((r) => ({
-            ...r,
-            key: r.id,
-          }))
-        );
+        setPlayerList(res.items);
         setPagination({
           ...pagination,
           total: res.totalCount,
@@ -172,7 +152,6 @@ const Player = () => {
 
   const getAllTeams = () => {
     TeamService.getAll().then((res) => {
-      console.log('Teams', res);
       setTeamList(res);
     });
   };
@@ -182,7 +161,6 @@ const Player = () => {
       playerId: id,
     };
     playerService.playerStatistics(req).then((res) => {
-      console.log('setPlayerStats', res);
       setPlayerStats(res);
     });
   };
@@ -208,27 +186,11 @@ const Player = () => {
         console.log('Cancel');
       },
     });
-    console.log(picture);
   };
 
   const handleChange = (value, key) => {
     playerFormik.setValues({ ...playerFormik.values, [key]: value });
   };
-
-  // useEffect(() => {
-  //   if (!isOpenModal) {
-
-  //     //setProfile([]);
-  //   }
-  // }, [isOpenModal]);
-
-  useEffect(() => {
-    if (profile.length > 0) {
-      setPicture(false);
-    } else {
-      setPicture(true);
-    }
-  }, [profile]);
 
   const handleUpload = ({ file, fileList }) => {
     setGallery(fileList);
@@ -236,7 +198,6 @@ const Player = () => {
 
   const handleProfileUpload = ({ fileList }) => {
     setProfile(fileList);
-    //console.log('profile', e.file);
   };
 
   const handleChangeDatePicker = (date, dateString) => {
@@ -262,7 +223,6 @@ const Player = () => {
           error({ title: res.successMessage });
           return;
         }
-        console.log('player', res);
         playerFormik.setValues({
           ...playerFormik.values,
           ...res.result,
@@ -317,9 +277,119 @@ const Player = () => {
     setPreview(true);
   };
 
+  const columns = [
+    {
+      title: 'Full Name',
+      width: 250,
+      dataIndex: 'name',
+      key: 'name',
+      fixed: 'left',
+      render: (text, item) => {
+        return (
+          <div>
+            <Link to={'/playerProfile/' + item.id}>{item.name}</Link>
+          </div>
+        );
+      },
+    },
+    {
+      title: 'Team',
+      width: 250,
+      dataIndex: 'teams',
+      fixed: 'left',
+      render: (text, item) => {
+        if (item && item.teams) {
+          Array.from(Array(item.teams), (e, index) => {
+            return <div>{e.title}</div>;
+          });
+        }
+      },
+    },
+    {
+      title: 'Contact',
+      width: 250,
+      dataIndex: 'contact',
+      key: 'contact',
+    },
+    {
+      title: 'Birth',
+      width: 250,
+      dataIndex: 'dob',
+      key: 'dob',
+      render: (item) => {
+        return moment(item).format('MM/DD/YYYY');
+      },
+    },
+    {
+      title: 'Playing Role',
+      width: 250,
+      dataIndex: 'playerRoleId',
+      key: 'playerRoleId',
+      render: (text, item) => {
+        return text > 0 ? playingRoleOptions.filter((i) => i.id == text)[0].name : 'N/A';
+      },
+    },
+    {
+      title: 'Batting Style',
+      width: 250,
+      dataIndex: 'battingStyleId',
+      key: 'battingStyleId',
+      render: (text, item) => {
+        return text > 0 ? battingStyleOptions.filter((i) => i.id == text)[0].name : 'N/A';
+      },
+    },
+    {
+      title: 'Bowling Style',
+      width: 250,
+      dataIndex: 'bowlingStyleId',
+      key: 'bowlingStyleId',
+      render: (text, item) => {
+        return text > 0 ? bowlingStyleOptions.filter((i) => i.id == text)[0].name : 'N/A';
+      },
+    },
+    {
+      title: 'Action',
+      key: 'operation',
+      fixed: 'right',
+      width: 100,
+      render: (text, item) => (
+        <div>
+          <Dropdown
+            trigger={['click']}
+            overlay={
+              <Menu>
+                <Menu.Item onClick={(e) => handleEditPlayer(item)}>{L('Edit')}</Menu.Item>
+                <Menu.Item onClick={(e) => handleDeletePlayer(item)}>{L('Delete')}</Menu.Item>
+                <Menu.Item onClick={(e) => viewPlayerProfile(item)}>{L('Profile')}</Menu.Item>
+              </Menu>
+            }
+            placement="bottomLeft"
+          >
+            <Button type="primary" icon="setting">
+              {L('Actions')}
+            </Button>
+          </Dropdown>
+        </div>
+      ),
+    },
+  ];
 
+  useEffect(() => {
+    //getAll();
+    getAllTeams();
+  }, []);
 
-  console.log('validations', playerFormik);
+  useEffect(() => {
+    getAll();
+  }, [pagination.current]);
+
+  useEffect(() => {
+    if (profile.length > 0) {
+      setPicture(false);
+    } else {
+      setPicture(true);
+    }
+  }, [profile]);
 
   return (
     <Card>
@@ -337,11 +407,11 @@ const Player = () => {
       <CustomTable
         loading={loading}
         pagination={pagination}
-        columns={PlayerColumns}
+        columns={columns}
         data={playerList}
         scroll={{ x: 1500 }}
         handleTableChange={handleTableChange}
-      />{' '}
+      />
       {isOpenModal && (
         <AddOrEditPlayerModal
           isOpenModal={isOpenModal}

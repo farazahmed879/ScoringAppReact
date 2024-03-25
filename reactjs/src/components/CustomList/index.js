@@ -7,7 +7,6 @@ const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender
 const CustomList = ({ title, list, initLoading, handleChange }) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
-  console.log('list ', list);
   //   const onLoadMore = () => {
   //     setLoading(true);
   //     setList(

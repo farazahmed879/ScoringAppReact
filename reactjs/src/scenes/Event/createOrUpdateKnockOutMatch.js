@@ -16,8 +16,7 @@ const CreateOrUpdateKnockOutMatch = ({
   handleSubmit = (e) => {},
   isEditDataLoading,
 }) => {
-  console.log('teamList', teamList);
-  console.log('playerList', playerList);
+
 
   const handleChange = (value, key) => {
     matchFormik.setValues({ ...matchFormik.values, [key]: value });
@@ -37,8 +36,7 @@ const CreateOrUpdateKnockOutMatch = ({
     teamid1 = teamid2;
     teamid2 = swapid;
     matchFormik.setValues({ ...matchFormik.values, team1: team1, team2: team2, team1Id: teamid1, team2Id: teamid2 });
-    console.log('Team1', matchFormik.values.team1);
-    console.log('Team2', matchFormik.values.team2);
+
   };
 
   return (

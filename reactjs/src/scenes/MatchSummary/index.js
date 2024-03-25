@@ -48,7 +48,6 @@ const MatchSummary = () => {
   const history = useHistory();
 
   const handleRadio = (e) => {
-    console.log('e', e.target.value);
     setInning(e.target.value);
   };
 
@@ -66,7 +65,6 @@ const MatchSummary = () => {
     ScoreCardService.getTeamScorecard(+param.team1Id, +param.team2Id, param.matchId).then((res) => {
       if (res.success) {
         setLoading(false);
-        console.log('scorecard', res);
         setFirstInningBatsman(res.result.firstInningBatsman);
         setSecondInningBatsman(res.result.secondInningBatsman);
         setFirstInningBowler(res.result.firstInningBowler);
@@ -101,7 +99,6 @@ const MatchSummary = () => {
   };
   const getGallery = (id) => {
     GalleryService.getAllByEntity(undefined, undefined, undefined, id, undefined).then((res) => {
-      console.log('Gallery', res);
       if (res.success) {
         setGAllery(res.result);
       }

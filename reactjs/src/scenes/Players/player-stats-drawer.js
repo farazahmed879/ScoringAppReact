@@ -13,7 +13,6 @@ const PlayerStatsDrawer = ({ visible = false, onClose, stats }) => {
     marginBottom: 16,
   };
 
-  console.log('stats', stats);
 
   const callback = (key) => {
     console.log(key);

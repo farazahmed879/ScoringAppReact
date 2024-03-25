@@ -8,7 +8,6 @@ const style = {
   marginRight: '100px',
 };
 const PointsTable = ({ data = [] }) => {
-  console.log('Points Table', data);
 
   const isHeading = (data = []) => {
     let isMatchFound = false;

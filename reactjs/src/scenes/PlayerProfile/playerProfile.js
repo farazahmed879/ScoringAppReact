@@ -82,7 +82,6 @@ const PlayerProfile = () => {
 
   const playerStatistics = () => {
     playerService.playerStatistics(filters).then((res) => {
-      console.log('setPlayerStats', res);
       setPlayerStats(res);
       setStatsLoading(false);
     });
@@ -90,28 +89,24 @@ const PlayerProfile = () => {
 
   const getAllTeamsByPlayerId = (id) => {
     TeamService.getAllTeamsByPlayerId(id).then((res) => {
-      console.log('Player Teams', res);
       setTeamList(res);
     });
   };
 
   const getMatchesByPlayerId = (id) => {
     matchService.getAllMatchesByPlayerId(id, matchResultFilter).then((res) => {
-      console.log('Player Matches', res);
       setMatchList(res);
     });
   };
 
   const getMOMByPlayerId = (id) => {
     matchService.getMOMByPlayerId(id).then((res) => {
-      console.log('MOM', res);
       setMOMList(res);
     });
   };
 
   const getGallery = (id) => {
     GalleryService.getAllByEntity(undefined, undefined, id).then((res) => {
-      console.log('Gallery', res);
       if (res.success) {
         setGAllery(res.result);
       }

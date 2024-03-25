@@ -3,7 +3,6 @@ import React from 'react';
 import getImage from '../../lib/getImage';
 import ImageCard from '../ImageCard';
 const ProfileHeader = ({ children, data, viewImageModal, loading }) => {
-  console.log('ProfileHeader', data);
   return (
     <>
       {' '}

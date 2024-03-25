@@ -27,7 +27,6 @@ const AddOrEditMatchModal = ({
   eventList,
 }) => {
 
-    console.log(matchFormik.values);
   return (
     <CustomModal title={Object.keys(matchFormik.values).length ? 'Edit Match' : 'Add Match'} isModalVisible={isOpenModal} handleCancel={handleCancel}>
       <Skeleton loading={isEditDataLoading}>

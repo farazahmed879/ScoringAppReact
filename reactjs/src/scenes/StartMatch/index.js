@@ -73,7 +73,6 @@ const StartMatch = () => {
       };
       teamPlayers.push(teamPlayer);
     });
-    console.log('teamplayers', teamPlayers);
     var model = {
       status: MatchStatus.STARTED,
       matchId: param.matchId,
@@ -109,7 +108,6 @@ const StartMatch = () => {
   const getAllPlayerByTeamId = (id) => {
     setInitLoading(true);
     playerService.getAllByTeamId(id).then((res) => {
-      console.log('Team Player', res);
 
       let array = [];
       res.forEach((el, index) => {
@@ -159,9 +157,6 @@ const StartMatch = () => {
     event ? arra.push(key) : arra.pop(key);
     setTeam2SelectedPlayers(arra);
   };
-  console.log('team1SelectedPlayers', team1SelectedPlayers);
-  console.log('team2SelectedPlayers', team2SelectedPlayers);
-  console.log('startMatchFormik', startMatchFormik);
 
   const selectTeamPlayers = () => {
     return (

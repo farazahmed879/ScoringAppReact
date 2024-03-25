@@ -90,26 +90,22 @@ const TeamProfile = () => {
 
   const getAllPlayersByTeamId = (id) => {
     playerService.getAllByTeamId(id).then((res) => {
-      console.log('Team Players', res);
       setPlayerList(res);
     });
   };
   const getAllMatchesByTeamId = (id) => {
     matchService.getAllMatchesByTeamId(id, matchResultFilter).then((res) => {
-      console.log('Team Matches', res);
       setMatchList(res);
     });
   };
   const getAllEventsByTeamId = (id) => {
     EventService.getAllEventsByTeamId(id, eventFilter).then((res) => {
-      console.log('Team Events', res);
 
       setEventList(res);
     });
   };
   const getTeamStats = () => {
     TeamService.getTeamStats(statsFilters).then((res) => {
-      console.log('Team Stats', res);
       setTeamStats(res);
       setStatsLoading(false);
     });
@@ -117,7 +113,6 @@ const TeamProfile = () => {
 
   const getGallery = (id) => {
     GalleryService.getAllByEntity(id).then((res) => {
-      console.log('Gallery', res);
       if (res.success) {
         setGAllery(res.result);
       }
@@ -141,7 +136,6 @@ const TeamProfile = () => {
     setMatchResultFilter(e.target.value);
   };
   const handleEventFilter = (e) => {
-    //console.log("event",filtered);
     setEventFilter(e.target.value);
     //setEventList(filtered);
   };

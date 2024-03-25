@@ -111,7 +111,6 @@ const Matches = () => {
       return;
     }
 
-    console.log('Match Object', req);
     matchService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);
@@ -210,7 +209,6 @@ const Matches = () => {
     }
     setGroups(group);
 
-    console.log('groups', groups);
   };
 
   const getAll = (filter) => {
@@ -226,7 +224,6 @@ const Matches = () => {
         date: filter && filter.date ? moment(filter.date).valueOf() : undefined,
       })
       .then((res) => {
-        console.log('Matches', res.items);
         setLoading(false);
         setMatchList(
           res.items.map((r) => ({
@@ -244,21 +241,18 @@ const Matches = () => {
 
   const getAllTeamsByEventId = (id, group) => {
     TeamService.getAllEventTeams(id, group).then((res) => {
-      console.log('Event Teams', res);
       setTeamList(res);
     });
   };
 
   const getAllTeams = () => {
     TeamService.getAll().then((res) => {
-      console.log('Teams', res);
       setFilterTeamList(res);
     });
   };
 
   const getAllGrounds = () => {
     GroundService.getAll().then((res) => {
-      console.log('Grounds', res);
       setGroundList(res);
     });
   };
@@ -268,13 +262,11 @@ const Matches = () => {
     teamIds.push(matchFormik.values.team1Id);
     teamIds.push(matchFormik.values.team2Id);
     playerService.AllPlayersByTeamIds(teamIds).then((res) => {
-      console.log('Players', res);
       setPlayerList(res);
     });
   };
   const getAllEvents = () => {
     EventService.getAll().then((res) => {
-      console.log('eventList', res);
       setEventList(res);
     });
   };
@@ -293,7 +285,6 @@ const Matches = () => {
 
   const handleProfileUpload = ({ fileList }) => {
     setProfile(fileList);
-    //console.log('profile', e.file);
   };
 
   const handleChange = (value, key) => {
@@ -321,7 +312,6 @@ const Matches = () => {
         console.log('Cancel');
       },
     });
-    console.log(picture);
   };
 
   const handleEditMatch = (item) => {
@@ -368,7 +358,6 @@ const Matches = () => {
     matchFormik.setValues({});
   };
 
-  console.log('matchFormik', matchFormik.values);
 
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
@@ -492,7 +481,6 @@ const Matches = () => {
       ),
     },
   ];
-  // console.log('matchFormik', matchFormik);
 
   return (
     <Card>

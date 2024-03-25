@@ -75,7 +75,6 @@ const Event = () => {
 
   const handleProfileUpload = ({ fileList }) => {
     setProfile(fileList);
-    //console.log('profile', e.file);
   };
 
   const handleDeletePicture = () => {
@@ -136,7 +135,6 @@ const Event = () => {
       //setIsOpenModal(true);
     }
 
-    console.log('Event Object', eventObject);
     eventService.createOrUpdate(eventObject).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       getAll();
@@ -168,7 +166,6 @@ const Event = () => {
       })
       .then((res) => {
         setLoading(false);
-        console.log('Events', res.items);
         setEventList(
           res.items.map((r) => ({
             ...r,
@@ -215,7 +212,6 @@ const Event = () => {
         console.log('Cancel');
       },
     });
-    console.log(picture);
   };
 
   const handleEditEvent = (item) => {
@@ -223,14 +219,12 @@ const Event = () => {
     setModalMode('Edit Event');
     setIsOpenModal(true);
     // setGallery([]);
-    console.log(picture);
     eventService.getById(item.id).then((res) => {
       if (res) {
         if (!res.success) {
           error({ title: res.successMessage });
           return;
         }
-        console.log('Event', res);
         eventFormik.setValues({
           ...eventFormik.values,
           ...res.result,
@@ -254,7 +248,6 @@ const Event = () => {
     });
   };
 
-  console.log('Edit Event', eventFormik.values);
 
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {

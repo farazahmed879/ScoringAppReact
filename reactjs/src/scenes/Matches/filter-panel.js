@@ -36,10 +36,8 @@ const FilterPanel = ({ teams = [], grounds = [], groups = [], handleSubmit = (e)
     setFilters({ ...filters, [key]: value });
     //playerFormik.setValues({ ...playerFormik.values, [key]: value });
   };
-  console.log('filters', filters);
   const getAllEvents = () => {
     EventService.getAll().then((res) => {
-      console.log('eventList', res);
       setEventList(res);
     });
   };

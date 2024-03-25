@@ -55,21 +55,18 @@ const TeamPlayers = () => {
 
   const getAllTeams = () => {
     TeamService.getAll().then((res) => {
-      console.log('Teams', res);
       setTeamList(res);
     });
   };
 
   const getAllPlayers = () => {
     playerService.getAll().then((res) => {
-      console.log('Players', res);
       setPlayerList(res);
       getAllPlayersByTeamId(res);
     });
   };
   const handleProfileUpload = ({ fileList }) => {
     setProfile(fileList);
-    //console.log('profile', e.file);
   };
   const handleDeletePicture = () => {
     setProfile([]);
@@ -138,7 +135,6 @@ const TeamPlayers = () => {
       return;
     }
 
-    console.log('Player Object', playerObject);
     playerService.createOrUpdate(playerObject).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);
@@ -167,7 +163,6 @@ const TeamPlayers = () => {
 
   const getAllPlayersByTeamId = (allPlayers) => {
     playerService.getAllByTeamId(+param.teamId).then((res) => {
-      console.log('Selected Players', res);
       setSelectedPlayerList(res);
       getMock(allPlayers, res);
     });

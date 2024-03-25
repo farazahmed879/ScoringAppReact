@@ -24,7 +24,6 @@ export const handleSubmitMatch = (matchFormik) => {
     playerOTM: matchFormik.values.playerOTM,
   };
 
-  console.log('Match Object', req);
   return matchService.createOrUpdate(req).then((res) => {
     res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
     return res.success;

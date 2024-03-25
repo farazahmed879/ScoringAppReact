@@ -11,7 +11,6 @@ const RunOutDialog = ({ isOpen, handleSubmit, team1Players = [], team2Players = 
   const [fielderId, setFielderId] = useState();
   const [batsman, setSelectedBatsman] = useState({});
 
-  console.log('fielding players', team2Players);
   const handleRuns = (e) => {
     setRuns(e.target.value);
   };

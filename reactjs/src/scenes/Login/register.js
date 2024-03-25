@@ -69,7 +69,6 @@ const Register = () => {
         setDisabledMode(true);
         setLayoutMode(2);
         getRoles();
-        console.log('res', res);
         if (res.result.user) {
           let user = {
             id: 0,
@@ -107,7 +106,6 @@ const Register = () => {
   };
 
   const handleRegisterSubmit = () => {
-    console.log('handleSubmit');
     let req = {
       id: 0,
       name: userFormik.values.name,

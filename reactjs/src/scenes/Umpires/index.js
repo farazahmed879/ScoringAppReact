@@ -81,7 +81,6 @@ const Umpires = () => {
       return;
     }
 
-    console.log('Umpire Object', req);
     UmpireService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);
@@ -159,7 +158,6 @@ const Umpires = () => {
   const getAll = () => {
     setLoading(true);
     UmpireService.getPaginatedAll({ maxResultCount: pagination.maxResultCount, skipCount: pagination.skipCount, name: '' }).then((res) => {
-      console.log('Matches', res.items);
       setLoading(false);
       setUmpireList(
         res.items.map((r) => ({
@@ -203,7 +201,6 @@ const Umpires = () => {
         console.log('Cancel');
       },
     });
-    console.log(picture);
   };
 
   useEffect(() => {
@@ -223,7 +220,6 @@ const Umpires = () => {
 
   const handleProfileUpload = ({ fileList }) => {
     setProfile(fileList);
-    //console.log('profile', e.file);
   };
 
   const handleChange = (value, key) => {
@@ -300,7 +296,6 @@ const Umpires = () => {
       ),
     },
   ];
-  console.log('umpireFormik', umpireFormik);
 
   return (
     <Card>

@@ -4,7 +4,6 @@ import { truncateText } from '../../helper/helper';
 import './style.css';
 
 const ViewBracket = ({ formikData }) => {
-  console.log('viewBracketsFormik', formikData);
   const [column1Teams, setColumn1Teams] = useState([]);
   const [column2Teams, setColumn2Teams] = useState([]);
   const arr = [4, 8, 16, 32, 64, 128];
@@ -17,8 +16,6 @@ const ViewBracket = ({ formikData }) => {
         }
       });
       let col1 = bracketTeams.splice(0, bracketTeams.length / 2);
-      console.log('c1', col1);
-      console.log('c2', bracketTeams);
       setColumn1Teams(col1);
       setColumn2Teams(bracketTeams);
     }
@@ -36,7 +33,6 @@ const ViewBracket = ({ formikData }) => {
 
   const generateBracket = (teams = []) => {
     if (teams.length == 0) return;
-    console.log(teams);
     let assignedTeams = JSON.parse(JSON.stringify(teams));
     return (
       <div

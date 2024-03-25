@@ -1,10 +1,8 @@
 import React from 'react';
 import { Row, Col, Card } from 'antd';
 const Scorecard = ({ batsman = [], bowler = [], teamScore, matchDetails }) => {
-  console.log(teamScore);
 
   const handleHowOut = (data) => {
-    // console.log('data', data);
     switch (data.howOut) {
       case 1: {
         return 'Not out';

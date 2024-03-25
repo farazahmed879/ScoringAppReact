@@ -60,7 +60,6 @@ const GroupProfile = () => {
     setStatsLoading(true);
     GroundService.getById(id).then((res) => {
       if (res) {
-        console.log(res);
         setEventStats(res.result);
         setGAllery(res.result.pictures);
         setStatsLoading(false);

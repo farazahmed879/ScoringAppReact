@@ -148,7 +148,6 @@ const AddScore = (prop) => {
       isPlayedInning: scoreCardFormik.values.isPlayedInning,
     };
 
-    //console.log('Match Object', req);
     ScoreCardService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);
@@ -175,7 +174,6 @@ const AddScore = (prop) => {
       matchId: +param.matchId,
     };
 
-    //console.log('Team SCore Object', req);
     TeamScoreCardService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setTeamScoreStateUpdate(res.result);
@@ -199,7 +197,6 @@ const AddScore = (prop) => {
       teamId: e.team1Id,
       matchId: +param.matchId,
     };
-    //console.log('Team SCore Object', req);
     FallofWicketService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setFallofWicketStateUpdate(res.result || res.array);
@@ -331,7 +328,6 @@ const AddScore = (prop) => {
 
   const getScoreCard = (teamId, matchId) => {
     ScoreCardService.getAll(teamId, matchId).then((res) => {
-      //console.log('PLayer Scores 1', res);
       if (!res) return;
       setScoreCardStateUpdate(res, teamId);
     });
@@ -341,7 +337,6 @@ const AddScore = (prop) => {
   const getTeamScore = (teamId, matchId) => {
     TeamScoreCardService.getByTeamIdAndMatchId(teamId, matchId).then((res) => {
       if (!res) return;
-      console.log('PLayer Scores 1', res);
       setTeamScoreStateUpdate(res);
     });
     //
@@ -350,7 +345,6 @@ const AddScore = (prop) => {
   const getFallofWicket = (teamId, matchId) => {
     FallofWicketService.getByTeamIdAndMatchId(teamId, matchId).then((res) => {
       if (!res) return;
-      //console.log('Fall of wickets', res);
       setFallofWicketStateUpdate(res);
     });
     //
@@ -359,7 +353,6 @@ const AddScore = (prop) => {
   // const getAllTeam2 = (teamId, matchId) => {
   //   ScoreCardService.getAll(teamId, matchId).then((res) => {
   //     if (!res.items) return;
-  //     //console.log('PLayer Scores 2', res.items);
   //     setScoreCardListTeam2(
   //       res.items.map((r) => ({
   //         ...r,
@@ -372,7 +365,6 @@ const AddScore = (prop) => {
 
   const getAllPlayers = () => {
     playerService.getAllByTeamId(activeTag == 1 ? +param.team1Id : activeTag == 2 ? +param.team2Id : null).then((res) => {
-      // console.log('Players', res);
       setPlayerList(res);
     });
   };
@@ -559,10 +551,7 @@ const AddScore = (prop) => {
       ),
     },
   ];
-  //console.log('fallofWicketTeam1Formik', fallofWicketTeam2Formik);
-  console.log('team1ScoreFormik', team1ScoreFormik.values);
-  console.log('team2ScoreFormik', team2ScoreFormik.values);
-  console.log('activeTag', activeTag);
+
 
   const { tabPosition } = { tabPosition: 'top' };
   return (

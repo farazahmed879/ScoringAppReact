@@ -99,13 +99,11 @@ const EventProfile = () => {
 
   const getMatchesViewByEventId = (id) => {
     matchService.getMatchesViewByEventId(id).then((res) => {
-      console.log('Event Matches', res);
       setMatchList(res);
     });
   };
   const getAllTeamsByEventId = (id, group) => {
     TeamService.getAllEventTeams(id, group).then((res) => {
-      console.log('Event Teams', res);
       if (group) {
         setFilterTeamList(res);
         return;
@@ -116,7 +114,6 @@ const EventProfile = () => {
 
   const getEventStats = (id) => {
     EventService.getEventStats(id).then((res) => {
-      console.log('Event Stats', res);
       setEventStats(res);
       setStatsLoading(false);
     });
@@ -124,7 +121,6 @@ const EventProfile = () => {
 
   const getAllGrouds = () => {
     GroundService.getAll().then((res) => {
-      console.log('Grounds', res);
       setGrounds(res);
     });
   };
@@ -155,7 +151,6 @@ const EventProfile = () => {
   };
   const getGallery = (id) => {
     GalleryService.getAllByEntity(undefined, id, undefined, undefined, undefined).then((res) => {
-      console.log('Gallery', res);
       if (res.success) {
         setGAllery(res.result);
       }
@@ -164,7 +159,6 @@ const EventProfile = () => {
 
   //Add-league-based
   const handleAddMatch = () => {
-    console.log('SHort Term Memory Lose');
     setIsOpenMatchModal(true);
   };
 
@@ -202,7 +196,6 @@ const EventProfile = () => {
   //     playerOTM: matchFormik.values.playerOTM,
   //   };
 
-  //   console.log('Match Object', req);
   //   matchService.createOrUpdate(req).then((res) => {
   //     res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
   //     setIsOpenMatchModal(false);
@@ -233,7 +226,6 @@ const EventProfile = () => {
     }
     setGroups(group);
 
-    console.log('groups', groups);
   };
 
   useEffect(() => {
@@ -265,7 +257,6 @@ const EventProfile = () => {
   }, [matchFormik.values.group]);
 
   const handleBracketUpdate = (e) => {
-    console.log('handleBracketUpdate', e);
     if (e) {
       getAllMatchesByEventId(param.eventId);
     }

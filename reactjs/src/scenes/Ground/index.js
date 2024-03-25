@@ -74,7 +74,6 @@ const Ground = () => {
       return;
     }
 
-    console.log('Ground Object', req);
     groundService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);
@@ -154,7 +153,6 @@ const Ground = () => {
   const getAll = () => {
     setLoading(true);
     groundService.getPaginatedAll({ maxResultCount: pagination.maxResultCount, skipCount: pagination.skipCount, name: '' }).then((res) => {
-      console.log('Matches', res.items);
       setLoading(false);
       setGroundList(
         res.items.map((r) => ({
@@ -198,7 +196,6 @@ const Ground = () => {
         console.log('Cancel');
       },
     });
-    console.log(picture);
   };
 
   useEffect(() => {
@@ -218,7 +215,6 @@ const Ground = () => {
 
   const handleProfileUpload = ({ fileList }) => {
     setProfile(fileList);
-    //console.log('profile', e.file);
   };
 
   const handleChange = (value, key) => {
@@ -285,7 +281,6 @@ const Ground = () => {
       ),
     },
   ];
-  console.log('groundFormik', groundFormik);
 
   return (
     <Card>

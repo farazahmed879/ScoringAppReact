@@ -149,7 +149,6 @@ const LiveScoring = () => {
     setInitLoading(true);
     if (team2AllPlayers.length == 0)
       playerService.getAllByTeamId(teamId).then((res) => {
-        console.log('Team Player', res);
         setInitLoading(false);
         if (teamId == playingTeamId) {
           setTeam1AllPlayers(res);
@@ -163,7 +162,6 @@ const LiveScoring = () => {
   const getBatsmanOrBowlers = (teamId) => {
     setInitLoading(true);
     playerService.getTeamPlayersByMatchId(param.matchId, teamId).then((res) => {
-      console.log('Team Player', res);
     });
   };
 
@@ -214,7 +212,6 @@ const LiveScoring = () => {
     };
     liveScoringService.updateLiveScore(req).then((res) => {
       //res.success && ? success({ title: res.successMessage }) : error({ title: res.successMessage });
-      console.log("result", res);
       mappData(res.result);
       setInitLoading(false)
     });
@@ -250,7 +247,6 @@ const LiveScoring = () => {
   };
 
   const handleWicket = (howOutId) => {
-    console.log(howOutId);
     if (howOutId == WICKETCONST.Run_Out) {
       let currentBatsmans = [];
       getAllBowlers(bowlingTeamId);
@@ -313,7 +309,6 @@ const LiveScoring = () => {
     if (runs == 6) setIsCeleberationVisible(true);
     const batsman = batsmans[strikerId];
     let timeLine = batsman.timeline;
-    console.log('timeLine', timeLine);
     timeLine.push(runs);
     setBatsmans({
       ...batsmans,
@@ -332,7 +327,6 @@ const LiveScoring = () => {
     const toAddBalls = extra === Extras.WIDE || extra === Extras.NO_BALLS ? 0 : 1;
     const toAddRuns = extra === Extras.BYES || extra === Extras.LEG_BYES ? 0 : runs;
     const balls = (bowler.totalBalls + toAddBalls) % 6;
-    console.log(balls);
     setBowler({
       ...bowler,
       runs: bowler.runs + toAddRuns,
@@ -428,10 +422,6 @@ const LiveScoring = () => {
     return (obtain * 100) / total;
   };
 
-  //s console.log('data', data);
-  console.log('batsman', batsmans);
-  console.log('team1AllPlayers', team1AllPlayers);
-  console.log('bowler', bowler);
 
   return (
     <>

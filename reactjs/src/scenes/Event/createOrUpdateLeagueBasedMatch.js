@@ -18,8 +18,7 @@ const CreateOrUpdateLeagueBasedMatch = ({
     matchFormik.setValues({ ...matchFormik.values, [key]: value });
   };
 
-  console.log('groups', groups);
-  console.log('teamList', teamList);
+  
   return (
     <CustomModal title="Add Match" isModalVisible={isOpenModal} handleCancel={() => handleCancel(false)}>
       <Form className="form" onSubmit={matchFormik.handleSubmit}>

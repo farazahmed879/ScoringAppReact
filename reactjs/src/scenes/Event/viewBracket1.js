@@ -38,7 +38,6 @@ const success = Modal.success;
 const error = Modal.error;
 
 const ViewBracket1 = ({ formikData,event }) => {
-  console.log('viewBracketsFormik', formikData);
   const [column1Teams, setColumn1Teams] = useState([]);
   const [column2Teams, setColumn2Teams] = useState([]);
 
@@ -63,8 +62,6 @@ const ViewBracket1 = ({ formikData,event }) => {
     });
     setColumn1Teams(column1);
     setColumn2Teams(column2);
-    console.log('c1', column1);
-    console.log('c2', column2);
   }, [formikData]);
 
   const calculateColumns = (num) => {
@@ -138,7 +135,6 @@ const ViewBracket1 = ({ formikData,event }) => {
   const generateBracket = (matches = []) => {
     if (matches.length == 0) return;
     let assignedTeams = JSON.parse(JSON.stringify(matches));
-    console.log('assignedTeams', assignedTeams);
     return (
       <div
         style={{
@@ -234,7 +230,6 @@ const ViewBracket1 = ({ formikData,event }) => {
       playerOTM: matchFormik.values.playerOTM,
     };
 
-    console.log('Match Object', req);
     matchService.createOrUpdate(req).then((res) => {
       res.success ? success({ title: res.successMessage }) : error({ title: res.successMessage });
       setIsOpenModal(false);
@@ -268,21 +263,18 @@ const ViewBracket1 = ({ formikData,event }) => {
 
   const getAllPlayersByMatchId = (id) => {
     playerService.getAllByMatchId(id).then((res) => {
-      console.log('Players', res);
       setPlayerList(res);
     });
   };
 
   const getMatchTeams = (id) => {
     TeamService.getMatchTeams(id).then((res) => {
-      console.log('Event Teams', res);
       setTeamList(res);
     });
   };
 
   const getAllGrounds = () => {
     GroundService.getAll().then((res) => {
-      console.log('Grounds', res);
       setGroundList(res);
     });
   };
